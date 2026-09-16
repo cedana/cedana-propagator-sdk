@@ -3,55 +3,44 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
 from typing import Any, Optional, TYPE_CHECKING, Union
+from uuid import UUID
 
 if TYPE_CHECKING:
-    from .create import Create
-    from .pipeline_filter import PipelineFilter
-    from .pipeline_trigger import PipelineTrigger
+    from .slurm_maintenance_window_sync import SlurmMaintenanceWindowSync
 
 @dataclass
-class PolicyPipeline(AdditionalDataHolder, Parsable):
-    """
-    Complete policy pipeline definition
-    """
+class SlurmMaintenanceWindowSyncRequest(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # Action defines WHAT to do when triggered
-    action: Optional[Create] = None
-    # Filter defines WHAT resources are targeted
-    filter: Optional[PipelineFilter] = None
-    # Trigger defines WHEN a policy activates
-    trigger: Optional[PipelineTrigger] = None
+    # The cluster_id property
+    cluster_id: Optional[UUID] = None
+    # The maintenance_windows property
+    maintenance_windows: Optional[list[SlurmMaintenanceWindowSync]] = None
     
     @staticmethod
-    def create_from_discriminator_value(parse_node: ParseNode) -> PolicyPipeline:
+    def create_from_discriminator_value(parse_node: ParseNode) -> SlurmMaintenanceWindowSyncRequest:
         """
         Creates a new instance of the appropriate class based on discriminator value
         param parse_node: The parse node to use to read the discriminator value and create the object
-        Returns: PolicyPipeline
+        Returns: SlurmMaintenanceWindowSyncRequest
         """
         if parse_node is None:
             raise TypeError("parse_node cannot be null.")
-        return PolicyPipeline()
+        return SlurmMaintenanceWindowSyncRequest()
     
     def get_field_deserializers(self,) -> dict[str, Callable[[ParseNode], None]]:
         """
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
-        from .create import Create
-        from .pipeline_filter import PipelineFilter
-        from .pipeline_trigger import PipelineTrigger
+        from .slurm_maintenance_window_sync import SlurmMaintenanceWindowSync
 
-        from .create import Create
-        from .pipeline_filter import PipelineFilter
-        from .pipeline_trigger import PipelineTrigger
+        from .slurm_maintenance_window_sync import SlurmMaintenanceWindowSync
 
         fields: dict[str, Callable[[Any], None]] = {
-            "action": lambda n : setattr(self, 'action', n.get_object_value(Create)),
-            "filter": lambda n : setattr(self, 'filter', n.get_object_value(PipelineFilter)),
-            "trigger": lambda n : setattr(self, 'trigger', n.get_object_value(PipelineTrigger)),
+            "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
+            "maintenance_windows": lambda n : setattr(self, 'maintenance_windows', n.get_collection_of_object_values(SlurmMaintenanceWindowSync)),
         }
         return fields
     
@@ -63,9 +52,8 @@ class PolicyPipeline(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
-        writer.write_object_value("action", self.action)
-        writer.write_object_value("filter", self.filter)
-        writer.write_object_value("trigger", self.trigger)
+        writer.write_uuid_value("cluster_id", self.cluster_id)
+        writer.write_collection_of_object_values("maintenance_windows", self.maintenance_windows)
         writer.write_additional_data_value(self.additional_data)
     
 

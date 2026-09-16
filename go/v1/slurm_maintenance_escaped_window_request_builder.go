@@ -109,6 +109,12 @@ func (m *SlurmMaintenance_windowRequestBuilder) Post(ctx context.Context, body i
 	return res.(*string), nil
 }
 
+// Sync the sync property
+// returns a *SlurmMaintenance_windowSyncRequestBuilder when successful
+func (m *SlurmMaintenance_windowRequestBuilder) Sync() *SlurmMaintenance_windowSyncRequestBuilder {
+	return NewSlurmMaintenance_windowSyncRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // ToGetRequestInformation returns all maintenance windows
 // returns a *RequestInformation when successful
 func (m *SlurmMaintenance_windowRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *SlurmMaintenance_windowRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {

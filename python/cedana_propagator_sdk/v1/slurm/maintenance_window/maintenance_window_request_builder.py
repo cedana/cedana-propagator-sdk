@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from ....models.http_error import HttpError
     from ....models.slurm_maintenance_window import SlurmMaintenanceWindow
     from .item.maintenance_window_item_request_builder import Maintenance_windowItemRequestBuilder
+    from .sync.sync_request_builder import SyncRequestBuilder
 
 class Maintenance_windowRequestBuilder(BaseRequestBuilder):
     """
@@ -125,6 +126,15 @@ class Maintenance_windowRequestBuilder(BaseRequestBuilder):
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
         return Maintenance_windowRequestBuilder(self.request_adapter, raw_url)
+    
+    @property
+    def sync(self) -> SyncRequestBuilder:
+        """
+        The sync property
+        """
+        from .sync.sync_request_builder import SyncRequestBuilder
+
+        return SyncRequestBuilder(self.request_adapter, self.path_parameters)
     
     @dataclass
     class Maintenance_windowRequestBuilderGetRequestConfiguration(RequestConfiguration[QueryParameters]):

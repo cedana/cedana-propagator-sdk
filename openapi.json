@@ -966,7 +966,8 @@
       "CheckpointReason": {
         "enum": [
           "heartbeat",
-          "manual"
+          "manual",
+          "maintenance"
         ],
         "type": "string"
       },
@@ -4085,6 +4086,23 @@
         ],
         "type": "object"
       },
+      "MaintenanceTriggerConfig": {
+        "properties": {
+          "end_time": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "start_time": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_time",
+          "end_time"
+        ],
+        "type": "object"
+      },
       "MemoryTimeSeries": {
         "properties": {
           "allocated_memory": {
@@ -5640,6 +5658,24 @@
               "type"
             ],
             "type": "object"
+          },
+          {
+            "properties": {
+              "config": {
+                "$ref": "#/components/schemas/MaintenanceTriggerConfig"
+              },
+              "type": {
+                "enum": [
+                  "maintenance"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "config",
+              "type"
+            ],
+            "type": "object"
           }
         ]
       },
@@ -6358,6 +6394,20 @@
       },
       "PolicyResponse": {
         "properties": {
+          "cluster_id": {
+            "description": "Cluster and namespace the policy targets, from `details`.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "end_time": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "id": {
             "type": "string"
           },
@@ -6369,6 +6419,12 @@
             "format": "int64",
             "type": [
               "integer",
+              "null"
+            ]
+          },
+          "namespace": {
+            "type": [
+              "string",
               "null"
             ]
           },
@@ -6387,6 +6443,14 @@
               "type": "string"
             },
             "type": "array"
+          },
+          "start_time": {
+            "description": "Window bounds for maintenance policies; absent for other types.",
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "status": {
             "type": "string"
@@ -7670,6 +7734,7 @@
         "enum": [
           "heartbeat",
           "manual",
+          "maintenance",
           "preemption"
         ],
         "type": "string"
@@ -8051,6 +8116,13 @@
       },
       "SlurmMaintenanceWindow": {
         "properties": {
+          "cluster_id": {
+            "description": "Cluster the window was synced from; None for manually created windows",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "created_at": {
             "format": "date-time",
             "type": [
@@ -8066,6 +8138,13 @@
             ]
           },
           "id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "description": "Reservation name; set for windows synced from the cluster",
             "type": [
               "string",
               "null"
@@ -8109,6 +8188,89 @@
             ]
           }
         },
+        "type": "object"
+      },
+      "SlurmMaintenanceWindowSync": {
+        "description": "A SLURM maintenance reservation as reported by the cedana-slurm plugin",
+        "properties": {
+          "end_time": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "metadata": {},
+          "name": {
+            "description": "Reservation name, unique within the cluster",
+            "type": "string"
+          },
+          "nodes": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "partitions": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "start_time": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "description": "One of scheduled, active, completed, cancelled (defaults to scheduled)",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "start_time",
+          "end_time"
+        ],
+        "type": "object"
+      },
+      "SlurmMaintenanceWindowSyncRequest": {
+        "properties": {
+          "cluster_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "maintenance_windows": {
+            "items": {
+              "$ref": "#/components/schemas/SlurmMaintenanceWindowSync"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "cluster_id",
+          "maintenance_windows"
+        ],
         "type": "object"
       },
       "SlurmMetric": {
@@ -24014,6 +24176,83 @@
           }
         ],
         "summary": "Create maintenance window",
+        "tags": [
+          "Policy (Slurm)"
+        ]
+      }
+    },
+    "/v1/slurm/maintenance_window/sync": {
+      "post": {
+        "description": "Receives the full set of maintenance reservations for a cluster from the cedana-slurm\nplugin and upserts them by name. Windows previously synced for the cluster that are\nmissing from the payload are marked 'stale'.",
+        "operationId": "sync",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SlurmMaintenanceWindowSyncRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Maintenance windows synced successfully"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Cluster with given id does not exist for this org"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Failed to sync maintenance windows to database"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Auth Token": []
+          }
+        ],
+        "summary": "Sync SLURM maintenance windows",
         "tags": [
           "Policy (Slurm)"
         ]
