@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from .models_requests.models_request_builder import ModelsRequestBuilder
     from .observations.observations_request_builder import ObservationsRequestBuilder
     from .outbox.outbox_request_builder import OutboxRequestBuilder
+    from .placement.placement_request_builder import PlacementRequestBuilder
     from .profiles.profiles_request_builder import ProfilesRequestBuilder
     from .retention_policies.retention_policies_request_builder import RetentionPoliciesRequestBuilder
     from .router.router_request_builder import RouterRequestBuilder
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
     from .startup_comparison.startup_comparison_request_builder import StartupComparisonRequestBuilder
     from .storage.storage_request_builder import StorageRequestBuilder
     from .usage.usage_request_builder import UsageRequestBuilder
+    from .utilization.utilization_request_builder import UtilizationRequestBuilder
 
 class InferenceRequestBuilder(BaseRequestBuilder):
     """
@@ -178,6 +180,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         return OutboxRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
+    def placement(self) -> PlacementRequestBuilder:
+        """
+        The placement property
+        """
+        from .placement.placement_request_builder import PlacementRequestBuilder
+
+        return PlacementRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
     def profiles(self) -> ProfilesRequestBuilder:
         """
         The profiles property
@@ -239,5 +250,14 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .usage.usage_request_builder import UsageRequestBuilder
 
         return UsageRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def utilization(self) -> UtilizationRequestBuilder:
+        """
+        The utilization property
+        """
+        from .utilization.utilization_request_builder import UtilizationRequestBuilder
+
+        return UtilizationRequestBuilder(self.request_adapter, self.path_parameters)
     
 

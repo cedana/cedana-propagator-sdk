@@ -117,6 +117,12 @@ func (m *InferenceRequestBuilder) Outbox() *InferenceOutboxRequestBuilder {
 	return NewInferenceOutboxRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Placement the placement property
+// returns a *InferencePlacementRequestBuilder when successful
+func (m *InferenceRequestBuilder) Placement() *InferencePlacementRequestBuilder {
+	return NewInferencePlacementRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Profiles the profiles property
 // returns a *InferenceProfilesRequestBuilder when successful
 func (m *InferenceRequestBuilder) Profiles() *InferenceProfilesRequestBuilder {
@@ -157,4 +163,10 @@ func (m *InferenceRequestBuilder) Storage() *InferenceStorageRequestBuilder {
 // returns a *InferenceUsageRequestBuilder when successful
 func (m *InferenceRequestBuilder) Usage() *InferenceUsageRequestBuilder {
 	return NewInferenceUsageRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// Utilization the utilization property
+// returns a *InferenceUtilizationRequestBuilder when successful
+func (m *InferenceRequestBuilder) Utilization() *InferenceUtilizationRequestBuilder {
+	return NewInferenceUtilizationRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }

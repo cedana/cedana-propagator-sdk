@@ -5441,6 +5441,10 @@
           "pending_profile_id": {
             "type": "string"
           },
+          "reason": {
+            "description": "`activating` while the profile comes up, `saturated` while a serving profile is\nat its concurrency cap and the request is only waiting for a stream slot,\n`no_capacity` while the node is full and nothing resident may be displaced yet.",
+            "type": "string"
+          },
           "retry_after_ms": {
             "format": "int64",
             "type": "integer"
@@ -5448,7 +5452,8 @@
         },
         "required": [
           "pending_profile_id",
-          "retry_after_ms"
+          "retry_after_ms",
+          "reason"
         ],
         "type": "object"
       },
@@ -5642,6 +5647,81 @@
             "type": "object"
           }
         ]
+      },
+      "PlacementProfile": {
+        "properties": {
+          "activating": {
+            "type": "boolean"
+          },
+          "cluster_id": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "gpus": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "logical_model": {
+            "type": "string"
+          },
+          "profile_id": {
+            "type": "string"
+          },
+          "resident": {
+            "type": "boolean"
+          },
+          "suspending": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "profile_id",
+          "logical_model",
+          "gpus",
+          "resident",
+          "activating",
+          "suspending"
+        ],
+        "type": "object"
+      },
+      "PlacementView": {
+        "properties": {
+          "cluster_id": {
+            "description": "The cluster placement resolved for inference, from lifecycle events. None until\nsomething has run.",
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "gpu_capacity": {
+            "description": "Allocatable GPUs on that cluster's Ready, schedulable nodes. None when unknown, in\nwhich case preemption falls back to displacing one victim.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "occupied_gpus": {
+            "description": "GPUs held by resident or activating profiles on that cluster.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "profiles": {
+            "items": {
+              "$ref": "#/components/schemas/PlacementProfile"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "occupied_gpus",
+          "profiles"
+        ],
+        "type": "object"
       },
       "Plugin": {
         "properties": {
@@ -6596,6 +6676,45 @@
         ],
         "type": "object"
       },
+      "ProfileUtilization": {
+        "properties": {
+          "gpus": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "logical_model": {
+            "type": "string"
+          },
+          "mean_slice_s": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "profile_id": {
+            "type": "string"
+          },
+          "resident_s": {
+            "description": "Seconds a published route existed for the profile inside the window.",
+            "format": "double",
+            "type": "number"
+          },
+          "slices": {
+            "description": "Route publications inside the window: activations that completed.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "profile_id",
+          "logical_model",
+          "gpus",
+          "resident_s",
+          "slices"
+        ],
+        "type": "object"
+      },
       "PromoteArtifact": {
         "properties": {
           "deadline_ms": {
@@ -6768,10 +6887,6 @@
               "string",
               "null"
             ]
-          },
-          "queued_requests": {
-            "format": "int64",
-            "type": "integer"
           },
           "request_id": {
             "type": "string"
@@ -9272,6 +9387,67 @@
           "prompt_tokens",
           "completion_tokens",
           "cold_start_avoided_ms"
+        ],
+        "type": "object"
+      },
+      "UtilizationView": {
+        "properties": {
+          "cluster_id": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "gpu_capacity": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "gpu_seconds_available": {
+            "description": "gpu_capacity x window, when capacity is known.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "gpu_seconds_resident": {
+            "description": "Sum over profiles of resident seconds x GPUs.",
+            "format": "double",
+            "type": "number"
+          },
+          "profiles": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileUtilization"
+            },
+            "type": "array"
+          },
+          "swaps": {
+            "description": "Activations that completed inside the window (route publications).",
+            "format": "int64",
+            "type": "integer"
+          },
+          "utilization": {
+            "description": "gpu_seconds_resident / gpu_seconds_available; the number to set beside an\nenterprise fleet's 15-22%. Residency of a serving model, not SM occupancy.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "window_hours": {
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "window_hours",
+          "gpu_seconds_resident",
+          "swaps",
+          "profiles"
         ],
         "type": "object"
       },
@@ -15635,6 +15811,52 @@
         ]
       }
     },
+    "/v1/inference/placement": {
+      "get": {
+        "operationId": "placement",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlacementView"
+                }
+              }
+            },
+            "description": "Placement view"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "What placement sees: the inference cluster, its GPU capacity as synced from the\nnodes, and each profile's residency. Read-only; for preflight and the UI.",
+        "tags": [
+          "Router"
+        ]
+      }
+    },
     "/v1/inference/profiles": {
       "get": {
         "operationId": "list_profiles",
@@ -17343,6 +17565,64 @@
         "summary": "Bucketed usage time series",
         "tags": [
           "inference"
+        ]
+      }
+    },
+    "/v1/inference/utilization": {
+      "get": {
+        "operationId": "utilization",
+        "parameters": [
+          {
+            "description": "Window ending now; default 1, max 168",
+            "in": "query",
+            "name": "window_hours",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UtilizationView"
+                }
+              }
+            },
+            "description": "Residency utilization"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "GPU residency over a window, from route publications and withdrawals: how much of\nthe cluster's GPU time had a serving model on it, and how often that changed.",
+        "tags": [
+          "Router"
         ]
       }
     },
