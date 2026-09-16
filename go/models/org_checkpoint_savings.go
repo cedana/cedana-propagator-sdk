@@ -4,7 +4,6 @@
 package models
 
 import (
-	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 	i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e "time"
 )
@@ -15,8 +14,6 @@ type OrgCheckpointSavings struct {
 	additionalData map[string]any
 	// The avg_checkpoint_interval_seconds property
 	avg_checkpoint_interval_seconds *float64
-	// The org_id property
-	org_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The pods_protected property
 	pods_protected *int64
 	// The refreshed_at property
@@ -75,16 +72,6 @@ func (m *OrgCheckpointSavings) GetFieldDeserializers() map[string]func(i878a80d2
 		}
 		if val != nil {
 			m.SetAvgCheckpointIntervalSeconds(val)
-		}
-		return nil
-	}
-	res["org_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetUUIDValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetOrgId(val)
 		}
 		return nil
 	}
@@ -191,12 +178,6 @@ func (m *OrgCheckpointSavings) GetFieldDeserializers() map[string]func(i878a80d2
 	return res
 }
 
-// GetOrgId gets the org_id property value. The org_id property
-// returns a *UUID when successful
-func (m *OrgCheckpointSavings) GetOrgId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID {
-	return m.org_id
-}
-
 // GetPodsProtected gets the pods_protected property value. The pods_protected property
 // returns a *int64 when successful
 func (m *OrgCheckpointSavings) GetPodsProtected() *int64 {
@@ -261,12 +242,6 @@ func (m *OrgCheckpointSavings) GetWorstCaseRecoveryPointSeconds() *float64 {
 func (m *OrgCheckpointSavings) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
 		err := writer.WriteFloat64Value("avg_checkpoint_interval_seconds", m.GetAvgCheckpointIntervalSeconds())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteUUIDValue("org_id", m.GetOrgId())
 		if err != nil {
 			return err
 		}
@@ -350,11 +325,6 @@ func (m *OrgCheckpointSavings) SetAvgCheckpointIntervalSeconds(value *float64) {
 	m.avg_checkpoint_interval_seconds = value
 }
 
-// SetOrgId sets the org_id property value. The org_id property
-func (m *OrgCheckpointSavings) SetOrgId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
-	m.org_id = value
-}
-
 // SetPodsProtected sets the pods_protected property value. The pods_protected property
 func (m *OrgCheckpointSavings) SetPodsProtected(value *int64) {
 	m.pods_protected = value
@@ -409,7 +379,6 @@ type OrgCheckpointSavingsable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetAvgCheckpointIntervalSeconds() *float64
-	GetOrgId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetPodsProtected() *int64
 	GetRefreshedAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	GetTotalCheckpointOverheadNs() *int64
@@ -421,7 +390,6 @@ type OrgCheckpointSavingsable interface {
 	GetTotalTimeProtectedSeconds() *float64
 	GetWorstCaseRecoveryPointSeconds() *float64
 	SetAvgCheckpointIntervalSeconds(value *float64)
-	SetOrgId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetPodsProtected(value *int64)
 	SetRefreshedAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
 	SetTotalCheckpointOverheadNs(value *int64)

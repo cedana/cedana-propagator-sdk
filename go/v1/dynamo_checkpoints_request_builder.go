@@ -15,7 +15,7 @@ type DynamoCheckpointsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// DynamoCheckpointsRequestBuilderGetQueryParameters returns checkpoints visible to the caller's org, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
+// DynamoCheckpointsRequestBuilderGetQueryParameters returns checkpoints in the given cluster, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
 type DynamoCheckpointsRequestBuilderGetQueryParameters struct {
 	// Cluster to scope checkpoints to.
 	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
@@ -48,7 +48,7 @@ func NewDynamoCheckpointsRequestBuilder(rawUrl string, requestAdapter i2ae4187f7
 	return NewDynamoCheckpointsRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Get returns checkpoints visible to the caller's org, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
+// Get returns checkpoints in the given cluster, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
 // returns a []DynamoCheckpointEntryable when successful
 // returns a HttpError error when the service returns a 500 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
@@ -74,7 +74,7 @@ func (m *DynamoCheckpointsRequestBuilder) Get(ctx context.Context, requestConfig
 	return val, nil
 }
 
-// ToGetRequestInformation returns checkpoints visible to the caller's org, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
+// ToGetRequestInformation returns checkpoints in the given cluster, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
 // returns a *RequestInformation when successful
 func (m *DynamoCheckpointsRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *DynamoCheckpointsRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

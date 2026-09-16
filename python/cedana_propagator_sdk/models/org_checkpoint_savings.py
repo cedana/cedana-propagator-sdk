@@ -4,7 +4,6 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
 from typing import Any, Optional, TYPE_CHECKING, Union
-from uuid import UUID
 
 @dataclass
 class OrgCheckpointSavings(AdditionalDataHolder, Parsable):
@@ -16,8 +15,6 @@ class OrgCheckpointSavings(AdditionalDataHolder, Parsable):
 
     # The avg_checkpoint_interval_seconds property
     avg_checkpoint_interval_seconds: Optional[float] = None
-    # The org_id property
-    org_id: Optional[UUID] = None
     # The pods_protected property
     pods_protected: Optional[int] = None
     # The refreshed_at property
@@ -57,7 +54,6 @@ class OrgCheckpointSavings(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
             "avg_checkpoint_interval_seconds": lambda n : setattr(self, 'avg_checkpoint_interval_seconds', n.get_float_value()),
-            "org_id": lambda n : setattr(self, 'org_id', n.get_uuid_value()),
             "pods_protected": lambda n : setattr(self, 'pods_protected', n.get_int_value()),
             "refreshed_at": lambda n : setattr(self, 'refreshed_at', n.get_datetime_value()),
             "total_checkpoint_overhead_ns": lambda n : setattr(self, 'total_checkpoint_overhead_ns', n.get_int_value()),
@@ -80,7 +76,6 @@ class OrgCheckpointSavings(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_float_value("avg_checkpoint_interval_seconds", self.avg_checkpoint_interval_seconds)
-        writer.write_uuid_value("org_id", self.org_id)
         writer.write_int_value("pods_protected", self.pods_protected)
         writer.write_datetime_value("refreshed_at", self.refreshed_at)
         writer.write_int_value("total_checkpoint_overhead_ns", self.total_checkpoint_overhead_ns)

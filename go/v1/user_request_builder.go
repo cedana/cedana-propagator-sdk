@@ -40,7 +40,6 @@ func NewUserRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee263371cb1
 // returns a *string when successful
 // returns a HttpError error when the service returns a 401 status code
 // returns a HttpError error when the service returns a 404 status code
-// returns a HttpError error when the service returns a 500 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
 func (m *UserRequestBuilder) Get(ctx context.Context, requestConfiguration *UserRequestBuilderGetRequestConfiguration) (*string, error) {
 	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
@@ -50,7 +49,6 @@ func (m *UserRequestBuilder) Get(ctx context.Context, requestConfiguration *User
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
 		"401": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"404": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
 	res, err := m.BaseRequestBuilder.RequestAdapter.SendPrimitive(ctx, requestInfo, "string", errorMapping)
