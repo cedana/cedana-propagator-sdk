@@ -42,7 +42,6 @@ class UserRequestBuilder(BaseRequestBuilder):
         error_mapping: dict[str, type[ParsableFactory]] = {
             "401": HttpError,
             "404": HttpError,
-            "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
