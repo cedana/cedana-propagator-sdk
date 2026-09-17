@@ -4145,6 +4145,34 @@
         ],
         "type": "object"
       },
+      "LifetimeReport": {
+        "properties": {
+          "authorization_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/LifetimeState"
+          }
+        },
+        "required": [
+          "authorization_id",
+          "request_id",
+          "state"
+        ],
+        "type": "object"
+      },
+      "LifetimeState": {
+        "enum": [
+          "heartbeat",
+          "finished",
+          "cancelled"
+        ],
+        "type": "string"
+      },
       "MemoryTimeSeries": {
         "properties": {
           "allocated_memory": {
@@ -6932,6 +6960,14 @@
             "format": "uuid",
             "type": "string"
           },
+          "lifetime_protocol": {
+            "format": "int32",
+            "minimum": 0,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "logical_model": {
             "type": "string"
           },
@@ -6962,6 +6998,13 @@
           },
           "fallback_used": {
             "type": "boolean"
+          },
+          "lease_duration_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
           },
           "profile_id": {
             "type": "string"
@@ -17158,6 +17201,75 @@
           }
         ],
         "summary": "Full routing snapshot for Switchyard, service-token-only. Generation is the sum of\nthe route generations; `If-None-Match: \"<generation>\"` gets a 304.",
+        "tags": [
+          "Router"
+        ]
+      }
+    },
+    "/v1/inference/router/lifetime": {
+      "post": {
+        "operationId": "report",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LifetimeReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Lifetime updated"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Lease no longer live"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Placement busy; retry"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "ServiceToken": []
+          }
+        ],
+        "summary": "Renew or finish one admission. Expired/finished requests can never be revived.",
         "tags": [
           "Router"
         ]

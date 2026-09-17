@@ -39,6 +39,12 @@ func NewInferenceRouterRequestBuilder(rawUrl string, requestAdapter i2ae4187f7da
 	return NewInferenceRouterRequestBuilderInternal(urlParams, requestAdapter)
 }
 
+// Lifetime the lifetime property
+// returns a *InferenceRouterLifetimeRequestBuilder when successful
+func (m *InferenceRouterRequestBuilder) Lifetime() *InferenceRouterLifetimeRequestBuilder {
+	return NewInferenceRouterLifetimeRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Metrics the metrics property
 // returns a *InferenceRouterMetricsRequestBuilder when successful
 func (m *InferenceRouterRequestBuilder) Metrics() *InferenceRouterMetricsRequestBuilder {

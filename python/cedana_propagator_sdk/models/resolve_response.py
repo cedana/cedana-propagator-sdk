@@ -15,6 +15,8 @@ class ResolveResponse(AdditionalDataHolder, Parsable):
     decision_source: Optional[str] = None
     # The fallback_used property
     fallback_used: Optional[bool] = None
+    # The lease_duration_ms property
+    lease_duration_ms: Optional[int] = None
     # The profile_id property
     profile_id: Optional[str] = None
     # The route_generation property
@@ -44,6 +46,7 @@ class ResolveResponse(AdditionalDataHolder, Parsable):
             "activation_path": lambda n : setattr(self, 'activation_path', n.get_str_value()),
             "decision_source": lambda n : setattr(self, 'decision_source', n.get_str_value()),
             "fallback_used": lambda n : setattr(self, 'fallback_used', n.get_bool_value()),
+            "lease_duration_ms": lambda n : setattr(self, 'lease_duration_ms', n.get_int_value()),
             "profile_id": lambda n : setattr(self, 'profile_id', n.get_str_value()),
             "route_generation": lambda n : setattr(self, 'route_generation', n.get_int_value()),
             "target_name": lambda n : setattr(self, 'target_name', n.get_str_value()),
@@ -62,6 +65,7 @@ class ResolveResponse(AdditionalDataHolder, Parsable):
         writer.write_str_value("activation_path", self.activation_path)
         writer.write_str_value("decision_source", self.decision_source)
         writer.write_bool_value("fallback_used", self.fallback_used)
+        writer.write_int_value("lease_duration_ms", self.lease_duration_ms)
         writer.write_str_value("profile_id", self.profile_id)
         writer.write_int_value("route_generation", self.route_generation)
         writer.write_str_value("target_name", self.target_name)
