@@ -52,7 +52,7 @@ class ClusterRequestBuilder(BaseRequestBuilder):
     
     async def get(self,request_configuration: Optional[RequestConfiguration[ClusterRequestBuilderGetQueryParameters]] = None) -> Optional[list[Cluster]]:
         """
-        Returns all clusters associated with the authenticated user's organization.Optional `?kind=kubernetes|slurm` filter.
+        Returns all clusters. Optional `?kind=kubernetes|slurm` filter.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[list[Cluster]]
         """
@@ -97,7 +97,7 @@ class ClusterRequestBuilder(BaseRequestBuilder):
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[ClusterRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Returns all clusters associated with the authenticated user's organization.Optional `?kind=kubernetes|slurm` filter.
+        Returns all clusters. Optional `?kind=kubernetes|slurm` filter.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -161,7 +161,7 @@ class ClusterRequestBuilder(BaseRequestBuilder):
     @dataclass
     class ClusterRequestBuilderGetQueryParameters():
         """
-        Returns all clusters associated with the authenticated user's organization.Optional `?kind=kubernetes|slurm` filter.
+        Returns all clusters. Optional `?kind=kubernetes|slurm` filter.
         """
         # Filter by cluster kind: "kubernetes" or "slurm"
         kind: Optional[str] = None

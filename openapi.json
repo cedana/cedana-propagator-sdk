@@ -5103,13 +5103,6 @@
               "null"
             ]
           },
-          "org_id": {
-            "format": "uuid",
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "pods_protected": {
             "format": "int64",
             "type": [
@@ -10822,7 +10815,7 @@
     },
     "/v1/cluster": {
       "get": {
-        "description": "Returns all clusters associated with the authenticated user's organization.\nOptional `?kind=kubernetes|slurm` filter.",
+        "description": "Returns all clusters. Optional `?kind=kubernetes|slurm` filter.",
         "operationId": "list",
         "parameters": [
           {
@@ -11459,7 +11452,7 @@
     },
     "/v1/dynamo/checkpoints": {
       "get": {
-        "description": "Returns checkpoints visible to the caller's org, optionally filtered by\nCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that any\ndeployment with a matching CEDANA_CHECKPOINT env restores from.",
+        "description": "Returns checkpoints in the given cluster, optionally filtered by\nCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that any\ndeployment with a matching CEDANA_CHECKPOINT env restores from.",
         "operationId": "list_checkpoints",
         "parameters": [
           {
@@ -24846,16 +24839,6 @@
               }
             },
             "description": "Client error"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Internal server error"
           },
           "5XX": {
             "content": {
