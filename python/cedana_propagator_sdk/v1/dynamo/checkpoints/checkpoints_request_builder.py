@@ -33,7 +33,7 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
     
     async def get(self,request_configuration: Optional[RequestConfiguration[CheckpointsRequestBuilderGetQueryParameters]] = None) -> Optional[list[DynamoCheckpointEntry]]:
         """
-        Returns checkpoints visible to the caller's org, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
+        Returns checkpoints in the given cluster, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[list[DynamoCheckpointEntry]]
         """
@@ -54,7 +54,7 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[CheckpointsRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Returns checkpoints visible to the caller's org, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
+        Returns checkpoints in the given cluster, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -76,7 +76,7 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
     @dataclass
     class CheckpointsRequestBuilderGetQueryParameters():
         """
-        Returns checkpoints visible to the caller's org, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
+        Returns checkpoints in the given cluster, optionally filtered byCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that anydeployment with a matching CEDANA_CHECKPOINT env restores from.
         """
         # Cluster to scope checkpoints to.
         cluster_id: Optional[UUID] = None

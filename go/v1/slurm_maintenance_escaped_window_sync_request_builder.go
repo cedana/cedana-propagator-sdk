@@ -37,7 +37,7 @@ func NewSlurmMaintenance_windowSyncRequestBuilder(rawUrl string, requestAdapter 
 	return NewSlurmMaintenance_windowSyncRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Post receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'stale'.
+// Post receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'ended'.
 // returns a *string when successful
 // returns a HttpError error when the service returns a 404 status code
 // returns a HttpError error when the service returns a 500 status code
@@ -62,7 +62,7 @@ func (m *SlurmMaintenance_windowSyncRequestBuilder) Post(ctx context.Context, bo
 	return res.(*string), nil
 }
 
-// ToPostRequestInformation receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'stale'.
+// ToPostRequestInformation receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'ended'.
 // returns a *RequestInformation when successful
 func (m *SlurmMaintenance_windowSyncRequestBuilder) ToPostRequestInformation(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.SlurmMaintenanceWindowSyncRequestable, requestConfiguration *SlurmMaintenance_windowSyncRequestBuilderPostRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

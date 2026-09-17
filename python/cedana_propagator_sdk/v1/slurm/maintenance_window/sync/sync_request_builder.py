@@ -32,7 +32,7 @@ class SyncRequestBuilder(BaseRequestBuilder):
     
     async def post(self,body: SlurmMaintenanceWindowSyncRequest, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[str]:
         """
-        Receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'stale'.
+        Receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'ended'.
         param body: The request body
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[str]
@@ -55,7 +55,7 @@ class SyncRequestBuilder(BaseRequestBuilder):
     
     def to_post_request_information(self,body: SlurmMaintenanceWindowSyncRequest, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'stale'.
+        Receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'ended'.
         param body: The request body
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation

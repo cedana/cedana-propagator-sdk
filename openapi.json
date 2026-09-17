@@ -5117,13 +5117,6 @@
               "null"
             ]
           },
-          "org_id": {
-            "format": "uuid",
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "pods_protected": {
             "format": "int64",
             "type": [
@@ -10980,7 +10973,7 @@
     },
     "/v1/cluster": {
       "get": {
-        "description": "Returns all clusters associated with the authenticated user's organization.\nOptional `?kind=kubernetes|slurm` filter.",
+        "description": "Returns all clusters. Optional `?kind=kubernetes|slurm` filter.",
         "operationId": "list",
         "parameters": [
           {
@@ -11617,7 +11610,7 @@
     },
     "/v1/dynamo/checkpoints": {
       "get": {
-        "description": "Returns checkpoints visible to the caller's org, optionally filtered by\nCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that any\ndeployment with a matching CEDANA_CHECKPOINT env restores from.",
+        "description": "Returns checkpoints in the given cluster, optionally filtered by\nCEDANA_CHECKPOINT name. Each entry is a reusable warm-state asset that any\ndeployment with a matching CEDANA_CHECKPOINT env restores from.",
         "operationId": "list_checkpoints",
         "parameters": [
           {
@@ -24183,7 +24176,7 @@
     },
     "/v1/slurm/maintenance_window/sync": {
       "post": {
-        "description": "Receives the full set of maintenance reservations for a cluster from the cedana-slurm\nplugin and upserts them by name. Windows previously synced for the cluster that are\nmissing from the payload are marked 'stale'.",
+        "description": "Receives the full set of maintenance reservations for a cluster from the cedana-slurm\nplugin and upserts them by name. Windows previously synced for the cluster that are\nmissing from the payload are marked 'ended'.",
         "operationId": "sync",
         "requestBody": {
           "content": {
@@ -24214,7 +24207,7 @@
                 }
               }
             },
-            "description": "Cluster with given id does not exist for this org"
+            "description": "Cluster with given id does not exist"
           },
           "4XX": {
             "content": {
@@ -25081,16 +25074,6 @@
               }
             },
             "description": "Client error"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Internal server error"
           },
           "5XX": {
             "content": {

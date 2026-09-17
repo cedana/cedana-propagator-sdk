@@ -15,7 +15,7 @@ type ClusterRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// ClusterRequestBuilderGetQueryParameters returns all clusters associated with the authenticated user's organization.Optional `?kind=kubernetes|slurm` filter.
+// ClusterRequestBuilderGetQueryParameters returns all clusters. Optional `?kind=kubernetes|slurm` filter.
 type ClusterRequestBuilderGetQueryParameters struct {
 	// Filter by cluster kind: "kubernetes" or "slurm"
 	Kind *string "uriparametername:\"kind\""
@@ -85,7 +85,7 @@ func (m *ClusterRequestBuilder) Count() *ClusterCountRequestBuilder {
 	return NewClusterCountRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Get returns all clusters associated with the authenticated user's organization.Optional `?kind=kubernetes|slurm` filter.
+// Get returns all clusters. Optional `?kind=kubernetes|slurm` filter.
 // returns a []Clusterable when successful
 // returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 500 status code
@@ -144,7 +144,7 @@ func (m *ClusterRequestBuilder) Sync() *ClusterSyncRequestBuilder {
 	return NewClusterSyncRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// ToGetRequestInformation returns all clusters associated with the authenticated user's organization.Optional `?kind=kubernetes|slurm` filter.
+// ToGetRequestInformation returns all clusters. Optional `?kind=kubernetes|slurm` filter.
 // returns a *RequestInformation when successful
 func (m *ClusterRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *ClusterRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
