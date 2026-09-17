@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from .costs.costs_request_builder import CostsRequestBuilder
     from .experiments.experiments_request_builder import ExperimentsRequestBuilder
     from .fleets.fleets_request_builder import FleetsRequestBuilder
+    from .history.history_request_builder import HistoryRequestBuilder
     from .keys.keys_request_builder import KeysRequestBuilder
     from .lifecycle_events.lifecycle_events_request_builder import LifecycleEventsRequestBuilder
     from .metrics.metrics_request_builder import MetricsRequestBuilder
@@ -124,6 +125,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .fleets.fleets_request_builder import FleetsRequestBuilder
 
         return FleetsRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def history(self) -> HistoryRequestBuilder:
+        """
+        The history property
+        """
+        from .history.history_request_builder import HistoryRequestBuilder
+
+        return HistoryRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def keys(self) -> KeysRequestBuilder:

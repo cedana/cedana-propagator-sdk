@@ -16,6 +16,8 @@ type TelemetryRecord struct {
 	classifier_latency_ms *int64
 	// The classifier_profile_id property
 	classifier_profile_id *string
+	// The completed_at_ms property
+	completed_at_ms *int64
 	// The completion_tokens property
 	completion_tokens *int64
 	// The decision_source property
@@ -40,6 +42,8 @@ type TelemetryRecord struct {
 	request_id *string
 	// The route_generation property
 	route_generation *int64
+	// The started_at_ms property
+	started_at_ms *int64
 	// The status_code property
 	status_code *int32
 	// The stream_duration_ms property
@@ -85,6 +89,12 @@ func (m *TelemetryRecord) GetClassifierLatencyMs() *int64 {
 // returns a *string when successful
 func (m *TelemetryRecord) GetClassifierProfileId() *string {
 	return m.classifier_profile_id
+}
+
+// GetCompletedAtMs gets the completed_at_ms property value. The completed_at_ms property
+// returns a *int64 when successful
+func (m *TelemetryRecord) GetCompletedAtMs() *int64 {
+	return m.completed_at_ms
 }
 
 // GetCompletionTokens gets the completion_tokens property value. The completion_tokens property
@@ -142,6 +152,16 @@ func (m *TelemetryRecord) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		if val != nil {
 			m.SetClassifierProfileId(val)
+		}
+		return nil
+	}
+	res["completed_at_ms"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCompletedAtMs(val)
 		}
 		return nil
 	}
@@ -265,6 +285,16 @@ func (m *TelemetryRecord) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		return nil
 	}
+	res["started_at_ms"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetStartedAtMs(val)
+		}
+		return nil
+	}
 	res["status_code"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetInt32Value()
 		if err != nil {
@@ -356,6 +386,12 @@ func (m *TelemetryRecord) GetRouteGeneration() *int64 {
 	return m.route_generation
 }
 
+// GetStartedAtMs gets the started_at_ms property value. The started_at_ms property
+// returns a *int64 when successful
+func (m *TelemetryRecord) GetStartedAtMs() *int64 {
+	return m.started_at_ms
+}
+
 // GetStatusCode gets the status_code property value. The status_code property
 // returns a *int32 when successful
 func (m *TelemetryRecord) GetStatusCode() *int32 {
@@ -396,6 +432,12 @@ func (m *TelemetryRecord) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 	}
 	{
 		err := writer.WriteStringValue("classifier_profile_id", m.GetClassifierProfileId())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt64Value("completed_at_ms", m.GetCompletedAtMs())
 		if err != nil {
 			return err
 		}
@@ -473,6 +515,12 @@ func (m *TelemetryRecord) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 		}
 	}
 	{
+		err := writer.WriteInt64Value("started_at_ms", m.GetStartedAtMs())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteInt32Value("status_code", m.GetStatusCode())
 		if err != nil {
 			return err
@@ -523,6 +571,11 @@ func (m *TelemetryRecord) SetClassifierLatencyMs(value *int64) {
 // SetClassifierProfileId sets the classifier_profile_id property value. The classifier_profile_id property
 func (m *TelemetryRecord) SetClassifierProfileId(value *string) {
 	m.classifier_profile_id = value
+}
+
+// SetCompletedAtMs sets the completed_at_ms property value. The completed_at_ms property
+func (m *TelemetryRecord) SetCompletedAtMs(value *int64) {
+	m.completed_at_ms = value
 }
 
 // SetCompletionTokens sets the completion_tokens property value. The completion_tokens property
@@ -585,6 +638,11 @@ func (m *TelemetryRecord) SetRouteGeneration(value *int64) {
 	m.route_generation = value
 }
 
+// SetStartedAtMs sets the started_at_ms property value. The started_at_ms property
+func (m *TelemetryRecord) SetStartedAtMs(value *int64) {
+	m.started_at_ms = value
+}
+
 // SetStatusCode sets the status_code property value. The status_code property
 func (m *TelemetryRecord) SetStatusCode(value *int32) {
 	m.status_code = value
@@ -611,6 +669,7 @@ type TelemetryRecordable interface {
 	GetActivationPath() *string
 	GetClassifierLatencyMs() *int64
 	GetClassifierProfileId() *string
+	GetCompletedAtMs() *int64
 	GetCompletionTokens() *int64
 	GetDecisionSource() *string
 	GetEndToEndLatencyMs() *int64
@@ -623,6 +682,7 @@ type TelemetryRecordable interface {
 	GetQueueMs() *int64
 	GetRequestId() *string
 	GetRouteGeneration() *int64
+	GetStartedAtMs() *int64
 	GetStatusCode() *int32
 	GetStreamDurationMs() *int64
 	GetTtftMs() *int64
@@ -630,6 +690,7 @@ type TelemetryRecordable interface {
 	SetActivationPath(value *string)
 	SetClassifierLatencyMs(value *int64)
 	SetClassifierProfileId(value *string)
+	SetCompletedAtMs(value *int64)
 	SetCompletionTokens(value *int64)
 	SetDecisionSource(value *string)
 	SetEndToEndLatencyMs(value *int64)
@@ -642,6 +703,7 @@ type TelemetryRecordable interface {
 	SetQueueMs(value *int64)
 	SetRequestId(value *string)
 	SetRouteGeneration(value *int64)
+	SetStartedAtMs(value *int64)
 	SetStatusCode(value *int32)
 	SetStreamDurationMs(value *int64)
 	SetTtftMs(value *int64)

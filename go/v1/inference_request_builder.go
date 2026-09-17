@@ -81,6 +81,12 @@ func (m *InferenceRequestBuilder) Fleets() *InferenceFleetsRequestBuilder {
 	return NewInferenceFleetsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// History the history property
+// returns a *InferenceHistoryRequestBuilder when successful
+func (m *InferenceRequestBuilder) History() *InferenceHistoryRequestBuilder {
+	return NewInferenceHistoryRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Keys the keys property
 // returns a *InferenceKeysRequestBuilder when successful
 func (m *InferenceRequestBuilder) Keys() *InferenceKeysRequestBuilder {

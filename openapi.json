@@ -3093,6 +3093,66 @@
         ],
         "type": "object"
       },
+      "HistoryCursor": {
+        "properties": {
+          "after_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "after_time": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "after_time",
+          "after_id"
+        ],
+        "type": "object"
+      },
+      "HistoryPage": {
+        "properties": {
+          "next": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/HistoryCursor"
+              }
+            ]
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryRecord"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "records"
+        ],
+        "type": "object"
+      },
+      "HistoryRecord": {
+        "properties": {
+          "data": {},
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "occurred_at",
+          "data"
+        ],
+        "type": "object"
+      },
       "Host": {
         "properties": {
           "CPU": {
@@ -8859,6 +8919,13 @@
               "null"
             ]
           },
+          "completed_at_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "completion_tokens": {
             "format": "int64",
             "type": [
@@ -8926,6 +8993,13 @@
             "type": "string"
           },
           "route_generation": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "started_at_ms": {
             "format": "int64",
             "type": [
               "integer",
@@ -15051,6 +15125,152 @@
         "summary": "Get a fleet",
         "tags": [
           "inference"
+        ]
+      }
+    },
+    "/v1/inference/history/{stream}": {
+      "get": {
+        "operationId": "history",
+        "parameters": [
+          {
+            "description": "lifecycle, placement, or requests",
+            "in": "path",
+            "name": "stream",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Exclusive end of the recording window. Keep fixed while paging.",
+            "in": "query",
+            "name": "until",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after_time",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "after_id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "profile_id",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Applicable to lifecycle and placement; requests have no cluster identity.",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryPage"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Invalid query"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Replays lifecycle, placement, or request records in stable timestamp/id order.\nRequest time falls back to ingestion time for older, untimestamped records.\nRe-export after pending telemetry drains: late arrivals can precede a cursor.",
+        "tags": [
+          "Inference"
         ]
       }
     },
