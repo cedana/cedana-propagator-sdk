@@ -15311,7 +15311,7 @@
             "Token": []
           }
         ],
-        "summary": "Replays lifecycle, placement, or request records in stable timestamp/id order.\nRequest time falls back to ingestion time for older, untimestamped records.\nRe-export after pending telemetry drains: late arrivals can precede a cursor.",
+        "summary": "Replays lifecycle, placement, or request records in stable timestamp/id order,\nfalling back to ingestion time. Late arrivals can precede a cursor: re-export\nafter telemetry drains.",
         "tags": [
           "Inference"
         ]

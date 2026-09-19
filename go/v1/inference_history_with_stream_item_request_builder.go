@@ -16,7 +16,7 @@ type InferenceHistoryWithStreamItemRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// InferenceHistoryWithStreamItemRequestBuilderGetQueryParameters replays lifecycle, placement, or request records in stable timestamp/id order.Request time falls back to ingestion time for older, untimestamped records.Re-export after pending telemetry drains: late arrivals can precede a cursor.
+// InferenceHistoryWithStreamItemRequestBuilderGetQueryParameters replays lifecycle, placement, or request records in stable timestamp/id order,falling back to ingestion time. Late arrivals can precede a cursor: re-exportafter telemetry drains.
 type InferenceHistoryWithStreamItemRequestBuilderGetQueryParameters struct {
 	After_id   *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"after_id\""
 	After_time *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time "uriparametername:\"after_time\""
@@ -54,7 +54,7 @@ func NewInferenceHistoryWithStreamItemRequestBuilder(rawUrl string, requestAdapt
 	return NewInferenceHistoryWithStreamItemRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Get replays lifecycle, placement, or request records in stable timestamp/id order.Request time falls back to ingestion time for older, untimestamped records.Re-export after pending telemetry drains: late arrivals can precede a cursor.
+// Get replays lifecycle, placement, or request records in stable timestamp/id order,falling back to ingestion time. Late arrivals can precede a cursor: re-exportafter telemetry drains.
 // returns a HistoryPageable when successful
 // returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
@@ -77,7 +77,7 @@ func (m *InferenceHistoryWithStreamItemRequestBuilder) Get(ctx context.Context, 
 	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.HistoryPageable), nil
 }
 
-// ToGetRequestInformation replays lifecycle, placement, or request records in stable timestamp/id order.Request time falls back to ingestion time for older, untimestamped records.Re-export after pending telemetry drains: late arrivals can precede a cursor.
+// ToGetRequestInformation replays lifecycle, placement, or request records in stable timestamp/id order,falling back to ingestion time. Late arrivals can precede a cursor: re-exportafter telemetry drains.
 // returns a *RequestInformation when successful
 func (m *InferenceHistoryWithStreamItemRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *InferenceHistoryWithStreamItemRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

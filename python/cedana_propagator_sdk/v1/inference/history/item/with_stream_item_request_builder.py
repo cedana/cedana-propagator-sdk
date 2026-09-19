@@ -34,7 +34,7 @@ class WithStreamItemRequestBuilder(BaseRequestBuilder):
     
     async def get(self,request_configuration: Optional[RequestConfiguration[WithStreamItemRequestBuilderGetQueryParameters]] = None) -> Optional[HistoryPage]:
         """
-        Replays lifecycle, placement, or request records in stable timestamp/id order.Request time falls back to ingestion time for older, untimestamped records.Re-export after pending telemetry drains: late arrivals can precede a cursor.
+        Replays lifecycle, placement, or request records in stable timestamp/id order,falling back to ingestion time. Late arrivals can precede a cursor: re-exportafter telemetry drains.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[HistoryPage]
         """
@@ -55,7 +55,7 @@ class WithStreamItemRequestBuilder(BaseRequestBuilder):
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[WithStreamItemRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Replays lifecycle, placement, or request records in stable timestamp/id order.Request time falls back to ingestion time for older, untimestamped records.Re-export after pending telemetry drains: late arrivals can precede a cursor.
+        Replays lifecycle, placement, or request records in stable timestamp/id order,falling back to ingestion time. Late arrivals can precede a cursor: re-exportafter telemetry drains.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -77,7 +77,7 @@ class WithStreamItemRequestBuilder(BaseRequestBuilder):
     @dataclass
     class WithStreamItemRequestBuilderGetQueryParameters():
         """
-        Replays lifecycle, placement, or request records in stable timestamp/id order.Request time falls back to ingestion time for older, untimestamped records.Re-export after pending telemetry drains: late arrivals can precede a cursor.
+        Replays lifecycle, placement, or request records in stable timestamp/id order,falling back to ingestion time. Late arrivals can precede a cursor: re-exportafter telemetry drains.
         """
         after_id: Optional[UUID] = None
 
