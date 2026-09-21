@@ -4,45 +4,35 @@ from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
-if TYPE_CHECKING:
-    from .checkpoint_action_config import CheckpointActionConfig
-    from .with_policy__type import WithPolicy__type
-
 @dataclass
-class WithPolicy_(AdditionalDataHolder, Parsable):
+class SlurmAvailableFilters(AdditionalDataHolder, Parsable):
+    """
+    Distinct filter values across all jobs (not just the current page)
+    """
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # The config property
-    config: Optional[CheckpointActionConfig] = None
-    # The type property
-    type: Optional[WithPolicy__type] = None
+    # The statuses property
+    statuses: Optional[list[str]] = None
     
     @staticmethod
-    def create_from_discriminator_value(parse_node: ParseNode) -> WithPolicy_:
+    def create_from_discriminator_value(parse_node: ParseNode) -> SlurmAvailableFilters:
         """
         Creates a new instance of the appropriate class based on discriminator value
         param parse_node: The parse node to use to read the discriminator value and create the object
-        Returns: WithPolicy_
+        Returns: SlurmAvailableFilters
         """
         if parse_node is None:
             raise TypeError("parse_node cannot be null.")
-        return WithPolicy_()
+        return SlurmAvailableFilters()
     
     def get_field_deserializers(self,) -> dict[str, Callable[[ParseNode], None]]:
         """
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
-        from .checkpoint_action_config import CheckpointActionConfig
-        from .with_policy__type import WithPolicy__type
-
-        from .checkpoint_action_config import CheckpointActionConfig
-        from .with_policy__type import WithPolicy__type
-
         fields: dict[str, Callable[[Any], None]] = {
-            "config": lambda n : setattr(self, 'config', n.get_object_value(CheckpointActionConfig)),
-            "type": lambda n : setattr(self, 'type', n.get_enum_value(WithPolicy__type)),
+            "statuses": lambda n : setattr(self, 'statuses', n.get_collection_of_primitive_values(str)),
         }
         return fields
     
@@ -54,8 +44,7 @@ class WithPolicy_(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
-        writer.write_object_value("config", self.config)
-        writer.write_enum_value("type", self.type)
+        writer.write_collection_of_primitive_values("statuses", self.statuses)
         writer.write_additional_data_value(self.additional_data)
     
 

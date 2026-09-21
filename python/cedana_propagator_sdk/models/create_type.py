@@ -1,5 +1,5 @@
 from enum import Enum
 
-class WithPolicy__type(str, Enum):
+class Create_type(str, Enum):
     Checkpoint = "checkpoint",
 

@@ -5325,6 +5325,36 @@
         ],
         "type": "object"
       },
+      "PaginatedSlurmJobResponse": {
+        "description": "One page of SLURM jobs plus the total number of jobs matching the query,\nso clients can compute page counts without walking every page.",
+        "properties": {
+          "available_filters": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SlurmAvailableFilters"
+              }
+            ]
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/SlurmJob"
+            },
+            "type": "array"
+          },
+          "total_count": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "jobs",
+          "total_count"
+        ],
+        "type": "object"
+      },
       "PartitionNodeCount": {
         "description": "Node count per state for a partition",
         "properties": {
@@ -7598,6 +7628,21 @@
           "projected_deadline_miss_rate",
           "projected_p50_ms",
           "evidence"
+        ],
+        "type": "object"
+      },
+      "SlurmAvailableFilters": {
+        "description": "Distinct filter values across all jobs (not just the current page)",
+        "properties": {
+          "statuses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "statuses"
         ],
         "type": "object"
       },
@@ -23631,102 +23676,6 @@
         ]
       }
     },
-    "/v1/slurm/jobs": {
-      "get": {
-        "description": "Returns SLURM jobs from the database. Supports filtering by `job_ids` (comma-separated list)\nand `cluster_id`",
-        "operationId": "list",
-        "parameters": [
-          {
-            "description": "Comma-separated list of SLURM job ids to filter by",
-            "in": "query",
-            "name": "job_ids",
-            "required": false,
-            "schema": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
-          },
-          {
-            "description": "Cluster id (UUID) to filter by",
-            "in": "query",
-            "name": "cluster_id",
-            "required": false,
-            "schema": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SlurmJob"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": "Returns jobs"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Invalid query parameters"
-          },
-          "4XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Client error"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Failed to fetch from database"
-          },
-          "5XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "Token": []
-          }
-        ],
-        "summary": "List jobs",
-        "tags": [
-          "Jobs (Slurm)"
-        ]
-      }
-    },
     "/v1/slurm/jobs/sync": {
       "post": {
         "description": "Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database",
@@ -23800,23 +23749,87 @@
         "operationId": "list_paginated",
         "parameters": [
           {
-            "description": "Number of records to skip (default: 0)",
+            "description": "Exact SLURM job id to fetch; when set, all other filters are ignored",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          {
             "in": "query",
             "name": "offset",
             "required": false,
             "schema": {
               "format": "int64",
-              "type": "integer"
+              "type": [
+                "integer",
+                "null"
+              ]
             }
           },
           {
-            "description": "Maximum number of records to return (default: 50, max: 100)",
             "in": "query",
             "name": "limit",
             "required": false,
             "schema": {
               "format": "int64",
-              "type": "integer"
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "One of: id, name, status, submit_time, start_time (default: start_time)",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Sort ascending (default: false)",
+            "in": "query",
+            "name": "ascending",
+            "required": false,
+            "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Job name or job id to query against (uses postgres ILIKE pattern search)",
+            "in": "query",
+            "name": "job_name",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
             }
           }
         ],
@@ -23825,14 +23838,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SlurmJob"
-                  },
-                  "type": "array"
+                  "$ref": "#/components/schemas/PaginatedSlurmJobResponse"
                 }
               }
             },
             "description": "Returns jobs"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Invalid sort column"
           },
           "4XX": {
             "content": {

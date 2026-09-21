@@ -4,8 +4,6 @@
 package v1
 
 import (
-	"context"
-	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
@@ -14,28 +12,10 @@ type SlurmJobsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// SlurmJobsRequestBuilderGetQueryParameters returns SLURM jobs from the database. Supports filtering by `job_ids` (comma-separated list)and `cluster_id`
-type SlurmJobsRequestBuilderGetQueryParameters struct {
-	// Cluster id (UUID) to filter by
-	Cluster_id *string "uriparametername:\"cluster_id\""
-	// Comma-separated list of SLURM job ids to filter by
-	Job_ids *string "uriparametername:\"job_ids\""
-}
-
-// SlurmJobsRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type SlurmJobsRequestBuilderGetRequestConfiguration struct {
-	// Request headers
-	Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-	// Request options
-	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-	// Request query parameters
-	QueryParameters *SlurmJobsRequestBuilderGetQueryParameters
-}
-
 // NewSlurmJobsRequestBuilderInternal instantiates a new SlurmJobsRequestBuilder and sets the default values.
 func NewSlurmJobsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *SlurmJobsRequestBuilder {
 	m := &SlurmJobsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/slurm/jobs{?cluster_id*,job_ids*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/slurm/jobs", pathParameters),
 	}
 	return m
 }
@@ -47,57 +27,8 @@ func NewSlurmJobsRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee2633
 	return NewSlurmJobsRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Get returns SLURM jobs from the database. Supports filtering by `job_ids` (comma-separated list)and `cluster_id`
-// returns a []SlurmJobable when successful
-// returns a HttpError error when the service returns a 400 status code
-// returns a HttpError error when the service returns a 500 status code
-// returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *SlurmJobsRequestBuilder) Get(ctx context.Context, requestConfiguration *SlurmJobsRequestBuilderGetRequestConfiguration) ([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.SlurmJobable, error) {
-	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
-	if err != nil {
-		return nil, err
-	}
-	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
-		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.SendCollection(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateSlurmJobFromDiscriminatorValue, errorMapping)
-	if err != nil {
-		return nil, err
-	}
-	val := make([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.SlurmJobable, len(res))
-	for i, v := range res {
-		if v != nil {
-			val[i] = v.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.SlurmJobable)
-		}
-	}
-	return val, nil
-}
-
 // Sync the sync property
 // returns a *SlurmJobsSyncRequestBuilder when successful
 func (m *SlurmJobsRequestBuilder) Sync() *SlurmJobsSyncRequestBuilder {
 	return NewSlurmJobsSyncRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// ToGetRequestInformation returns SLURM jobs from the database. Supports filtering by `job_ids` (comma-separated list)and `cluster_id`
-// returns a *RequestInformation when successful
-func (m *SlurmJobsRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *SlurmJobsRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
-	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-	if requestConfiguration != nil {
-		if requestConfiguration.QueryParameters != nil {
-			requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
-		}
-		requestInfo.Headers.AddAll(requestConfiguration.Headers)
-		requestInfo.AddRequestOptions(requestConfiguration.Options)
-	}
-	requestInfo.Headers.TryAdd("Accept", "application/json")
-	return requestInfo, nil
-}
-
-// WithUrl returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
-// returns a *SlurmJobsRequestBuilder when successful
-func (m *SlurmJobsRequestBuilder) WithUrl(rawUrl string) *SlurmJobsRequestBuilder {
-	return NewSlurmJobsRequestBuilder(rawUrl, m.BaseRequestBuilder.RequestAdapter)
 }
