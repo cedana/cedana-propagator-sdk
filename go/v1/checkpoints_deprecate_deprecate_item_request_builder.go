@@ -37,7 +37,7 @@ func NewCheckpointsDeprecateDeprecateItemRequestBuilder(rawUrl string, requestAd
 	return NewCheckpointsDeprecateDeprecateItemRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Patch routes a deletion request to at least one queue before marking the checkpoint deprecated.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
+// Patch routes a deletion request to at least one queue before marking the checkpoint deprecated.Checkpoints without a restore path are deprecated without publishing a deletion request.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
 // returns a *string when successful
 // returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 404 status code
@@ -64,7 +64,7 @@ func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) Patch(ctx context.Cont
 	return res.(*string), nil
 }
 
-// ToPatchRequestInformation routes a deletion request to at least one queue before marking the checkpoint deprecated.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
+// ToPatchRequestInformation routes a deletion request to at least one queue before marking the checkpoint deprecated.Checkpoints without a restore path are deprecated without publishing a deletion request.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
 // returns a *RequestInformation when successful
 func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) ToPatchRequestInformation(ctx context.Context, requestConfiguration *CheckpointsDeprecateDeprecateItemRequestBuilderPatchRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.PATCH, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

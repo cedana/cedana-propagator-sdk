@@ -31,7 +31,7 @@ class DeprecateItemRequestBuilder(BaseRequestBuilder):
     
     async def patch(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[str]:
         """
-        Routes a deletion request to at least one queue before marking the checkpoint deprecated.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
+        Routes a deletion request to at least one queue before marking the checkpoint deprecated.Checkpoints without a restore path are deprecated without publishing a deletion request.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[str]
         """
@@ -52,7 +52,7 @@ class DeprecateItemRequestBuilder(BaseRequestBuilder):
     
     def to_patch_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Routes a deletion request to at least one queue before marking the checkpoint deprecated.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
+        Routes a deletion request to at least one queue before marking the checkpoint deprecated.Checkpoints without a restore path are deprecated without publishing a deletion request.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """

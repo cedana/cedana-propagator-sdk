@@ -10566,7 +10566,7 @@
     },
     "/v1/checkpoints/deprecate/{id}": {
       "patch": {
-        "description": "Routes a deletion request to at least one queue before marking the checkpoint deprecated.\nLocks the checkpoint in a transaction to serialize concurrent deprecation requests.",
+        "description": "Routes a deletion request to at least one queue before marking the checkpoint deprecated.\nCheckpoints without a restore path are deprecated without publishing a deletion request.\nLocks the checkpoint in a transaction to serialize concurrent deprecation requests.",
         "operationId": "deprecate",
         "parameters": [
           {
@@ -10598,7 +10598,7 @@
                 }
               }
             },
-            "description": "Invalid UUID or checkpoint has no restore path"
+            "description": "Invalid UUID provided"
           },
           "404": {
             "content": {
