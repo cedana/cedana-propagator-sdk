@@ -6,28 +6,28 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from .checkpoint_action_config import CheckpointActionConfig
-    from .with_policy__type import WithPolicy__type
+    from .create_type import Create_type
 
 @dataclass
-class WithPolicy_(AdditionalDataHolder, Parsable):
+class Create(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
     # The config property
     config: Optional[CheckpointActionConfig] = None
     # The type property
-    type: Optional[WithPolicy__type] = None
+    type: Optional[Create_type] = None
     
     @staticmethod
-    def create_from_discriminator_value(parse_node: ParseNode) -> WithPolicy_:
+    def create_from_discriminator_value(parse_node: ParseNode) -> Create:
         """
         Creates a new instance of the appropriate class based on discriminator value
         param parse_node: The parse node to use to read the discriminator value and create the object
-        Returns: WithPolicy_
+        Returns: Create
         """
         if parse_node is None:
             raise TypeError("parse_node cannot be null.")
-        return WithPolicy_()
+        return Create()
     
     def get_field_deserializers(self,) -> dict[str, Callable[[ParseNode], None]]:
         """
@@ -35,14 +35,14 @@ class WithPolicy_(AdditionalDataHolder, Parsable):
         Returns: dict[str, Callable[[ParseNode], None]]
         """
         from .checkpoint_action_config import CheckpointActionConfig
-        from .with_policy__type import WithPolicy__type
+        from .create_type import Create_type
 
         from .checkpoint_action_config import CheckpointActionConfig
-        from .with_policy__type import WithPolicy__type
+        from .create_type import Create_type
 
         fields: dict[str, Callable[[Any], None]] = {
             "config": lambda n : setattr(self, 'config', n.get_object_value(CheckpointActionConfig)),
-            "type": lambda n : setattr(self, 'type', n.get_enum_value(WithPolicy__type)),
+            "type": lambda n : setattr(self, 'type', n.get_enum_value(Create_type)),
         }
         return fields
     
