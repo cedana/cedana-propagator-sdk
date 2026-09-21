@@ -31,7 +31,7 @@ class DeprecateItemRequestBuilder(BaseRequestBuilder):
     
     async def patch(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[str]:
         """
-        Marks checkpoint as deprecated, so that they can be removed on next internal state cleanup
+        Routes a deletion request to at least one queue before marking the checkpoint deprecated.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[str]
         """
@@ -42,6 +42,7 @@ class DeprecateItemRequestBuilder(BaseRequestBuilder):
 
         error_mapping: dict[str, type[ParsableFactory]] = {
             "400": HttpError,
+            "404": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
@@ -51,7 +52,7 @@ class DeprecateItemRequestBuilder(BaseRequestBuilder):
     
     def to_patch_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Marks checkpoint as deprecated, so that they can be removed on next internal state cleanup
+        Routes a deletion request to at least one queue before marking the checkpoint deprecated.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """

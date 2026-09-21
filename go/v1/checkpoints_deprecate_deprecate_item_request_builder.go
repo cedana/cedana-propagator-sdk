@@ -37,9 +37,10 @@ func NewCheckpointsDeprecateDeprecateItemRequestBuilder(rawUrl string, requestAd
 	return NewCheckpointsDeprecateDeprecateItemRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Patch marks checkpoint as deprecated, so that they can be removed on next internal state cleanup
+// Patch routes a deletion request to at least one queue before marking the checkpoint deprecated.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
 // returns a *string when successful
 // returns a HttpError error when the service returns a 400 status code
+// returns a HttpError error when the service returns a 404 status code
 // returns a HttpError error when the service returns a 500 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
 func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) Patch(ctx context.Context, requestConfiguration *CheckpointsDeprecateDeprecateItemRequestBuilderPatchRequestConfiguration) (*string, error) {
@@ -49,6 +50,7 @@ func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) Patch(ctx context.Cont
 	}
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
 		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+		"404": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
@@ -62,7 +64,7 @@ func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) Patch(ctx context.Cont
 	return res.(*string), nil
 }
 
-// ToPatchRequestInformation marks checkpoint as deprecated, so that they can be removed on next internal state cleanup
+// ToPatchRequestInformation routes a deletion request to at least one queue before marking the checkpoint deprecated.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
 // returns a *RequestInformation when successful
 func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) ToPatchRequestInformation(ctx context.Context, requestConfiguration *CheckpointsDeprecateDeprecateItemRequestBuilderPatchRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.PATCH, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
