@@ -6785,6 +6785,27 @@
             "description": "Route publications inside the window: activations that completed.",
             "format": "int64",
             "type": "integer"
+          },
+          "swap_p50_s": {
+            "description": "Median seconds the node spent switching before this profile served: its swap\ncost. Compare against a cold start for the same model.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "swap_p90_s": {
+            "description": "90th percentile of the same, so a regression is visible rather than averaged out.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "swaps_measured": {
+            "description": "Swaps into this profile that were measured (the node was empty beforehand).",
+            "format": "int64",
+            "type": "integer"
           }
         },
         "required": [
@@ -6792,7 +6813,8 @@
           "logical_model",
           "gpus",
           "resident_s",
-          "slices"
+          "slices",
+          "swaps_measured"
         ],
         "type": "object"
       },
@@ -9509,6 +9531,11 @@
               "null"
             ]
           },
+          "cold_starts": {
+            "description": "Publications by a profile with no restore evidence at all in the window.",
+            "format": "int64",
+            "type": "integer"
+          },
           "gpu_capacity": {
             "format": "int64",
             "type": [
@@ -9529,11 +9556,21 @@
             "format": "double",
             "type": "number"
           },
+          "idle_s": {
+            "description": "Seconds in the window during which NO model was serving: the node's dead time,\nwhich is the swap cost in aggregate. The number an operator is buying down.",
+            "format": "double",
+            "type": "number"
+          },
           "profiles": {
             "items": {
               "$ref": "#/components/schemas/ProfileUtilization"
             },
             "type": "array"
+          },
+          "restores": {
+            "description": "Of those, ones a `model.restored` accounts for: the swap was a checkpoint\nrestore, not a cold start. This is the system's central claim, measured.",
+            "format": "int64",
+            "type": "integer"
           },
           "swaps": {
             "description": "Activations that completed inside the window (route publications).",
@@ -9557,6 +9594,9 @@
           "window_hours",
           "gpu_seconds_resident",
           "swaps",
+          "restores",
+          "cold_starts",
+          "idle_s",
           "profiles"
         ],
         "type": "object"

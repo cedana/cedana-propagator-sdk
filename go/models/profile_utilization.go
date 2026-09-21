@@ -22,6 +22,12 @@ type ProfileUtilization struct {
 	resident_s *float64
 	// Route publications inside the window: activations that completed.
 	slices *int64
+	// Median seconds the node spent switching before this profile served: its swapcost. Compare against a cold start for the same model.
+	swap_p50_s *float64
+	// 90th percentile of the same, so a regression is visible rather than averaged out.
+	swap_p90_s *float64
+	// Swaps into this profile that were measured (the node was empty beforehand).
+	swaps_measured *int64
 }
 
 // NewProfileUtilization instantiates a new ProfileUtilization and sets the default values.
@@ -107,6 +113,36 @@ func (m *ProfileUtilization) GetFieldDeserializers() map[string]func(i878a80d233
 		}
 		return nil
 	}
+	res["swap_p50_s"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetFloat64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetSwapP50S(val)
+		}
+		return nil
+	}
+	res["swap_p90_s"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetFloat64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetSwapP90S(val)
+		}
+		return nil
+	}
+	res["swaps_measured"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetSwapsMeasured(val)
+		}
+		return nil
+	}
 	return res
 }
 
@@ -146,6 +182,24 @@ func (m *ProfileUtilization) GetSlices() *int64 {
 	return m.slices
 }
 
+// GetSwapP50S gets the swap_p50_s property value. Median seconds the node spent switching before this profile served: its swapcost. Compare against a cold start for the same model.
+// returns a *float64 when successful
+func (m *ProfileUtilization) GetSwapP50S() *float64 {
+	return m.swap_p50_s
+}
+
+// GetSwapP90S gets the swap_p90_s property value. 90th percentile of the same, so a regression is visible rather than averaged out.
+// returns a *float64 when successful
+func (m *ProfileUtilization) GetSwapP90S() *float64 {
+	return m.swap_p90_s
+}
+
+// GetSwapsMeasured gets the swaps_measured property value. Swaps into this profile that were measured (the node was empty beforehand).
+// returns a *int64 when successful
+func (m *ProfileUtilization) GetSwapsMeasured() *int64 {
+	return m.swaps_measured
+}
+
 // Serialize serializes information the current object
 func (m *ProfileUtilization) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
@@ -180,6 +234,24 @@ func (m *ProfileUtilization) Serialize(writer i878a80d2330e89d26896388a3f487eef2
 	}
 	{
 		err := writer.WriteInt64Value("slices", m.GetSlices())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt64Value("swaps_measured", m.GetSwapsMeasured())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteFloat64Value("swap_p50_s", m.GetSwapP50S())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteFloat64Value("swap_p90_s", m.GetSwapP90S())
 		if err != nil {
 			return err
 		}
@@ -228,6 +300,21 @@ func (m *ProfileUtilization) SetSlices(value *int64) {
 	m.slices = value
 }
 
+// SetSwapP50S sets the swap_p50_s property value. Median seconds the node spent switching before this profile served: its swapcost. Compare against a cold start for the same model.
+func (m *ProfileUtilization) SetSwapP50S(value *float64) {
+	m.swap_p50_s = value
+}
+
+// SetSwapP90S sets the swap_p90_s property value. 90th percentile of the same, so a regression is visible rather than averaged out.
+func (m *ProfileUtilization) SetSwapP90S(value *float64) {
+	m.swap_p90_s = value
+}
+
+// SetSwapsMeasured sets the swaps_measured property value. Swaps into this profile that were measured (the node was empty beforehand).
+func (m *ProfileUtilization) SetSwapsMeasured(value *int64) {
+	m.swaps_measured = value
+}
+
 type ProfileUtilizationable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
@@ -237,10 +324,16 @@ type ProfileUtilizationable interface {
 	GetProfileId() *string
 	GetResidentS() *float64
 	GetSlices() *int64
+	GetSwapP50S() *float64
+	GetSwapP90S() *float64
+	GetSwapsMeasured() *int64
 	SetGpus(value *int64)
 	SetLogicalModel(value *string)
 	SetMeanSliceS(value *float64)
 	SetProfileId(value *string)
 	SetResidentS(value *float64)
 	SetSlices(value *int64)
+	SetSwapP50S(value *float64)
+	SetSwapP90S(value *float64)
+	SetSwapsMeasured(value *int64)
 }

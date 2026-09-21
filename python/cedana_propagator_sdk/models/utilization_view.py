@@ -15,14 +15,20 @@ class UtilizationView(AdditionalDataHolder, Parsable):
 
     # The cluster_id property
     cluster_id: Optional[UUID] = None
+    # Publications by a profile with no restore evidence at all in the window.
+    cold_starts: Optional[int] = None
     # The gpu_capacity property
     gpu_capacity: Optional[int] = None
     # gpu_capacity x window, when capacity is known.
     gpu_seconds_available: Optional[float] = None
     # Sum over profiles of resident seconds x GPUs.
     gpu_seconds_resident: Optional[float] = None
+    # Seconds in the window during which NO model was serving: the node's dead time,which is the swap cost in aggregate. The number an operator is buying down.
+    idle_s: Optional[float] = None
     # The profiles property
     profiles: Optional[list[ProfileUtilization]] = None
+    # Of those, ones a `model.restored` accounts for: the swap was a checkpointrestore, not a cold start. This is the system's central claim, measured.
+    restores: Optional[int] = None
     # Activations that completed inside the window (route publications).
     swaps: Optional[int] = None
     # gpu_seconds_resident / gpu_seconds_available; the number to set beside anenterprise fleet's 15-22%. Residency of a serving model, not SM occupancy.
@@ -52,10 +58,13 @@ class UtilizationView(AdditionalDataHolder, Parsable):
 
         fields: dict[str, Callable[[Any], None]] = {
             "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
+            "cold_starts": lambda n : setattr(self, 'cold_starts', n.get_int_value()),
             "gpu_capacity": lambda n : setattr(self, 'gpu_capacity', n.get_int_value()),
             "gpu_seconds_available": lambda n : setattr(self, 'gpu_seconds_available', n.get_float_value()),
             "gpu_seconds_resident": lambda n : setattr(self, 'gpu_seconds_resident', n.get_float_value()),
+            "idle_s": lambda n : setattr(self, 'idle_s', n.get_float_value()),
             "profiles": lambda n : setattr(self, 'profiles', n.get_collection_of_object_values(ProfileUtilization)),
+            "restores": lambda n : setattr(self, 'restores', n.get_int_value()),
             "swaps": lambda n : setattr(self, 'swaps', n.get_int_value()),
             "utilization": lambda n : setattr(self, 'utilization', n.get_float_value()),
             "window_hours": lambda n : setattr(self, 'window_hours', n.get_float_value()),
@@ -71,10 +80,13 @@ class UtilizationView(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_uuid_value("cluster_id", self.cluster_id)
+        writer.write_int_value("cold_starts", self.cold_starts)
         writer.write_int_value("gpu_capacity", self.gpu_capacity)
         writer.write_float_value("gpu_seconds_available", self.gpu_seconds_available)
         writer.write_float_value("gpu_seconds_resident", self.gpu_seconds_resident)
+        writer.write_float_value("idle_s", self.idle_s)
         writer.write_collection_of_object_values("profiles", self.profiles)
+        writer.write_int_value("restores", self.restores)
         writer.write_int_value("swaps", self.swaps)
         writer.write_float_value("utilization", self.utilization)
         writer.write_float_value("window_hours", self.window_hours)

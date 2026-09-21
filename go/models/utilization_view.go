@@ -13,14 +13,20 @@ type UtilizationView struct {
 	additionalData map[string]any
 	// The cluster_id property
 	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	// Publications by a profile with no restore evidence at all in the window.
+	cold_starts *int64
 	// The gpu_capacity property
 	gpu_capacity *int64
 	// gpu_capacity x window, when capacity is known.
 	gpu_seconds_available *float64
 	// Sum over profiles of resident seconds x GPUs.
 	gpu_seconds_resident *float64
+	// Seconds in the window during which NO model was serving: the node's dead time,which is the swap cost in aggregate. The number an operator is buying down.
+	idle_s *float64
 	// The profiles property
 	profiles []ProfileUtilizationable
+	// Of those, ones a `model.restored` accounts for: the swap was a checkpointrestore, not a cold start. This is the system's central claim, measured.
+	restores *int64
 	// Activations that completed inside the window (route publications).
 	swaps *int64
 	// gpu_seconds_resident / gpu_seconds_available; the number to set beside anenterprise fleet's 15-22%. Residency of a serving model, not SM occupancy.
@@ -54,6 +60,12 @@ func (m *UtilizationView) GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3
 	return m.cluster_id
 }
 
+// GetColdStarts gets the cold_starts property value. Publications by a profile with no restore evidence at all in the window.
+// returns a *int64 when successful
+func (m *UtilizationView) GetColdStarts() *int64 {
+	return m.cold_starts
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *UtilizationView) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
@@ -65,6 +77,16 @@ func (m *UtilizationView) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		if val != nil {
 			m.SetClusterId(val)
+		}
+		return nil
+	}
+	res["cold_starts"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetColdStarts(val)
 		}
 		return nil
 	}
@@ -98,6 +120,16 @@ func (m *UtilizationView) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		return nil
 	}
+	res["idle_s"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetFloat64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetIdleS(val)
+		}
+		return nil
+	}
 	res["profiles"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetCollectionOfObjectValues(CreateProfileUtilizationFromDiscriminatorValue)
 		if err != nil {
@@ -111,6 +143,16 @@ func (m *UtilizationView) GetFieldDeserializers() map[string]func(i878a80d2330e8
 				}
 			}
 			m.SetProfiles(res)
+		}
+		return nil
+	}
+	res["restores"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetRestores(val)
 		}
 		return nil
 	}
@@ -165,10 +207,22 @@ func (m *UtilizationView) GetGpuSecondsResident() *float64 {
 	return m.gpu_seconds_resident
 }
 
+// GetIdleS gets the idle_s property value. Seconds in the window during which NO model was serving: the node's dead time,which is the swap cost in aggregate. The number an operator is buying down.
+// returns a *float64 when successful
+func (m *UtilizationView) GetIdleS() *float64 {
+	return m.idle_s
+}
+
 // GetProfiles gets the profiles property value. The profiles property
 // returns a []ProfileUtilizationable when successful
 func (m *UtilizationView) GetProfiles() []ProfileUtilizationable {
 	return m.profiles
+}
+
+// GetRestores gets the restores property value. Of those, ones a `model.restored` accounts for: the swap was a checkpointrestore, not a cold start. This is the system's central claim, measured.
+// returns a *int64 when successful
+func (m *UtilizationView) GetRestores() *int64 {
+	return m.restores
 }
 
 // GetSwaps gets the swaps property value. Activations that completed inside the window (route publications).
@@ -198,6 +252,12 @@ func (m *UtilizationView) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 		}
 	}
 	{
+		err := writer.WriteInt64Value("cold_starts", m.GetColdStarts())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteInt64Value("gpu_capacity", m.GetGpuCapacity())
 		if err != nil {
 			return err
@@ -215,6 +275,12 @@ func (m *UtilizationView) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 			return err
 		}
 	}
+	{
+		err := writer.WriteFloat64Value("idle_s", m.GetIdleS())
+		if err != nil {
+			return err
+		}
+	}
 	if m.GetProfiles() != nil {
 		cast := make([]i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, len(m.GetProfiles()))
 		for i, v := range m.GetProfiles() {
@@ -223,6 +289,12 @@ func (m *UtilizationView) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 			}
 		}
 		err := writer.WriteCollectionOfObjectValues("profiles", cast)
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt64Value("restores", m.GetRestores())
 		if err != nil {
 			return err
 		}
@@ -264,6 +336,11 @@ func (m *UtilizationView) SetClusterId(value *i561e97a8befe7661a44c8f54600992b42
 	m.cluster_id = value
 }
 
+// SetColdStarts sets the cold_starts property value. Publications by a profile with no restore evidence at all in the window.
+func (m *UtilizationView) SetColdStarts(value *int64) {
+	m.cold_starts = value
+}
+
 // SetGpuCapacity sets the gpu_capacity property value. The gpu_capacity property
 func (m *UtilizationView) SetGpuCapacity(value *int64) {
 	m.gpu_capacity = value
@@ -279,9 +356,19 @@ func (m *UtilizationView) SetGpuSecondsResident(value *float64) {
 	m.gpu_seconds_resident = value
 }
 
+// SetIdleS sets the idle_s property value. Seconds in the window during which NO model was serving: the node's dead time,which is the swap cost in aggregate. The number an operator is buying down.
+func (m *UtilizationView) SetIdleS(value *float64) {
+	m.idle_s = value
+}
+
 // SetProfiles sets the profiles property value. The profiles property
 func (m *UtilizationView) SetProfiles(value []ProfileUtilizationable) {
 	m.profiles = value
+}
+
+// SetRestores sets the restores property value. Of those, ones a `model.restored` accounts for: the swap was a checkpointrestore, not a cold start. This is the system's central claim, measured.
+func (m *UtilizationView) SetRestores(value *int64) {
+	m.restores = value
 }
 
 // SetSwaps sets the swaps property value. Activations that completed inside the window (route publications).
@@ -303,18 +390,24 @@ type UtilizationViewable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	GetColdStarts() *int64
 	GetGpuCapacity() *int64
 	GetGpuSecondsAvailable() *float64
 	GetGpuSecondsResident() *float64
+	GetIdleS() *float64
 	GetProfiles() []ProfileUtilizationable
+	GetRestores() *int64
 	GetSwaps() *int64
 	GetUtilization() *float64
 	GetWindowHours() *float64
 	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
+	SetColdStarts(value *int64)
 	SetGpuCapacity(value *int64)
 	SetGpuSecondsAvailable(value *float64)
 	SetGpuSecondsResident(value *float64)
+	SetIdleS(value *float64)
 	SetProfiles(value []ProfileUtilizationable)
+	SetRestores(value *int64)
 	SetSwaps(value *int64)
 	SetUtilization(value *float64)
 	SetWindowHours(value *float64)
