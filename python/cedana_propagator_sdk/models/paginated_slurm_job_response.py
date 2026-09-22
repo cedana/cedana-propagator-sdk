@@ -5,50 +5,50 @@ from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, Par
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from .create import Create
-    from .pipeline_filter import PipelineFilter
+    from .slurm_available_filters import SlurmAvailableFilters
+    from .slurm_job import SlurmJob
 
 @dataclass
-class PolicyPipeline(AdditionalDataHolder, Parsable):
+class PaginatedSlurmJobResponse(AdditionalDataHolder, Parsable):
     """
-    Complete policy pipeline definition
+    One page of SLURM jobs plus the total number of jobs matching the query,so clients can compute page counts without walking every page.
     """
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # Action defines WHAT to do when triggered
-    action: Optional[Create] = None
-    # Filter defines WHAT resources are targeted
-    filter: Optional[PipelineFilter] = None
-    # Trigger defines WHEN a policy activates
-    trigger: Optional[Create] = None
+    # The available_filters property
+    available_filters: Optional[SlurmAvailableFilters] = None
+    # The jobs property
+    jobs: Optional[list[SlurmJob]] = None
+    # The total_count property
+    total_count: Optional[int] = None
     
     @staticmethod
-    def create_from_discriminator_value(parse_node: ParseNode) -> PolicyPipeline:
+    def create_from_discriminator_value(parse_node: ParseNode) -> PaginatedSlurmJobResponse:
         """
         Creates a new instance of the appropriate class based on discriminator value
         param parse_node: The parse node to use to read the discriminator value and create the object
-        Returns: PolicyPipeline
+        Returns: PaginatedSlurmJobResponse
         """
         if parse_node is None:
             raise TypeError("parse_node cannot be null.")
-        return PolicyPipeline()
+        return PaginatedSlurmJobResponse()
     
     def get_field_deserializers(self,) -> dict[str, Callable[[ParseNode], None]]:
         """
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
-        from .create import Create
-        from .pipeline_filter import PipelineFilter
+        from .slurm_available_filters import SlurmAvailableFilters
+        from .slurm_job import SlurmJob
 
-        from .create import Create
-        from .pipeline_filter import PipelineFilter
+        from .slurm_available_filters import SlurmAvailableFilters
+        from .slurm_job import SlurmJob
 
         fields: dict[str, Callable[[Any], None]] = {
-            "action": lambda n : setattr(self, 'action', n.get_object_value(Create)),
-            "filter": lambda n : setattr(self, 'filter', n.get_object_value(PipelineFilter)),
-            "trigger": lambda n : setattr(self, 'trigger', n.get_object_value(Create)),
+            "available_filters": lambda n : setattr(self, 'available_filters', n.get_object_value(SlurmAvailableFilters)),
+            "jobs": lambda n : setattr(self, 'jobs', n.get_collection_of_object_values(SlurmJob)),
+            "total_count": lambda n : setattr(self, 'total_count', n.get_int_value()),
         }
         return fields
     
@@ -60,9 +60,9 @@ class PolicyPipeline(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
-        writer.write_object_value("action", self.action)
-        writer.write_object_value("filter", self.filter)
-        writer.write_object_value("trigger", self.trigger)
+        writer.write_object_value("available_filters", self.available_filters)
+        writer.write_collection_of_object_values("jobs", self.jobs)
+        writer.write_int_value("total_count", self.total_count)
         writer.write_additional_data_value(self.additional_data)
     
 
