@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from .routes.routes_request_builder import RoutesRequestBuilder
     from .startup_comparison.startup_comparison_request_builder import StartupComparisonRequestBuilder
     from .storage.storage_request_builder import StorageRequestBuilder
+    from .switch_costs.switch_costs_request_builder import SwitchCostsRequestBuilder
     from .usage.usage_request_builder import UsageRequestBuilder
     from .utilization.utilization_request_builder import UtilizationRequestBuilder
 
@@ -251,6 +252,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .storage.storage_request_builder import StorageRequestBuilder
 
         return StorageRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def switch_costs(self) -> SwitchCostsRequestBuilder:
+        """
+        The switchCosts property
+        """
+        from .switch_costs.switch_costs_request_builder import SwitchCostsRequestBuilder
+
+        return SwitchCostsRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def usage(self) -> UsageRequestBuilder:

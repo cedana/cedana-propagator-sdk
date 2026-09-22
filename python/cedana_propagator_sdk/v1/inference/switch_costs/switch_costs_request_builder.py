@@ -15,26 +15,26 @@ from warnings import warn
 
 if TYPE_CHECKING:
     from ....models.http_error import HttpError
-    from ....models.paginated_slurm_job_response import PaginatedSlurmJobResponse
+    from ....models.switch_cost import SwitchCost
 
-class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
+class SwitchCostsRequestBuilder(BaseRequestBuilder):
     """
-    Builds and executes requests for operations under /v1/slurm/jobs_paginated
+    Builds and executes requests for operations under /v1/inference/switch-costs
     """
     def __init__(self,request_adapter: RequestAdapter, path_parameters: Union[str, dict[str, Any]]) -> None:
         """
-        Instantiates a new Jobs_paginatedRequestBuilder and sets the default values.
+        Instantiates a new SwitchCostsRequestBuilder and sets the default values.
         param path_parameters: The raw url or the url-template parameters for the request.
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/slurm/jobs_paginated{?ascending*,id*,job_name*,limit*,offset*,sort*,status*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/inference/switch-costs{?window_hours*}", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[Jobs_paginatedRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedSlurmJobResponse]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[SwitchCostsRequestBuilderGetQueryParameters]] = None) -> Optional[list[SwitchCost]]:
         """
-        Returns SLURM jobs from the database with pagination
+        What a switch costs each profile: restore time from its own lifecycle history over thewindow, and its measured cold start (never estimated; absent until one is observed).
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[PaginatedSlurmJobResponse]
+        Returns: Optional[list[SwitchCost]]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -42,19 +42,17 @@ class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
         from ....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
-            "400": HttpError,
-            "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ....models.paginated_slurm_job_response import PaginatedSlurmJobResponse
+        from ....models.switch_cost import SwitchCost
 
-        return await self.request_adapter.send_async(request_info, PaginatedSlurmJobResponse, error_mapping)
+        return await self.request_adapter.send_collection_async(request_info, SwitchCost, error_mapping)
     
-    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[Jobs_paginatedRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
+    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[SwitchCostsRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Returns SLURM jobs from the database with pagination
+        What a switch costs each profile: restore time from its own lifecycle history over thewindow, and its measured cold start (never estimated; absent until one is observed).
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -63,42 +61,27 @@ class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
         request_info.headers.try_add("Accept", "application/json")
         return request_info
     
-    def with_url(self,raw_url: str) -> Jobs_paginatedRequestBuilder:
+    def with_url(self,raw_url: str) -> SwitchCostsRequestBuilder:
         """
         Returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
         param raw_url: The raw URL to use for the request builder.
-        Returns: Jobs_paginatedRequestBuilder
+        Returns: SwitchCostsRequestBuilder
         """
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
-        return Jobs_paginatedRequestBuilder(self.request_adapter, raw_url)
+        return SwitchCostsRequestBuilder(self.request_adapter, raw_url)
     
     @dataclass
-    class Jobs_paginatedRequestBuilderGetQueryParameters():
+    class SwitchCostsRequestBuilderGetQueryParameters():
         """
-        Returns SLURM jobs from the database with pagination
+        What a switch costs each profile: restore time from its own lifecycle history over thewindow, and its measured cold start (never estimated; absent until one is observed).
         """
-        # Sort ascending (default: false)
-        ascending: Optional[bool] = None
-
-        # Exact SLURM job id to fetch; when set, all other filters are ignored
-        id: Optional[int] = None
-
-        # Job name or job id to query against (uses postgres ILIKE pattern search)
-        job_name: Optional[str] = None
-
-        limit: Optional[int] = None
-
-        offset: Optional[int] = None
-
-        # One of: id, name, status, submit_time, start_time (default: start_time)
-        sort: Optional[str] = None
-
-        status: Optional[str] = None
+        # History window, default 24
+        window_hours: Optional[float] = None
 
     
     @dataclass
-    class Jobs_paginatedRequestBuilderGetRequestConfiguration(RequestConfiguration[Jobs_paginatedRequestBuilderGetQueryParameters]):
+    class SwitchCostsRequestBuilderGetRequestConfiguration(RequestConfiguration[SwitchCostsRequestBuilderGetQueryParameters]):
         """
         Configuration for the request such as headers, query parameters, and middleware options.
         """

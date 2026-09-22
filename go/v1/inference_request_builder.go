@@ -165,6 +165,12 @@ func (m *InferenceRequestBuilder) Storage() *InferenceStorageRequestBuilder {
 	return NewInferenceStorageRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// SwitchCosts the switchCosts property
+// returns a *InferenceSwitchCostsRequestBuilder when successful
+func (m *InferenceRequestBuilder) SwitchCosts() *InferenceSwitchCostsRequestBuilder {
+	return NewInferenceSwitchCostsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Usage the usage property
 // returns a *InferenceUsageRequestBuilder when successful
 func (m *InferenceRequestBuilder) Usage() *InferenceUsageRequestBuilder {
