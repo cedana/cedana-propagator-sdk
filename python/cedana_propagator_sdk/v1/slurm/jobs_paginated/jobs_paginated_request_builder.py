@@ -15,7 +15,7 @@ from warnings import warn
 
 if TYPE_CHECKING:
     from ....models.http_error import HttpError
-    from ....models.slurm_job import SlurmJob
+    from ....models.paginated_slurm_job_response import PaginatedSlurmJobResponse
 
 class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
     """
@@ -28,13 +28,13 @@ class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/slurm/jobs_paginated{?limit*,offset*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/slurm/jobs_paginated{?ascending*,id*,job_name*,limit*,offset*,sort*,status*}", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[Jobs_paginatedRequestBuilderGetQueryParameters]] = None) -> Optional[list[SlurmJob]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[Jobs_paginatedRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedSlurmJobResponse]:
         """
         Returns SLURM jobs from the database with pagination
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[SlurmJob]]
+        Returns: Optional[PaginatedSlurmJobResponse]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -42,14 +42,15 @@ class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
         from ....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
+            "400": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ....models.slurm_job import SlurmJob
+        from ....models.paginated_slurm_job_response import PaginatedSlurmJobResponse
 
-        return await self.request_adapter.send_collection_async(request_info, SlurmJob, error_mapping)
+        return await self.request_adapter.send_async(request_info, PaginatedSlurmJobResponse, error_mapping)
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[Jobs_paginatedRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
@@ -77,11 +78,23 @@ class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
         """
         Returns SLURM jobs from the database with pagination
         """
-        # Maximum number of records to return (default: 50, max: 100)
+        # Sort ascending (default: false)
+        ascending: Optional[bool] = None
+
+        # Exact SLURM job id to fetch; when set, all other filters are ignored
+        id: Optional[int] = None
+
+        # Job name or job id to query against (uses postgres ILIKE pattern search)
+        job_name: Optional[str] = None
+
         limit: Optional[int] = None
 
-        # Number of records to skip (default: 0)
         offset: Optional[int] = None
+
+        # One of: id, name, status, submit_time, start_time (default: start_time)
+        sort: Optional[str] = None
+
+        status: Optional[str] = None
 
     
     @dataclass
