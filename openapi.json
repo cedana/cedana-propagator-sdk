@@ -9432,6 +9432,18 @@
                 "null"
               ]
             }
+          },
+          {
+            "description": "Only return actions that ran on this cluster",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
@@ -10471,13 +10483,25 @@
     },
     "/v1/checkpoints": {
       "get": {
-        "description": "Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDs for single or multiple checkpoints)",
+        "description": "Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDs\nfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint action\nran on)",
         "operationId": "list",
         "parameters": [
           {
             "description": "Comma-separated list of checkpoint UUIDs to filter by",
             "in": "query",
             "name": "ids",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Only return checkpoints whose checkpoint action ran on this cluster",
+            "in": "query",
+            "name": "cluster_id",
             "required": false,
             "schema": {
               "type": [
@@ -19251,6 +19275,18 @@
                 "null"
               ]
             }
+          },
+          {
+            "description": "Only include operations from this cluster (UUID; non-UUID values are ignored)",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
@@ -20038,6 +20074,19 @@
           {
             "in": "query",
             "name": "id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Only return nodes belonging to this cluster",
+            "in": "query",
+            "name": "cluster_id",
             "required": false,
             "schema": {
               "format": "uuid",
@@ -20891,6 +20940,19 @@
             "name": "pod_name",
             "required": false,
             "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Only return pods belonging to this cluster",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
               "type": [
                 "string",
                 "null"
@@ -23831,6 +23893,19 @@
                 "null"
               ]
             }
+          },
+          {
+            "description": "Only return jobs belonging to this cluster",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
@@ -24304,6 +24379,21 @@
     "/v1/slurm/nodes": {
       "get": {
         "operationId": "list",
+        "parameters": [
+          {
+            "description": "Only return nodes belonging to this cluster",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -24449,6 +24539,16 @@
             "schema": {
               "format": "int64",
               "type": "integer"
+            }
+          },
+          {
+            "description": "Only return nodes belonging to this cluster",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],

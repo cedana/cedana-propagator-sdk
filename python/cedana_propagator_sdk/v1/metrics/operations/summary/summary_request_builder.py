@@ -28,7 +28,7 @@ class SummaryRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/metrics/operations/summary{?operation*,time*,workload*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/metrics/operations/summary{?cluster_id*,operation*,time*,workload*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[SummaryRequestBuilderGetQueryParameters]] = None) -> Optional[OperationsSummary]:
         """
@@ -77,6 +77,9 @@ class SummaryRequestBuilder(BaseRequestBuilder):
         """
         Windowed operation aggregates for dashboards
         """
+        # Only include operations from this cluster (UUID; non-UUID values are ignored)
+        cluster_id: Optional[str] = None
+
         # checkpoint | restore
         operation: Optional[str] = None
 

@@ -16,6 +16,8 @@ type MetricsOperationsSummaryRequestBuilder struct {
 
 // MetricsOperationsSummaryRequestBuilderGetQueryParameters windowed operation aggregates for dashboards
 type MetricsOperationsSummaryRequestBuilderGetQueryParameters struct {
+	// Only include operations from this cluster (UUID; non-UUID values are ignored)
+	Cluster_id *string "uriparametername:\"cluster_id\""
 	// checkpoint | restore
 	Operation *string "uriparametername:\"operation\""
 	// Window in seconds (default 604800, max 90 days)
@@ -37,7 +39,7 @@ type MetricsOperationsSummaryRequestBuilderGetRequestConfiguration struct {
 // NewMetricsOperationsSummaryRequestBuilderInternal instantiates a new MetricsOperationsSummaryRequestBuilder and sets the default values.
 func NewMetricsOperationsSummaryRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *MetricsOperationsSummaryRequestBuilder {
 	m := &MetricsOperationsSummaryRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/metrics/operations/summary{?operation*,time*,workload*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/metrics/operations/summary{?cluster_id*,operation*,time*,workload*}", pathParameters),
 	}
 	return m
 }
