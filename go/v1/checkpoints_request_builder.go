@@ -14,8 +14,10 @@ type CheckpointsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// CheckpointsRequestBuilderGetQueryParameters use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDs for single or multiple checkpoints)
+// CheckpointsRequestBuilderGetQueryParameters use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
 type CheckpointsRequestBuilderGetQueryParameters struct {
+	// Only return checkpoints whose checkpoint action ran on this cluster
+	Cluster_id *string "uriparametername:\"cluster_id\""
 	// Comma-separated list of checkpoint UUIDs to filter by
 	Ids *string "uriparametername:\"ids\""
 }
@@ -41,7 +43,7 @@ type CheckpointsRequestBuilderPostRequestConfiguration struct {
 // NewCheckpointsRequestBuilderInternal instantiates a new CheckpointsRequestBuilder and sets the default values.
 func NewCheckpointsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *CheckpointsRequestBuilder {
 	m := &CheckpointsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/checkpoints{?ids*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/checkpoints{?cluster_id*,ids*}", pathParameters),
 	}
 	return m
 }
@@ -59,7 +61,7 @@ func (m *CheckpointsRequestBuilder) Deprecate() *CheckpointsDeprecateRequestBuil
 	return NewCheckpointsDeprecateRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Get use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDs for single or multiple checkpoints)
+// Get use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
 // returns a []Checkpointable when successful
 // returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 500 status code
@@ -116,7 +118,7 @@ func (m *CheckpointsRequestBuilder) Post(ctx context.Context, requestConfigurati
 	return res.(*string), nil
 }
 
-// ToGetRequestInformation use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDs for single or multiple checkpoints)
+// ToGetRequestInformation use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
 // returns a *RequestInformation when successful
 func (m *CheckpointsRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *CheckpointsRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

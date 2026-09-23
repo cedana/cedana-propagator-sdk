@@ -16,7 +16,9 @@ type ActionsRequestBuilder struct {
 
 // ActionsRequestBuilderGetQueryParameters list actions
 type ActionsRequestBuilderGetQueryParameters struct {
-	Type *string "uriparametername:\"type\""
+	// Only return actions that ran on this cluster
+	Cluster_id *string "uriparametername:\"cluster_id\""
+	Type       *string "uriparametername:\"type\""
 }
 
 // ActionsRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
@@ -45,7 +47,7 @@ func (m *ActionsRequestBuilder) ById(id string) *ActionsActionsItemRequestBuilde
 // NewActionsRequestBuilderInternal instantiates a new ActionsRequestBuilder and sets the default values.
 func NewActionsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *ActionsRequestBuilder {
 	m := &ActionsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/actions{?type*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/actions{?cluster_id*,type*}", pathParameters),
 	}
 	return m
 }

@@ -30,7 +30,7 @@ class NodesRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/nodes{?id*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/nodes{?cluster_id*,id*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[NodesRequestBuilderGetQueryParameters]] = None) -> Optional[list[NodeResponse]]:
         """
@@ -88,6 +88,9 @@ class NodesRequestBuilder(BaseRequestBuilder):
         """
         Will only return nodes from clusters with status 'active' if no params are provided. Also, nodeswith last_sync older than 5 minutes are not returned.
         """
+        # Only return nodes belonging to this cluster
+        cluster_id: Optional[UUID] = None
+
         id: Optional[UUID] = None
 
     
