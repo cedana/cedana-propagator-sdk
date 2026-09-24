@@ -14,74 +14,66 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 from warnings import warn
 
 if TYPE_CHECKING:
-    from ....models.http_error import HttpError
-    from .pods.pods_request_builder import PodsRequestBuilder
+    from .....models.http_error import HttpError
+    from .....models.pod_name import PodName
 
-class ClusterItemRequestBuilder(BaseRequestBuilder):
+class PodsRequestBuilder(BaseRequestBuilder):
     """
-    Builds and executes requests for operations under /v1/cluster/{id}
+    Builds and executes requests for operations under /v1/cluster/{id}/pods
     """
     def __init__(self,request_adapter: RequestAdapter, path_parameters: Union[str, dict[str, Any]]) -> None:
         """
-        Instantiates a new ClusterItemRequestBuilder and sets the default values.
+        Instantiates a new PodsRequestBuilder and sets the default values.
         param path_parameters: The raw url or the url-template parameters for the request.
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/cluster/{id}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/cluster/{id}/pods", path_parameters)
     
-    async def delete(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[bytes]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[list[PodName]]:
         """
-        This endpoint deletes a cluster and all its dependent entities in a single transactionwhich is rolled back if any part of the deletion fails
+        Every namespace/name with a pod not marked deleted, read from the pods table so the controller can retire names that no longer exist.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: bytes
+        Returns: Optional[list[PodName]]
         """
-        request_info = self.to_delete_request_information(
+        request_info = self.to_get_request_information(
             request_configuration
         )
-        from ....models.http_error import HttpError
+        from .....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
-            "404": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        return await self.request_adapter.send_primitive_async(request_info, "bytes", error_mapping)
+        from .....models.pod_name import PodName
+
+        return await self.request_adapter.send_collection_async(request_info, PodName, error_mapping)
     
-    def to_delete_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
+    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        This endpoint deletes a cluster and all its dependent entities in a single transactionwhich is rolled back if any part of the deletion fails
+        Every namespace/name with a pod not marked deleted, read from the pods table so the controller can retire names that no longer exist.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
-        request_info = RequestInformation(Method.DELETE, self.url_template, self.path_parameters)
+        request_info = RequestInformation(Method.GET, self.url_template, self.path_parameters)
         request_info.configure(request_configuration)
         request_info.headers.try_add("Accept", "application/json")
         return request_info
     
-    def with_url(self,raw_url: str) -> ClusterItemRequestBuilder:
+    def with_url(self,raw_url: str) -> PodsRequestBuilder:
         """
         Returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
         param raw_url: The raw URL to use for the request builder.
-        Returns: ClusterItemRequestBuilder
+        Returns: PodsRequestBuilder
         """
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
-        return ClusterItemRequestBuilder(self.request_adapter, raw_url)
-    
-    @property
-    def pods(self) -> PodsRequestBuilder:
-        """
-        The pods property
-        """
-        from .pods.pods_request_builder import PodsRequestBuilder
-
-        return PodsRequestBuilder(self.request_adapter, self.path_parameters)
+        return PodsRequestBuilder(self.request_adapter, raw_url)
     
     @dataclass
-    class ClusterItemRequestBuilderDeleteRequestConfiguration(RequestConfiguration[QueryParameters]):
+    class PodsRequestBuilderGetRequestConfiguration(RequestConfiguration[QueryParameters]):
         """
         Configuration for the request such as headers, query parameters, and middleware options.
         """

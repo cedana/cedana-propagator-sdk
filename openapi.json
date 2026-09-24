@@ -3821,6 +3821,7 @@
             "enum": [
               "None",
               "Pod",
+              "PodGone",
               "Node",
               "Job",
               "DynamoGraphDeployment",
@@ -6026,6 +6027,21 @@
             ]
           }
         },
+        "type": "object"
+      },
+      "PodName": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "namespace",
+          "name"
+        ],
         "type": "object"
       },
       "PodResponse": {
@@ -11332,6 +11348,77 @@
           }
         ],
         "summary": "Delete cluster",
+        "tags": [
+          "Clusters"
+        ]
+      }
+    },
+    "/v1/cluster/{id}/pods": {
+      "get": {
+        "description": "Every namespace/name with a pod not marked deleted, read from the pods table so the controller can retire names that no longer exist.",
+        "operationId": "live_pod_names",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PodName"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Live pod names in the cluster"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Failed to fetch from database"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "List live pod names in a cluster",
         "tags": [
           "Clusters"
         ]

@@ -8,6 +8,7 @@ type K8sResource_type int
 const (
 	NONE_K8SRESOURCE_TYPE K8sResource_type = iota
 	POD_K8SRESOURCE_TYPE
+	PODGONE_K8SRESOURCE_TYPE
 	NODE_K8SRESOURCE_TYPE
 	JOB_K8SRESOURCE_TYPE
 	DYNAMOGRAPHDEPLOYMENT_K8SRESOURCE_TYPE
@@ -15,7 +16,7 @@ const (
 )
 
 func (i K8sResource_type) String() string {
-	return []string{"None", "Pod", "Node", "Job", "DynamoGraphDeployment", "DynamoService"}[i]
+	return []string{"None", "Pod", "PodGone", "Node", "Job", "DynamoGraphDeployment", "DynamoService"}[i]
 }
 
 func ParseK8sResource_type(v string) (any, error) {
@@ -25,6 +26,8 @@ func ParseK8sResource_type(v string) (any, error) {
 		result = NONE_K8SRESOURCE_TYPE
 	case "Pod":
 		result = POD_K8SRESOURCE_TYPE
+	case "PodGone":
+		result = PODGONE_K8SRESOURCE_TYPE
 	case "Node":
 		result = NODE_K8SRESOURCE_TYPE
 	case "Job":

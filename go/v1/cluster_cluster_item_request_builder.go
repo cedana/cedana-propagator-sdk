@@ -62,6 +62,12 @@ func (m *ClusterClusterItemRequestBuilder) Delete(ctx context.Context, requestCo
 	return res.([]byte), nil
 }
 
+// Pods the pods property
+// returns a *ClusterItemPodsRequestBuilder when successful
+func (m *ClusterClusterItemRequestBuilder) Pods() *ClusterItemPodsRequestBuilder {
+	return NewClusterItemPodsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // ToDeleteRequestInformation this endpoint deletes a cluster and all its dependent entities in a single transactionwhich is rolled back if any part of the deletion fails
 // returns a *RequestInformation when successful
 func (m *ClusterClusterItemRequestBuilder) ToDeleteRequestInformation(ctx context.Context, requestConfiguration *ClusterClusterItemRequestBuilderDeleteRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
