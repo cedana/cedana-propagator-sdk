@@ -48,6 +48,9 @@
               "null"
             ]
           },
+          "checkpoint_status": {
+            "type": "string"
+          },
           "delta": {
             "description": "Whether the checkpoint is a (GPU delta) increment. Authoritative even\nwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)",
             "type": [
@@ -114,6 +117,7 @@
           "action_id",
           "checkpoint_id",
           "status",
+          "checkpoint_status",
           "type",
           "details",
           "gpu",
