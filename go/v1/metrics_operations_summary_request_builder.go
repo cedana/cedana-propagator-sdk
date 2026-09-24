@@ -6,6 +6,7 @@ package v1
 import (
 	"context"
 	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
+	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
@@ -16,6 +17,8 @@ type MetricsOperationsSummaryRequestBuilder struct {
 
 // MetricsOperationsSummaryRequestBuilderGetQueryParameters windowed operation aggregates for dashboards
 type MetricsOperationsSummaryRequestBuilderGetQueryParameters struct {
+	// Only include operations from this cluster
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
 	// checkpoint | restore
 	Operation *string "uriparametername:\"operation\""
 	// Window in seconds (default 604800, max 90 days)
@@ -37,7 +40,7 @@ type MetricsOperationsSummaryRequestBuilderGetRequestConfiguration struct {
 // NewMetricsOperationsSummaryRequestBuilderInternal instantiates a new MetricsOperationsSummaryRequestBuilder and sets the default values.
 func NewMetricsOperationsSummaryRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *MetricsOperationsSummaryRequestBuilder {
 	m := &MetricsOperationsSummaryRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/metrics/operations/summary{?operation*,time*,workload*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/metrics/operations/summary{?cluster_id*,operation*,time*,workload*}", pathParameters),
 	}
 	return m
 }

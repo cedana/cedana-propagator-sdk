@@ -31,7 +31,7 @@ class ActionsRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/actions{?type*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/actions{?cluster_id*,type*}", path_parameters)
     
     def by_id(self,id: str) -> ActionsItemRequestBuilder:
         """
@@ -113,6 +113,9 @@ class ActionsRequestBuilder(BaseRequestBuilder):
         """
         List actions
         """
+        # Only return actions that ran on this cluster
+        cluster_id: Optional[str] = None
+
         type: Optional[str] = None
 
     

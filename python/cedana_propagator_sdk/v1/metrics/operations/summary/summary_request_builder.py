@@ -11,6 +11,7 @@ from kiota_abstractions.request_information import RequestInformation
 from kiota_abstractions.request_option import RequestOption
 from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
+from uuid import UUID
 from warnings import warn
 
 if TYPE_CHECKING:
@@ -28,7 +29,7 @@ class SummaryRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/metrics/operations/summary{?operation*,time*,workload*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/metrics/operations/summary{?cluster_id*,operation*,time*,workload*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[SummaryRequestBuilderGetQueryParameters]] = None) -> Optional[OperationsSummary]:
         """
@@ -77,6 +78,9 @@ class SummaryRequestBuilder(BaseRequestBuilder):
         """
         Windowed operation aggregates for dashboards
         """
+        # Only include operations from this cluster
+        cluster_id: Optional[UUID] = None
+
         # checkpoint | restore
         operation: Optional[str] = None
 
