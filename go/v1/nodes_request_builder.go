@@ -17,7 +17,9 @@ type NodesRequestBuilder struct {
 
 // NodesRequestBuilderGetQueryParameters will only return nodes from clusters with status 'active' if no params are provided. Also, nodeswith last_sync older than 5 minutes are not returned.
 type NodesRequestBuilderGetQueryParameters struct {
-	Id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"id\""
+	// Only return nodes belonging to this cluster
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
+	Id         *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"id\""
 }
 
 // NodesRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
@@ -33,7 +35,7 @@ type NodesRequestBuilderGetRequestConfiguration struct {
 // NewNodesRequestBuilderInternal instantiates a new NodesRequestBuilder and sets the default values.
 func NewNodesRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *NodesRequestBuilder {
 	m := &NodesRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/nodes{?id*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/nodes{?cluster_id*,id*}", pathParameters),
 	}
 	return m
 }

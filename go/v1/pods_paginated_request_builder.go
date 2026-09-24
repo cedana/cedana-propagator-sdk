@@ -17,11 +17,13 @@ type PodsPaginatedRequestBuilder struct {
 
 // PodsPaginatedRequestBuilderGetQueryParameters list pods (paginated)
 type PodsPaginatedRequestBuilderGetQueryParameters struct {
-	Ascending *bool                                                                   "uriparametername:\"ascending\""
-	Id        *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"id\""
-	Limit     *int64                                                                  "uriparametername:\"limit\""
-	Namespace *string                                                                 "uriparametername:\"namespace\""
-	Offset    *int64                                                                  "uriparametername:\"offset\""
+	Ascending *bool "uriparametername:\"ascending\""
+	// Only return pods belonging to this cluster
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
+	Id         *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"id\""
+	Limit      *int64                                                                  "uriparametername:\"limit\""
+	Namespace  *string                                                                 "uriparametername:\"namespace\""
+	Offset     *int64                                                                  "uriparametername:\"offset\""
 	// pod name to query against (uses postgres ILIKE pattern search)
 	Pod_name *string "uriparametername:\"pod_name\""
 	Sort     *string "uriparametername:\"sort\""
@@ -41,7 +43,7 @@ type PodsPaginatedRequestBuilderGetRequestConfiguration struct {
 // NewPodsPaginatedRequestBuilderInternal instantiates a new PodsPaginatedRequestBuilder and sets the default values.
 func NewPodsPaginatedRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *PodsPaginatedRequestBuilder {
 	m := &PodsPaginatedRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/pods/paginated{?ascending*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/pods/paginated{?ascending*,cluster_id*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", pathParameters),
 	}
 	return m
 }
