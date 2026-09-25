@@ -48,6 +48,9 @@
               "null"
             ]
           },
+          "checkpoint_status": {
+            "type": "string"
+          },
           "delta": {
             "description": "Whether the checkpoint is a (GPU delta) increment. Authoritative even\nwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)",
             "type": [
@@ -114,6 +117,7 @@
           "action_id",
           "checkpoint_id",
           "status",
+          "checkpoint_status",
           "type",
           "details",
           "gpu",
@@ -10265,7 +10269,7 @@
             },
             "description": "Returns the restore path"
           },
-          "400": {
+          "404": {
             "content": {
               "application/json": {
                 "schema": {
@@ -10273,7 +10277,7 @@
                 }
               }
             },
-            "description": "Failed to get action for request"
+            "description": "No ready checkpoint with the given name"
           },
           "4XX": {
             "content": {
@@ -22788,16 +22792,6 @@
               }
             },
             "description": "Invalid restore UUID or profile JSON"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Restore not found"
           },
           "4XX": {
             "content": {
