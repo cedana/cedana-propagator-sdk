@@ -10639,7 +10639,7 @@
     },
     "/v1/checkpoints/deprecate/{id}": {
       "patch": {
-        "description": "Marks checkpoint as deprecated, so that they can be removed on next internal state cleanup",
+        "description": "Routes a deletion request to at least one queue before marking the checkpoint deprecated.\nCheckpoints without a restore path are deprecated without publishing a deletion request.\nLocks the checkpoint in a transaction to serialize concurrent deprecation requests.",
         "operationId": "deprecate",
         "parameters": [
           {
@@ -10673,6 +10673,16 @@
             },
             "description": "Invalid UUID provided"
           },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Checkpoint not found or already deprecated"
+          },
           "4XX": {
             "content": {
               "application/json": {
@@ -10691,7 +10701,7 @@
                 }
               }
             },
-            "description": "Failed to execute request against database"
+            "description": "Database operation or deletion request routing failed"
           },
           "5XX": {
             "content": {
