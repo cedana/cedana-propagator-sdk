@@ -83,7 +83,7 @@ class EventsRequestBuilder(BaseRequestBuilder):
         # Time window in hours; takes precedence over `time`
         hrs: Optional[int] = None
 
-        # Filter by operation: checkpoint, restore or storage (CSX tier movements)
+        # Filter by operation: checkpoint, restore, storage (CSX tier movements) or all.Without one, storage rows are left out so they cannot crowd checkpoint and restore results.
         operation: Optional[str] = None
 
         # Time window in seconds (default: 3600)

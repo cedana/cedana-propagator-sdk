@@ -20,7 +20,7 @@ type EventsRequestBuilderGetQueryParameters struct {
 	Cluster_id *string "uriparametername:\"cluster_id\""
 	// Time window in hours; takes precedence over `time`
 	Hrs *int32 "uriparametername:\"hrs\""
-	// Filter by operation: checkpoint, restore or storage (CSX tier movements)
+	// Filter by operation: checkpoint, restore, storage (CSX tier movements) or all.Without one, storage rows are left out so they cannot crowd checkpoint and restore results.
 	Operation *string "uriparametername:\"operation\""
 	// Time window in seconds (default: 3600)
 	Time *int32 "uriparametername:\"time\""

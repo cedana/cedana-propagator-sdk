@@ -21,6 +21,8 @@ class ClusterResidency(AdditionalDataHolder, Parsable):
     nfs_checkpoints: Optional[int] = None
     # The nodes property
     nodes: Optional[list[CsxNode]] = None
+    # Only the newest storage rows were folded; older checkpoints may be missing.
+    truncated: Optional[bool] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> ClusterResidency:
@@ -49,6 +51,7 @@ class ClusterResidency(AdditionalDataHolder, Parsable):
             "nfs_bytes": lambda n : setattr(self, 'nfs_bytes', n.get_int_value()),
             "nfs_checkpoints": lambda n : setattr(self, 'nfs_checkpoints', n.get_int_value()),
             "nodes": lambda n : setattr(self, 'nodes', n.get_collection_of_object_values(CsxNode)),
+            "truncated": lambda n : setattr(self, 'truncated', n.get_bool_value()),
         }
         return fields
     
@@ -64,6 +67,7 @@ class ClusterResidency(AdditionalDataHolder, Parsable):
         writer.write_int_value("nfs_bytes", self.nfs_bytes)
         writer.write_int_value("nfs_checkpoints", self.nfs_checkpoints)
         writer.write_collection_of_object_values("nodes", self.nodes)
+        writer.write_bool_value("truncated", self.truncated)
         writer.write_additional_data_value(self.additional_data)
     
 

@@ -1133,12 +1133,17 @@
               "$ref": "#/components/schemas/Residency"
             },
             "type": "array"
+          },
+          "truncated": {
+            "description": "More events exist than were returned; only the newest are included.",
+            "type": "boolean"
           }
         },
         "required": [
           "checkpoint_id",
           "residency",
-          "events"
+          "events",
+          "truncated"
         ],
         "type": "object"
       },
@@ -1209,13 +1214,18 @@
               "$ref": "#/components/schemas/CsxNode"
             },
             "type": "array"
+          },
+          "truncated": {
+            "description": "Only the newest storage rows were folded; older checkpoints may be missing.",
+            "type": "boolean"
           }
         },
         "required": [
           "nodes",
           "nfs_bytes",
           "nfs_checkpoints",
-          "checkpoints"
+          "checkpoints",
+          "truncated"
         ],
         "type": "object"
       },
@@ -13069,7 +13079,7 @@
             }
           },
           {
-            "description": "Filter by operation: checkpoint, restore or storage (CSX tier movements)",
+            "description": "Filter by operation: checkpoint, restore, storage (CSX tier movements) or all.\nWithout one, storage rows are left out so they cannot crowd checkpoint and restore results.",
             "in": "query",
             "name": "operation",
             "required": false,

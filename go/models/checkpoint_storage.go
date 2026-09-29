@@ -16,6 +16,8 @@ type CheckpointStorage struct {
 	events []NotificationEventable
 	// Where the checkpoint lives now, per node and tier.
 	residency []Residencyable
+	// More events exist than were returned; only the newest are included.
+	truncated *bool
 }
 
 // NewCheckpointStorage instantiates a new CheckpointStorage and sets the default values.
@@ -95,6 +97,16 @@ func (m *CheckpointStorage) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		return nil
 	}
+	res["truncated"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetBoolValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetTruncated(val)
+		}
+		return nil
+	}
 	return res
 }
 
@@ -102,6 +114,12 @@ func (m *CheckpointStorage) GetFieldDeserializers() map[string]func(i878a80d2330
 // returns a []Residencyable when successful
 func (m *CheckpointStorage) GetResidency() []Residencyable {
 	return m.residency
+}
+
+// GetTruncated gets the truncated property value. More events exist than were returned; only the newest are included.
+// returns a *bool when successful
+func (m *CheckpointStorage) GetTruncated() *bool {
+	return m.truncated
 }
 
 // Serialize serializes information the current object
@@ -137,6 +155,12 @@ func (m *CheckpointStorage) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 		}
 	}
 	{
+		err := writer.WriteBoolValue("truncated", m.GetTruncated())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteAdditionalData(m.GetAdditionalData())
 		if err != nil {
 			return err
@@ -165,13 +189,20 @@ func (m *CheckpointStorage) SetResidency(value []Residencyable) {
 	m.residency = value
 }
 
+// SetTruncated sets the truncated property value. More events exist than were returned; only the newest are included.
+func (m *CheckpointStorage) SetTruncated(value *bool) {
+	m.truncated = value
+}
+
 type CheckpointStorageable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetCheckpointId() *string
 	GetEvents() []NotificationEventable
 	GetResidency() []Residencyable
+	GetTruncated() *bool
 	SetCheckpointId(value *string)
 	SetEvents(value []NotificationEventable)
 	SetResidency(value []Residencyable)
+	SetTruncated(value *bool)
 }

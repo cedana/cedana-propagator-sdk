@@ -19,6 +19,8 @@ class CheckpointStorage(AdditionalDataHolder, Parsable):
     events: Optional[list[NotificationEvent]] = None
     # Where the checkpoint lives now, per node and tier.
     residency: Optional[list[Residency]] = None
+    # More events exist than were returned; only the newest are included.
+    truncated: Optional[bool] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> CheckpointStorage:
@@ -46,6 +48,7 @@ class CheckpointStorage(AdditionalDataHolder, Parsable):
             "checkpoint_id": lambda n : setattr(self, 'checkpoint_id', n.get_str_value()),
             "events": lambda n : setattr(self, 'events', n.get_collection_of_object_values(NotificationEvent)),
             "residency": lambda n : setattr(self, 'residency', n.get_collection_of_object_values(Residency)),
+            "truncated": lambda n : setattr(self, 'truncated', n.get_bool_value()),
         }
         return fields
     
@@ -60,6 +63,7 @@ class CheckpointStorage(AdditionalDataHolder, Parsable):
         writer.write_str_value("checkpoint_id", self.checkpoint_id)
         writer.write_collection_of_object_values("events", self.events)
         writer.write_collection_of_object_values("residency", self.residency)
+        writer.write_bool_value("truncated", self.truncated)
         writer.write_additional_data_value(self.additional_data)
     
 
