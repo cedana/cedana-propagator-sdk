@@ -10,7 +10,7 @@ import (
 type CheckpointSuccessInfo struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
-	// `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps any checksum already recorded
+	// `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,unless the restore path changes
 	checksum *string
 	// The restore_path property
 	restore_path *string
@@ -35,7 +35,7 @@ func (m *CheckpointSuccessInfo) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
-// GetChecksum gets the checksum property value. `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps any checksum already recorded
+// GetChecksum gets the checksum property value. `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,unless the restore path changes
 // returns a *string when successful
 func (m *CheckpointSuccessInfo) GetChecksum() *string {
 	return m.checksum
@@ -102,7 +102,7 @@ func (m *CheckpointSuccessInfo) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
-// SetChecksum sets the checksum property value. `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps any checksum already recorded
+// SetChecksum sets the checksum property value. `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,unless the restore path changes
 func (m *CheckpointSuccessInfo) SetChecksum(value *string) {
 	m.checksum = value
 }

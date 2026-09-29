@@ -9,7 +9,7 @@ class CheckpointSuccessInfo(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps any checksum already recorded
+    # `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,unless the restore path changes
     checksum: Optional[str] = None
     # The restore_path property
     restore_path: Optional[str] = None
