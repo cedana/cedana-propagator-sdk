@@ -14,32 +14,32 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 from warnings import warn
 
 if TYPE_CHECKING:
-    from ...models.events_response import EventsResponse
-    from ...models.http_error import HttpError
+    from ....models.cluster_residency import ClusterResidency
+    from ....models.http_error import HttpError
 
-class EventsRequestBuilder(BaseRequestBuilder):
+class ResidencyRequestBuilder(BaseRequestBuilder):
     """
-    Builds and executes requests for operations under /v1/events
+    Builds and executes requests for operations under /v1/csx/residency
     """
     def __init__(self,request_adapter: RequestAdapter, path_parameters: Union[str, dict[str, Any]]) -> None:
         """
-        Instantiates a new EventsRequestBuilder and sets the default values.
+        Instantiates a new ResidencyRequestBuilder and sets the default values.
         param path_parameters: The raw url or the url-template parameters for the request.
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/events{?cluster_id*,hrs*,operation*,time*,workload*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/csx/residency?cluster_id={cluster_id}", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[EventsRequestBuilderGetQueryParameters]] = None) -> Optional[EventsResponse]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[ResidencyRequestBuilderGetQueryParameters]] = None) -> Optional[ClusterResidency]:
         """
-        Recent checkpoint and restore results, newest first (the UI notification feed)
+        Where every CSX checkpoint of a cluster lives, with per-node cache usage
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[EventsResponse]
+        Returns: Optional[ClusterResidency]
         """
         request_info = self.to_get_request_information(
             request_configuration
         )
-        from ...models.http_error import HttpError
+        from ....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
             "503": HttpError,
@@ -47,13 +47,13 @@ class EventsRequestBuilder(BaseRequestBuilder):
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ...models.events_response import EventsResponse
+        from ....models.cluster_residency import ClusterResidency
 
-        return await self.request_adapter.send_async(request_info, EventsResponse, error_mapping)
+        return await self.request_adapter.send_async(request_info, ClusterResidency, error_mapping)
     
-    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[EventsRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
+    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[ResidencyRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Recent checkpoint and restore results, newest first (the UI notification feed)
+        Where every CSX checkpoint of a cluster lives, with per-node cache usage
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -62,39 +62,27 @@ class EventsRequestBuilder(BaseRequestBuilder):
         request_info.headers.try_add("Accept", "application/json")
         return request_info
     
-    def with_url(self,raw_url: str) -> EventsRequestBuilder:
+    def with_url(self,raw_url: str) -> ResidencyRequestBuilder:
         """
         Returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
         param raw_url: The raw URL to use for the request builder.
-        Returns: EventsRequestBuilder
+        Returns: ResidencyRequestBuilder
         """
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
-        return EventsRequestBuilder(self.request_adapter, raw_url)
+        return ResidencyRequestBuilder(self.request_adapter, raw_url)
     
     @dataclass
-    class EventsRequestBuilderGetQueryParameters():
+    class ResidencyRequestBuilderGetQueryParameters():
         """
-        Recent checkpoint and restore results, newest first (the UI notification feed)
+        Where every CSX checkpoint of a cluster lives, with per-node cache usage
         """
-        # Filter by cluster
+        # Cluster to summarize
         cluster_id: Optional[str] = None
 
-        # Time window in hours; takes precedence over `time`
-        hrs: Optional[int] = None
-
-        # Filter by operation: checkpoint, restore, storage (CSX tier movements) or all.Without one, storage rows are left out so they cannot crowd checkpoint and restore results.
-        operation: Optional[str] = None
-
-        # Time window in seconds (default: 3600)
-        time: Optional[int] = None
-
-        # Filter by workload: kubernetes or slurm
-        workload: Optional[str] = None
-
     
     @dataclass
-    class EventsRequestBuilderGetRequestConfiguration(RequestConfiguration[EventsRequestBuilderGetQueryParameters]):
+    class ResidencyRequestBuilderGetRequestConfiguration(RequestConfiguration[ResidencyRequestBuilderGetQueryParameters]):
         """
         Configuration for the request such as headers, query parameters, and middleware options.
         """

@@ -1116,6 +1116,49 @@
         ],
         "type": "object"
       },
+      "CheckpointStorage": {
+        "properties": {
+          "checkpoint_id": {
+            "type": "string"
+          },
+          "events": {
+            "description": "Checkpoint, restore and CSX storage events for this checkpoint, oldest first.",
+            "items": {
+              "$ref": "#/components/schemas/NotificationEvent"
+            },
+            "type": "array"
+          },
+          "residency": {
+            "description": "Where the checkpoint lives now, per node and tier.",
+            "items": {
+              "$ref": "#/components/schemas/Residency"
+            },
+            "type": "array"
+          },
+          "truncated": {
+            "description": "More events exist than were returned; only the newest are included.",
+            "type": "boolean"
+          },
+          "write": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CsxWrite",
+                "description": "Set while the checkpoint is still being written."
+              }
+            ]
+          }
+        },
+        "required": [
+          "checkpoint_id",
+          "residency",
+          "events",
+          "truncated"
+        ],
+        "type": "object"
+      },
       "CheckpointSuccessInfo": {
         "properties": {
           "restore_path": {
@@ -1156,6 +1199,40 @@
           "name",
           "status",
           "kind"
+        ],
+        "type": "object"
+      },
+      "ClusterResidency": {
+        "properties": {
+          "checkpoints": {
+            "description": "Checkpoints that still live somewhere, newest first.",
+            "items": {
+              "$ref": "#/components/schemas/CsxCheckpoint"
+            },
+            "type": "array"
+          },
+          "nfs_bytes": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "nfs_checkpoints": {
+            "format": "int32",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/CsxNode"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "nodes",
+          "nfs_bytes",
+          "nfs_checkpoints",
+          "checkpoints"
         ],
         "type": "object"
       },
@@ -2065,6 +2142,208 @@
             "type": "object"
           }
         ]
+      },
+      "CsxCheckpoint": {
+        "properties": {
+          "bytes": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "checkpoint_id": {
+            "type": "string"
+          },
+          "first_seen_ms": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "last_event_ms": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "last_read": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CsxRead"
+              }
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "reads": {
+            "format": "int32",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "residency": {
+            "items": {
+              "$ref": "#/components/schemas/Residency"
+            },
+            "type": "array"
+          },
+          "write": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CsxWrite",
+                "description": "Set while the checkpoint is still being written."
+              }
+            ]
+          }
+        },
+        "required": [
+          "checkpoint_id",
+          "name",
+          "namespace",
+          "bytes",
+          "first_seen_ms",
+          "last_event_ms",
+          "residency",
+          "reads"
+        ],
+        "type": "object"
+      },
+      "CsxNode": {
+        "properties": {
+          "disk_checkpoints": {
+            "format": "int32",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "disk_limit_bytes": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "disk_used_bytes": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "memory_checkpoints": {
+            "format": "int32",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "memory_limit_bytes": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "memory_used_bytes": {
+            "description": "Includes copies in flight, which CSX reserves up front.",
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "node_name": {
+            "type": "string"
+          },
+          "started_ms": {
+            "description": "Last CSX start; the node's caches were empty then.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "version": {
+            "type": "string"
+          },
+          "write_buffer_bytes": {
+            "description": "Bytes of finished writes still in the tmpfs buffer, waiting to be persisted to NFS.",
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "writes_in_flight": {
+            "format": "int32",
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "node_name",
+          "version",
+          "memory_limit_bytes",
+          "disk_limit_bytes",
+          "memory_used_bytes",
+          "disk_used_bytes",
+          "write_buffer_bytes",
+          "writes_in_flight",
+          "memory_checkpoints",
+          "disk_checkpoints"
+        ],
+        "type": "object"
+      },
+      "CsxRead": {
+        "properties": {
+          "at_ms": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "duration_ns": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "node_name": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "node_name",
+          "tier",
+          "at_ms",
+          "duration_ns"
+        ],
+        "type": "object"
+      },
+      "CsxWrite": {
+        "description": "A checkpoint still being written on a node; it lives on no tier until it reaches NFS.",
+        "properties": {
+          "bytes": {
+            "description": "0 while the write is still open.",
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "node_name": {
+            "type": "string"
+          },
+          "since_ms": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "state": {
+            "description": "writing | persisting",
+            "type": "string"
+          },
+          "target": {
+            "description": "tmpfs (the write buffer) or nfs (written straight to NFS)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "node_name",
+          "target",
+          "state",
+          "since_ms",
+          "bytes"
+        ],
+        "type": "object"
       },
       "DeploymentProfile": {
         "properties": {
@@ -4452,6 +4731,10 @@
       },
       "NotificationEvent": {
         "properties": {
+          "action": {
+            "description": "Storage rows: the CSX action (cached, evicted, persisted, read_closed, write_closed, ...); empty otherwise.",
+            "type": "string"
+          },
           "action_id": {
             "type": "string"
           },
@@ -4542,6 +4825,10 @@
           },
           "workload_type": {
             "type": "string"
+          },
+          "write_target": {
+            "description": "Write rows: where the write landed, tmpfs (the buffer) or nfs; empty otherwise.",
+            "type": "string"
           }
         },
         "required": [
@@ -4567,7 +4854,9 @@
           "failure_reason",
           "duration_ns",
           "physical_bytes",
-          "pause_ns"
+          "pause_ns",
+          "action",
+          "write_target"
         ],
         "type": "object"
       },
@@ -6833,6 +7122,38 @@
             "type": "boolean"
           }
         },
+        "type": "object"
+      },
+      "Residency": {
+        "description": "Where a checkpoint currently lives. `node_name` is empty for NFS, which every node shares.",
+        "properties": {
+          "bytes": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "node_name": {
+            "type": "string"
+          },
+          "since_ms": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "state": {
+            "description": "writing | persisting | copying | present",
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "node_name",
+          "tier",
+          "state",
+          "bytes",
+          "since_ms"
+        ],
         "type": "object"
       },
       "ResolveRequest": {
@@ -11054,6 +11375,83 @@
         ]
       }
     },
+    "/v1/checkpoints/{id}/storage": {
+      "get": {
+        "operationId": "get_checkpoint_storage",
+        "parameters": [
+          {
+            "description": "Checkpoint ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckpointStorage"
+                }
+              }
+            },
+            "description": "Storage timeline and residency"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Invalid checkpoint ID"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "ClickHouse unavailable"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Storage timeline and current residency of a CSX checkpoint",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
     "/v1/cluster": {
       "get": {
         "description": "Returns all clusters. Optional `?kind=kubernetes|slurm` filter.",
@@ -11510,6 +11908,73 @@
         "summary": "Delete cluster",
         "tags": [
           "Clusters"
+        ]
+      }
+    },
+    "/v1/csx/residency": {
+      "get": {
+        "operationId": "get_csx_residency",
+        "parameters": [
+          {
+            "description": "Cluster to summarize",
+            "in": "query",
+            "name": "cluster_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClusterResidency"
+                }
+              }
+            },
+            "description": "Cluster CSX residency"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "ClickHouse unavailable"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Where every CSX checkpoint of a cluster lives, with per-node cache usage",
+        "tags": [
+          "Events"
         ]
       }
     },
@@ -12839,9 +13304,21 @@
             }
           },
           {
-            "description": "Filter by operation: checkpoint or restore",
+            "description": "Filter by operation: checkpoint, restore, storage (CSX tier movements) or all.\nWithout one, storage rows are left out so they cannot crowd checkpoint and restore results.",
             "in": "query",
             "name": "operation",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Filter by cluster",
+            "in": "query",
+            "name": "cluster_id",
             "required": false,
             "schema": {
               "type": [
