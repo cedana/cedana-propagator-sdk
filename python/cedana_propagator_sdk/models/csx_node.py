@@ -25,10 +25,12 @@ class CsxNode(AdditionalDataHolder, Parsable):
     node_name: Optional[str] = None
     # Last CSX start; the node's caches were empty then.
     started_ms: Optional[int] = None
-    # The tmpfs_used_bytes property
-    tmpfs_used_bytes: Optional[int] = None
     # The version property
     version: Optional[str] = None
+    # Bytes of finished writes still in the tmpfs buffer, waiting to be persisted to NFS.
+    write_buffer_bytes: Optional[int] = None
+    # The writes_in_flight property
+    writes_in_flight: Optional[int] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> CsxNode:
@@ -55,8 +57,9 @@ class CsxNode(AdditionalDataHolder, Parsable):
             "memory_used_bytes": lambda n : setattr(self, 'memory_used_bytes', n.get_int_value()),
             "node_name": lambda n : setattr(self, 'node_name', n.get_str_value()),
             "started_ms": lambda n : setattr(self, 'started_ms', n.get_int_value()),
-            "tmpfs_used_bytes": lambda n : setattr(self, 'tmpfs_used_bytes', n.get_int_value()),
             "version": lambda n : setattr(self, 'version', n.get_str_value()),
+            "write_buffer_bytes": lambda n : setattr(self, 'write_buffer_bytes', n.get_int_value()),
+            "writes_in_flight": lambda n : setattr(self, 'writes_in_flight', n.get_int_value()),
         }
         return fields
     
@@ -76,8 +79,9 @@ class CsxNode(AdditionalDataHolder, Parsable):
         writer.write_int_value("memory_used_bytes", self.memory_used_bytes)
         writer.write_str_value("node_name", self.node_name)
         writer.write_int_value("started_ms", self.started_ms)
-        writer.write_int_value("tmpfs_used_bytes", self.tmpfs_used_bytes)
         writer.write_str_value("version", self.version)
+        writer.write_int_value("write_buffer_bytes", self.write_buffer_bytes)
+        writer.write_int_value("writes_in_flight", self.writes_in_flight)
         writer.write_additional_data_value(self.additional_data)
     
 

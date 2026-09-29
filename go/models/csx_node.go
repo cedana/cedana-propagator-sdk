@@ -26,10 +26,12 @@ type CsxNode struct {
 	node_name *string
 	// Last CSX start; the node's caches were empty then.
 	started_ms *int64
-	// The tmpfs_used_bytes property
-	tmpfs_used_bytes *int64
 	// The version property
 	version *string
+	// Bytes of finished writes still in the tmpfs buffer, waiting to be persisted to NFS.
+	write_buffer_bytes *int64
+	// The writes_in_flight property
+	writes_in_flight *int32
 }
 
 // NewCsxNode instantiates a new CsxNode and sets the default values.
@@ -153,16 +155,6 @@ func (m *CsxNode) GetFieldDeserializers() map[string]func(i878a80d2330e89d268963
 		}
 		return nil
 	}
-	res["tmpfs_used_bytes"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetInt64Value()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetTmpfsUsedBytes(val)
-		}
-		return nil
-	}
 	res["version"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -170,6 +162,26 @@ func (m *CsxNode) GetFieldDeserializers() map[string]func(i878a80d2330e89d268963
 		}
 		if val != nil {
 			m.SetVersion(val)
+		}
+		return nil
+	}
+	res["write_buffer_bytes"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWriteBufferBytes(val)
+		}
+		return nil
+	}
+	res["writes_in_flight"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt32Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWritesInFlight(val)
 		}
 		return nil
 	}
@@ -206,16 +218,22 @@ func (m *CsxNode) GetStartedMs() *int64 {
 	return m.started_ms
 }
 
-// GetTmpfsUsedBytes gets the tmpfs_used_bytes property value. The tmpfs_used_bytes property
-// returns a *int64 when successful
-func (m *CsxNode) GetTmpfsUsedBytes() *int64 {
-	return m.tmpfs_used_bytes
-}
-
 // GetVersion gets the version property value. The version property
 // returns a *string when successful
 func (m *CsxNode) GetVersion() *string {
 	return m.version
+}
+
+// GetWriteBufferBytes gets the write_buffer_bytes property value. Bytes of finished writes still in the tmpfs buffer, waiting to be persisted to NFS.
+// returns a *int64 when successful
+func (m *CsxNode) GetWriteBufferBytes() *int64 {
+	return m.write_buffer_bytes
+}
+
+// GetWritesInFlight gets the writes_in_flight property value. The writes_in_flight property
+// returns a *int32 when successful
+func (m *CsxNode) GetWritesInFlight() *int32 {
+	return m.writes_in_flight
 }
 
 // Serialize serializes information the current object
@@ -269,13 +287,19 @@ func (m *CsxNode) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010
 		}
 	}
 	{
-		err := writer.WriteInt64Value("tmpfs_used_bytes", m.GetTmpfsUsedBytes())
+		err := writer.WriteStringValue("version", m.GetVersion())
 		if err != nil {
 			return err
 		}
 	}
 	{
-		err := writer.WriteStringValue("version", m.GetVersion())
+		err := writer.WriteInt32Value("writes_in_flight", m.GetWritesInFlight())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt64Value("write_buffer_bytes", m.GetWriteBufferBytes())
 		if err != nil {
 			return err
 		}
@@ -334,14 +358,19 @@ func (m *CsxNode) SetStartedMs(value *int64) {
 	m.started_ms = value
 }
 
-// SetTmpfsUsedBytes sets the tmpfs_used_bytes property value. The tmpfs_used_bytes property
-func (m *CsxNode) SetTmpfsUsedBytes(value *int64) {
-	m.tmpfs_used_bytes = value
-}
-
 // SetVersion sets the version property value. The version property
 func (m *CsxNode) SetVersion(value *string) {
 	m.version = value
+}
+
+// SetWriteBufferBytes sets the write_buffer_bytes property value. Bytes of finished writes still in the tmpfs buffer, waiting to be persisted to NFS.
+func (m *CsxNode) SetWriteBufferBytes(value *int64) {
+	m.write_buffer_bytes = value
+}
+
+// SetWritesInFlight sets the writes_in_flight property value. The writes_in_flight property
+func (m *CsxNode) SetWritesInFlight(value *int32) {
+	m.writes_in_flight = value
 }
 
 type CsxNodeable interface {
@@ -355,8 +384,9 @@ type CsxNodeable interface {
 	GetMemoryUsedBytes() *int64
 	GetNodeName() *string
 	GetStartedMs() *int64
-	GetTmpfsUsedBytes() *int64
 	GetVersion() *string
+	GetWriteBufferBytes() *int64
+	GetWritesInFlight() *int32
 	SetDiskCheckpoints(value *int32)
 	SetDiskLimitBytes(value *int64)
 	SetDiskUsedBytes(value *int64)
@@ -365,6 +395,7 @@ type CsxNodeable interface {
 	SetMemoryUsedBytes(value *int64)
 	SetNodeName(value *string)
 	SetStartedMs(value *int64)
-	SetTmpfsUsedBytes(value *int64)
 	SetVersion(value *string)
+	SetWriteBufferBytes(value *int64)
+	SetWritesInFlight(value *int32)
 }

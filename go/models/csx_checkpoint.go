@@ -28,6 +28,8 @@ type CsxCheckpoint struct {
 	reads *int32
 	// The residency property
 	residency []Residencyable
+	// The write property
+	write CsxWriteable
 }
 
 // NewCsxCheckpoint instantiates a new CsxCheckpoint and sets the default values.
@@ -161,6 +163,16 @@ func (m *CsxCheckpoint) GetFieldDeserializers() map[string]func(i878a80d2330e89d
 		}
 		return nil
 	}
+	res["write"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateCsxWriteFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWrite(val.(CsxWriteable))
+		}
+		return nil
+	}
 	return res
 }
 
@@ -204,6 +216,12 @@ func (m *CsxCheckpoint) GetReads() *int32 {
 // returns a []Residencyable when successful
 func (m *CsxCheckpoint) GetResidency() []Residencyable {
 	return m.residency
+}
+
+// GetWrite gets the write property value. The write property
+// returns a CsxWriteable when successful
+func (m *CsxCheckpoint) GetWrite() CsxWriteable {
+	return m.write
 }
 
 // Serialize serializes information the current object
@@ -269,6 +287,12 @@ func (m *CsxCheckpoint) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0
 		}
 	}
 	{
+		err := writer.WriteObjectValue("write", m.GetWrite())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteAdditionalData(m.GetAdditionalData())
 		if err != nil {
 			return err
@@ -327,6 +351,11 @@ func (m *CsxCheckpoint) SetResidency(value []Residencyable) {
 	m.residency = value
 }
 
+// SetWrite sets the write property value. The write property
+func (m *CsxCheckpoint) SetWrite(value CsxWriteable) {
+	m.write = value
+}
+
 type CsxCheckpointable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
@@ -339,6 +368,7 @@ type CsxCheckpointable interface {
 	GetNamespace() *string
 	GetReads() *int32
 	GetResidency() []Residencyable
+	GetWrite() CsxWriteable
 	SetBytes(value *int64)
 	SetCheckpointId(value *string)
 	SetFirstSeenMs(value *int64)
@@ -348,4 +378,5 @@ type CsxCheckpointable interface {
 	SetNamespace(value *string)
 	SetReads(value *int32)
 	SetResidency(value []Residencyable)
+	SetWrite(value CsxWriteable)
 }

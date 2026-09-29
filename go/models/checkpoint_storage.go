@@ -18,6 +18,8 @@ type CheckpointStorage struct {
 	residency []Residencyable
 	// More events exist than were returned; only the newest are included.
 	truncated *bool
+	// The write property
+	write CsxWriteable
 }
 
 // NewCheckpointStorage instantiates a new CheckpointStorage and sets the default values.
@@ -107,6 +109,16 @@ func (m *CheckpointStorage) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		return nil
 	}
+	res["write"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateCsxWriteFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWrite(val.(CsxWriteable))
+		}
+		return nil
+	}
 	return res
 }
 
@@ -120,6 +132,12 @@ func (m *CheckpointStorage) GetResidency() []Residencyable {
 // returns a *bool when successful
 func (m *CheckpointStorage) GetTruncated() *bool {
 	return m.truncated
+}
+
+// GetWrite gets the write property value. The write property
+// returns a CsxWriteable when successful
+func (m *CheckpointStorage) GetWrite() CsxWriteable {
+	return m.write
 }
 
 // Serialize serializes information the current object
@@ -161,6 +179,12 @@ func (m *CheckpointStorage) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 		}
 	}
 	{
+		err := writer.WriteObjectValue("write", m.GetWrite())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteAdditionalData(m.GetAdditionalData())
 		if err != nil {
 			return err
@@ -194,6 +218,11 @@ func (m *CheckpointStorage) SetTruncated(value *bool) {
 	m.truncated = value
 }
 
+// SetWrite sets the write property value. The write property
+func (m *CheckpointStorage) SetWrite(value CsxWriteable) {
+	m.write = value
+}
+
 type CheckpointStorageable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
@@ -201,8 +230,10 @@ type CheckpointStorageable interface {
 	GetEvents() []NotificationEventable
 	GetResidency() []Residencyable
 	GetTruncated() *bool
+	GetWrite() CsxWriteable
 	SetCheckpointId(value *string)
 	SetEvents(value []NotificationEventable)
 	SetResidency(value []Residencyable)
 	SetTruncated(value *bool)
+	SetWrite(value CsxWriteable)
 }

@@ -9,7 +9,7 @@ class NotificationEvent(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.
+    # Storage rows: the CSX action (cached, evicted, persisted, read_closed, write_closed, ...); empty otherwise.
     action: Optional[str] = None
     # The action_id property
     action_id: Optional[str] = None
@@ -61,6 +61,8 @@ class NotificationEvent(AdditionalDataHolder, Parsable):
     type: Optional[str] = None
     # The workload_type property
     workload_type: Optional[str] = None
+    # Write rows: where the write landed, tmpfs (the buffer) or nfs; empty otherwise.
+    write_target: Optional[str] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> NotificationEvent:
@@ -105,6 +107,7 @@ class NotificationEvent(AdditionalDataHolder, Parsable):
             "timestamp": lambda n : setattr(self, 'timestamp', n.get_str_value()),
             "type": lambda n : setattr(self, 'type', n.get_str_value()),
             "workload_type": lambda n : setattr(self, 'workload_type', n.get_str_value()),
+            "write_target": lambda n : setattr(self, 'write_target', n.get_str_value()),
         }
         return fields
     
@@ -142,6 +145,7 @@ class NotificationEvent(AdditionalDataHolder, Parsable):
         writer.write_str_value("timestamp", self.timestamp)
         writer.write_str_value("type", self.type)
         writer.write_str_value("workload_type", self.workload_type)
+        writer.write_str_value("write_target", self.write_target)
         writer.write_additional_data_value(self.additional_data)
     
 

@@ -5,6 +5,7 @@ from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, Par
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
+    from .csx_write import CsxWrite
     from .notification_event import NotificationEvent
     from .residency import Residency
 
@@ -21,6 +22,8 @@ class CheckpointStorage(AdditionalDataHolder, Parsable):
     residency: Optional[list[Residency]] = None
     # More events exist than were returned; only the newest are included.
     truncated: Optional[bool] = None
+    # The write property
+    write: Optional[CsxWrite] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> CheckpointStorage:
@@ -38,9 +41,11 @@ class CheckpointStorage(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
+        from .csx_write import CsxWrite
         from .notification_event import NotificationEvent
         from .residency import Residency
 
+        from .csx_write import CsxWrite
         from .notification_event import NotificationEvent
         from .residency import Residency
 
@@ -49,6 +54,7 @@ class CheckpointStorage(AdditionalDataHolder, Parsable):
             "events": lambda n : setattr(self, 'events', n.get_collection_of_object_values(NotificationEvent)),
             "residency": lambda n : setattr(self, 'residency', n.get_collection_of_object_values(Residency)),
             "truncated": lambda n : setattr(self, 'truncated', n.get_bool_value()),
+            "write": lambda n : setattr(self, 'write', n.get_object_value(CsxWrite)),
         }
         return fields
     
@@ -64,6 +70,7 @@ class CheckpointStorage(AdditionalDataHolder, Parsable):
         writer.write_collection_of_object_values("events", self.events)
         writer.write_collection_of_object_values("residency", self.residency)
         writer.write_bool_value("truncated", self.truncated)
+        writer.write_object_value("write", self.write)
         writer.write_additional_data_value(self.additional_data)
     
 

@@ -6,6 +6,7 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from .csx_read import CsxRead
+    from .csx_write import CsxWrite
     from .residency import Residency
 
 @dataclass
@@ -31,6 +32,8 @@ class CsxCheckpoint(AdditionalDataHolder, Parsable):
     reads: Optional[int] = None
     # The residency property
     residency: Optional[list[Residency]] = None
+    # The write property
+    write: Optional[CsxWrite] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> CsxCheckpoint:
@@ -49,9 +52,11 @@ class CsxCheckpoint(AdditionalDataHolder, Parsable):
         Returns: dict[str, Callable[[ParseNode], None]]
         """
         from .csx_read import CsxRead
+        from .csx_write import CsxWrite
         from .residency import Residency
 
         from .csx_read import CsxRead
+        from .csx_write import CsxWrite
         from .residency import Residency
 
         fields: dict[str, Callable[[Any], None]] = {
@@ -64,6 +69,7 @@ class CsxCheckpoint(AdditionalDataHolder, Parsable):
             "namespace": lambda n : setattr(self, 'namespace', n.get_str_value()),
             "reads": lambda n : setattr(self, 'reads', n.get_int_value()),
             "residency": lambda n : setattr(self, 'residency', n.get_collection_of_object_values(Residency)),
+            "write": lambda n : setattr(self, 'write', n.get_object_value(CsxWrite)),
         }
         return fields
     
@@ -84,6 +90,7 @@ class CsxCheckpoint(AdditionalDataHolder, Parsable):
         writer.write_str_value("namespace", self.namespace)
         writer.write_int_value("reads", self.reads)
         writer.write_collection_of_object_values("residency", self.residency)
+        writer.write_object_value("write", self.write)
         writer.write_additional_data_value(self.additional_data)
     
 

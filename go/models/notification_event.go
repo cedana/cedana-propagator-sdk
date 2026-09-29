@@ -8,7 +8,7 @@ import (
 )
 
 type NotificationEvent struct {
-	// Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.
+	// Storage rows: the CSX action (cached, evicted, persisted, read_closed, write_closed, ...); empty otherwise.
 	action *string
 	// The action_id property
 	action_id *string
@@ -62,6 +62,8 @@ type NotificationEvent struct {
 	typeEscaped *string
 	// The workload_type property
 	workload_type *string
+	// Write rows: where the write landed, tmpfs (the buffer) or nfs; empty otherwise.
+	write_target *string
 }
 
 // NewNotificationEvent instantiates a new NotificationEvent and sets the default values.
@@ -77,7 +79,7 @@ func CreateNotificationEventFromDiscriminatorValue(parseNode i878a80d2330e89d268
 	return NewNotificationEvent(), nil
 }
 
-// GetAction gets the action property value. Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.
+// GetAction gets the action property value. Storage rows: the CSX action (cached, evicted, persisted, read_closed, write_closed, ...); empty otherwise.
 // returns a *string when successful
 func (m *NotificationEvent) GetAction() *string {
 	return m.action
@@ -401,6 +403,16 @@ func (m *NotificationEvent) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		return nil
 	}
+	res["write_target"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWriteTarget(val)
+		}
+		return nil
+	}
 	return res
 }
 
@@ -504,6 +516,12 @@ func (m *NotificationEvent) GetTypeEscaped() *string {
 // returns a *string when successful
 func (m *NotificationEvent) GetWorkloadType() *string {
 	return m.workload_type
+}
+
+// GetWriteTarget gets the write_target property value. Write rows: where the write landed, tmpfs (the buffer) or nfs; empty otherwise.
+// returns a *string when successful
+func (m *NotificationEvent) GetWriteTarget() *string {
+	return m.write_target
 }
 
 // Serialize serializes information the current object
@@ -665,6 +683,12 @@ func (m *NotificationEvent) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 		}
 	}
 	{
+		err := writer.WriteStringValue("write_target", m.GetWriteTarget())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteAdditionalData(m.GetAdditionalData())
 		if err != nil {
 			return err
@@ -673,7 +697,7 @@ func (m *NotificationEvent) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 	return nil
 }
 
-// SetAction sets the action property value. Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.
+// SetAction sets the action property value. Storage rows: the CSX action (cached, evicted, persisted, read_closed, write_closed, ...); empty otherwise.
 func (m *NotificationEvent) SetAction(value *string) {
 	m.action = value
 }
@@ -808,6 +832,11 @@ func (m *NotificationEvent) SetWorkloadType(value *string) {
 	m.workload_type = value
 }
 
+// SetWriteTarget sets the write_target property value. Write rows: where the write landed, tmpfs (the buffer) or nfs; empty otherwise.
+func (m *NotificationEvent) SetWriteTarget(value *string) {
+	m.write_target = value
+}
+
 type NotificationEventable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
@@ -837,6 +866,7 @@ type NotificationEventable interface {
 	GetTimestamp() *string
 	GetTypeEscaped() *string
 	GetWorkloadType() *string
+	GetWriteTarget() *string
 	SetAction(value *string)
 	SetActionId(value *string)
 	SetCheckpointId(value *string)
@@ -863,4 +893,5 @@ type NotificationEventable interface {
 	SetTimestamp(value *string)
 	SetTypeEscaped(value *string)
 	SetWorkloadType(value *string)
+	SetWriteTarget(value *string)
 }

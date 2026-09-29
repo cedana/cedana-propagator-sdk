@@ -1137,6 +1137,17 @@
           "truncated": {
             "description": "More events exist than were returned; only the newest are included.",
             "type": "boolean"
+          },
+          "write": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CsxWrite",
+                "description": "Set while the checkpoint is still being written."
+              }
+            ]
           }
         },
         "required": [
@@ -2175,6 +2186,17 @@
               "$ref": "#/components/schemas/Residency"
             },
             "type": "array"
+          },
+          "write": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CsxWrite",
+                "description": "Set while the checkpoint is still being written."
+              }
+            ]
           }
         },
         "required": [
@@ -2233,13 +2255,19 @@
               "null"
             ]
           },
-          "tmpfs_used_bytes": {
+          "version": {
+            "type": "string"
+          },
+          "write_buffer_bytes": {
+            "description": "Bytes of finished writes still in the tmpfs buffer, waiting to be persisted to NFS.",
             "format": "int64",
             "minimum": 0,
             "type": "integer"
           },
-          "version": {
-            "type": "string"
+          "writes_in_flight": {
+            "format": "int32",
+            "minimum": 0,
+            "type": "integer"
           }
         },
         "required": [
@@ -2249,7 +2277,8 @@
           "disk_limit_bytes",
           "memory_used_bytes",
           "disk_used_bytes",
-          "tmpfs_used_bytes",
+          "write_buffer_bytes",
+          "writes_in_flight",
           "memory_checkpoints",
           "disk_checkpoints"
         ],
@@ -2278,6 +2307,40 @@
           "tier",
           "at_ms",
           "duration_ns"
+        ],
+        "type": "object"
+      },
+      "CsxWrite": {
+        "description": "A checkpoint still being written on a node; it lives on no tier until it reaches NFS.",
+        "properties": {
+          "bytes": {
+            "description": "0 while the write is still open.",
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "node_name": {
+            "type": "string"
+          },
+          "since_ms": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "state": {
+            "description": "writing | persisting",
+            "type": "string"
+          },
+          "target": {
+            "description": "tmpfs (the write buffer) or nfs (written straight to NFS)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "node_name",
+          "target",
+          "state",
+          "since_ms",
+          "bytes"
         ],
         "type": "object"
       },
@@ -4651,7 +4714,7 @@
       "NotificationEvent": {
         "properties": {
           "action": {
-            "description": "Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.",
+            "description": "Storage rows: the CSX action (cached, evicted, persisted, read_closed, write_closed, ...); empty otherwise.",
             "type": "string"
           },
           "action_id": {
@@ -4744,6 +4807,10 @@
           },
           "workload_type": {
             "type": "string"
+          },
+          "write_target": {
+            "description": "Write rows: where the write landed, tmpfs (the buffer) or nfs; empty otherwise.",
+            "type": "string"
           }
         },
         "required": [
@@ -4770,7 +4837,8 @@
           "duration_ns",
           "physical_bytes",
           "pause_ns",
-          "action"
+          "action",
+          "write_target"
         ],
         "type": "object"
       },
