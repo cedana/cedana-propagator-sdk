@@ -10354,7 +10354,7 @@
                 }
               }
             },
-            "description": "Invalid request parameters"
+            "description": "Invalid request parameters, or no cluster_id given and none synced for the pod"
           },
           "404": {
             "content": {
@@ -10364,7 +10364,7 @@
                 }
               }
             },
-            "description": "Failed to find checkpointable resource"
+            "description": "Failed to find checkpointable resource or cluster"
           },
           "4XX": {
             "content": {
@@ -22251,7 +22251,17 @@
                 }
               }
             },
-            "description": "Invalid action_id or request parameters"
+            "description": "Invalid action_id, or no cluster_id given and none recorded on the checkpoint"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Cluster not found"
           },
           "4XX": {
             "content": {

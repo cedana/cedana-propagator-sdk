@@ -46,6 +46,7 @@ class PodRequestBuilder(BaseRequestBuilder):
 
         error_mapping: dict[str, type[ParsableFactory]] = {
             "400": HttpError,
+            "404": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
