@@ -57,6 +57,12 @@ func NewV1RequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee263371cb1c9
 	return NewV1RequestBuilderInternal(urlParams, requestAdapter)
 }
 
+// Csx the csx property
+// returns a *CsxRequestBuilder when successful
+func (m *V1RequestBuilder) Csx() *CsxRequestBuilder {
+	return NewCsxRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Discover the discover property
 // returns a *DiscoverRequestBuilder when successful
 func (m *V1RequestBuilder) Discover() *DiscoverRequestBuilder {

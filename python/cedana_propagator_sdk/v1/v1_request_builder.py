@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .checkpoint.checkpoint_request_builder import CheckpointRequestBuilder
     from .checkpoints.checkpoints_request_builder import CheckpointsRequestBuilder
     from .cluster.cluster_request_builder import ClusterRequestBuilder
+    from .csx.csx_request_builder import CsxRequestBuilder
     from .discover.discover_request_builder import DiscoverRequestBuilder
     from .download.download_request_builder import DownloadRequestBuilder
     from .dynamo.dynamo_request_builder import DynamoRequestBuilder
@@ -91,6 +92,15 @@ class V1RequestBuilder(BaseRequestBuilder):
         from .cluster.cluster_request_builder import ClusterRequestBuilder
 
         return ClusterRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def csx(self) -> CsxRequestBuilder:
+        """
+        The csx property
+        """
+        from .csx.csx_request_builder import CsxRequestBuilder
+
+        return CsxRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def discover(self) -> DiscoverRequestBuilder:
