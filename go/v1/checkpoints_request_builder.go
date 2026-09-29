@@ -40,6 +40,19 @@ type CheckpointsRequestBuilderPostRequestConfiguration struct {
 	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
 }
 
+// ById gets an item from the github.com/cedana/cedana-propagator-sdk/go.v1.checkpoints.item collection
+// returns a *CheckpointsCheckpointsItemRequestBuilder when successful
+func (m *CheckpointsRequestBuilder) ById(id string) *CheckpointsCheckpointsItemRequestBuilder {
+	urlTplParams := make(map[string]string)
+	for idx, item := range m.BaseRequestBuilder.PathParameters {
+		urlTplParams[idx] = item
+	}
+	if id != "" {
+		urlTplParams["id"] = id
+	}
+	return NewCheckpointsCheckpointsItemRequestBuilderInternal(urlTplParams, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // NewCheckpointsRequestBuilderInternal instantiates a new CheckpointsRequestBuilder and sets the default values.
 func NewCheckpointsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *CheckpointsRequestBuilder {
 	m := &CheckpointsRequestBuilder{

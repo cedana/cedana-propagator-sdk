@@ -16,9 +16,11 @@ type EventsRequestBuilder struct {
 
 // EventsRequestBuilderGetQueryParameters recent checkpoint and restore results, newest first (the UI notification feed)
 type EventsRequestBuilderGetQueryParameters struct {
+	// Filter by cluster
+	Cluster_id *string "uriparametername:\"cluster_id\""
 	// Time window in hours; takes precedence over `time`
 	Hrs *int32 "uriparametername:\"hrs\""
-	// Filter by operation: checkpoint or restore
+	// Filter by operation: checkpoint, restore, storage (CSX tier movements) or all.Without one, storage rows are left out so they cannot crowd checkpoint and restore results.
 	Operation *string "uriparametername:\"operation\""
 	// Time window in seconds (default: 3600)
 	Time *int32 "uriparametername:\"time\""
@@ -39,7 +41,7 @@ type EventsRequestBuilderGetRequestConfiguration struct {
 // NewEventsRequestBuilderInternal instantiates a new EventsRequestBuilder and sets the default values.
 func NewEventsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *EventsRequestBuilder {
 	m := &EventsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/events{?hrs*,operation*,time*,workload*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/events{?cluster_id*,hrs*,operation*,time*,workload*}", pathParameters),
 	}
 	return m
 }
