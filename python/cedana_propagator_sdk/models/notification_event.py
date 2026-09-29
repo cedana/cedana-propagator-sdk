@@ -9,6 +9,8 @@ class NotificationEvent(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
+    # Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.
+    action: Optional[str] = None
     # The action_id property
     action_id: Optional[str] = None
     # The checkpoint_id property
@@ -77,6 +79,7 @@ class NotificationEvent(AdditionalDataHolder, Parsable):
         Returns: dict[str, Callable[[ParseNode], None]]
         """
         fields: dict[str, Callable[[Any], None]] = {
+            "action": lambda n : setattr(self, 'action', n.get_str_value()),
             "action_id": lambda n : setattr(self, 'action_id', n.get_str_value()),
             "checkpoint_id": lambda n : setattr(self, 'checkpoint_id', n.get_str_value()),
             "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_str_value()),
@@ -113,6 +116,7 @@ class NotificationEvent(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
+        writer.write_str_value("action", self.action)
         writer.write_str_value("action_id", self.action_id)
         writer.write_str_value("checkpoint_id", self.checkpoint_id)
         writer.write_str_value("cluster_id", self.cluster_id)

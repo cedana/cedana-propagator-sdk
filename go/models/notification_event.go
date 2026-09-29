@@ -8,6 +8,8 @@ import (
 )
 
 type NotificationEvent struct {
+	// Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.
+	action *string
 	// The action_id property
 	action_id *string
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
@@ -75,6 +77,12 @@ func CreateNotificationEventFromDiscriminatorValue(parseNode i878a80d2330e89d268
 	return NewNotificationEvent(), nil
 }
 
+// GetAction gets the action property value. Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.
+// returns a *string when successful
+func (m *NotificationEvent) GetAction() *string {
+	return m.action
+}
+
 // GetActionId gets the action_id property value. The action_id property
 // returns a *string when successful
 func (m *NotificationEvent) GetActionId() *string {
@@ -133,6 +141,16 @@ func (m *NotificationEvent) GetFailureStage() *string {
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *NotificationEvent) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["action"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetAction(val)
+		}
+		return nil
+	}
 	res["action_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -491,6 +509,12 @@ func (m *NotificationEvent) GetWorkloadType() *string {
 // Serialize serializes information the current object
 func (m *NotificationEvent) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
+		err := writer.WriteStringValue("action", m.GetAction())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("action_id", m.GetActionId())
 		if err != nil {
 			return err
@@ -649,6 +673,11 @@ func (m *NotificationEvent) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 	return nil
 }
 
+// SetAction sets the action property value. Storage rows: the CSX action (cached, evicted, persisted, read_closed, ...); empty otherwise.
+func (m *NotificationEvent) SetAction(value *string) {
+	m.action = value
+}
+
 // SetActionId sets the action_id property value. The action_id property
 func (m *NotificationEvent) SetActionId(value *string) {
 	m.action_id = value
@@ -782,6 +811,7 @@ func (m *NotificationEvent) SetWorkloadType(value *string) {
 type NotificationEventable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetAction() *string
 	GetActionId() *string
 	GetCheckpointId() *string
 	GetClusterId() *string
@@ -807,6 +837,7 @@ type NotificationEventable interface {
 	GetTimestamp() *string
 	GetTypeEscaped() *string
 	GetWorkloadType() *string
+	SetAction(value *string)
 	SetActionId(value *string)
 	SetCheckpointId(value *string)
 	SetClusterId(value *string)
