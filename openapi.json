@@ -1214,18 +1214,13 @@
               "$ref": "#/components/schemas/CsxNode"
             },
             "type": "array"
-          },
-          "truncated": {
-            "description": "Only the newest storage rows were folded; older checkpoints may be missing.",
-            "type": "boolean"
           }
         },
         "required": [
           "nodes",
           "nfs_bytes",
           "nfs_checkpoints",
-          "checkpoints",
-          "truncated"
+          "checkpoints"
         ],
         "type": "object"
       },

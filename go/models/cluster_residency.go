@@ -18,8 +18,6 @@ type ClusterResidency struct {
 	nfs_checkpoints *int32
 	// The nodes property
 	nodes []CsxNodeable
-	// Only the newest storage rows were folded; older checkpoints may be missing.
-	truncated *bool
 }
 
 // NewClusterResidency instantiates a new ClusterResidency and sets the default values.
@@ -103,16 +101,6 @@ func (m *ClusterResidency) GetFieldDeserializers() map[string]func(i878a80d2330e
 		}
 		return nil
 	}
-	res["truncated"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetBoolValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetTruncated(val)
-		}
-		return nil
-	}
 	return res
 }
 
@@ -132,12 +120,6 @@ func (m *ClusterResidency) GetNfsCheckpoints() *int32 {
 // returns a []CsxNodeable when successful
 func (m *ClusterResidency) GetNodes() []CsxNodeable {
 	return m.nodes
-}
-
-// GetTruncated gets the truncated property value. Only the newest storage rows were folded; older checkpoints may be missing.
-// returns a *bool when successful
-func (m *ClusterResidency) GetTruncated() *bool {
-	return m.truncated
 }
 
 // Serialize serializes information the current object
@@ -179,12 +161,6 @@ func (m *ClusterResidency) Serialize(writer i878a80d2330e89d26896388a3f487eef27b
 		}
 	}
 	{
-		err := writer.WriteBoolValue("truncated", m.GetTruncated())
-		if err != nil {
-			return err
-		}
-	}
-	{
 		err := writer.WriteAdditionalData(m.GetAdditionalData())
 		if err != nil {
 			return err
@@ -218,11 +194,6 @@ func (m *ClusterResidency) SetNodes(value []CsxNodeable) {
 	m.nodes = value
 }
 
-// SetTruncated sets the truncated property value. Only the newest storage rows were folded; older checkpoints may be missing.
-func (m *ClusterResidency) SetTruncated(value *bool) {
-	m.truncated = value
-}
-
 type ClusterResidencyable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
@@ -230,10 +201,8 @@ type ClusterResidencyable interface {
 	GetNfsBytes() *int64
 	GetNfsCheckpoints() *int32
 	GetNodes() []CsxNodeable
-	GetTruncated() *bool
 	SetCheckpoints(value []CsxCheckpointable)
 	SetNfsBytes(value *int64)
 	SetNfsCheckpoints(value *int32)
 	SetNodes(value []CsxNodeable)
-	SetTruncated(value *bool)
 }
