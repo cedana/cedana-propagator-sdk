@@ -23,6 +23,8 @@ class Action(AdditionalDataHolder, Parsable):
     checkpoint_name: Optional[str] = None
     # The checkpoint_status property
     checkpoint_status: Optional[str] = None
+    # Integrity checksum of the checkpoint as stored, `<algorithm>:<hex>`.Null when none was recorded, which says nothing about the checkpoint
+    checksum: Optional[str] = None
     # Whether the checkpoint is a (GPU delta) increment. Authoritative evenwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)
     delta: Optional[bool] = None
     # The gpu property
@@ -69,6 +71,7 @@ class Action(AdditionalDataHolder, Parsable):
             "checkpoint_id": lambda n : setattr(self, 'checkpoint_id', n.get_uuid_value()),
             "checkpoint_name": lambda n : setattr(self, 'checkpoint_name', n.get_str_value()),
             "checkpoint_status": lambda n : setattr(self, 'checkpoint_status', n.get_str_value()),
+            "checksum": lambda n : setattr(self, 'checksum', n.get_str_value()),
             "delta": lambda n : setattr(self, 'delta', n.get_bool_value()),
             "gpu": lambda n : setattr(self, 'gpu', n.get_str_value()),
             "node_name": lambda n : setattr(self, 'node_name', n.get_str_value()),
@@ -97,6 +100,7 @@ class Action(AdditionalDataHolder, Parsable):
         writer.write_uuid_value("checkpoint_id", self.checkpoint_id)
         writer.write_str_value("checkpoint_name", self.checkpoint_name)
         writer.write_str_value("checkpoint_status", self.checkpoint_status)
+        writer.write_str_value("checksum", self.checksum)
         writer.write_bool_value("delta", self.delta)
         writer.write_str_value("gpu", self.gpu)
         writer.write_str_value("node_name", self.node_name)

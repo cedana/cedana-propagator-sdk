@@ -51,6 +51,13 @@
           "checkpoint_status": {
             "type": "string"
           },
+          "checksum": {
+            "description": "Integrity checksum of the checkpoint as stored, `<algorithm>:<hex>`.\nNull when none was recorded, which says nothing about the checkpoint",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "delta": {
             "description": "Whether the checkpoint is a (GPU delta) increment. Authoritative even\nwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)",
             "type": [
@@ -1117,6 +1124,13 @@
       },
       "CheckpointSuccessInfo": {
         "properties": {
+          "checksum": {
+            "description": "`<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps any checksum already recorded",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "restore_path": {
             "type": [
               "string",

@@ -24,6 +24,8 @@ type Action struct {
 	checkpoint_name *string
 	// The checkpoint_status property
 	checkpoint_status *string
+	// Integrity checksum of the checkpoint as stored, `<algorithm>:<hex>`.Null when none was recorded, which says nothing about the checkpoint
+	checksum *string
 	// Whether the checkpoint is a (GPU delta) increment. Authoritative evenwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)
 	delta *bool
 	// The details property
@@ -105,6 +107,12 @@ func (m *Action) GetCheckpointStatus() *string {
 	return m.checkpoint_status
 }
 
+// GetChecksum gets the checksum property value. Integrity checksum of the checkpoint as stored, `<algorithm>:<hex>`.Null when none was recorded, which says nothing about the checkpoint
+// returns a *string when successful
+func (m *Action) GetChecksum() *string {
+	return m.checksum
+}
+
 // GetDelta gets the delta property value. Whether the checkpoint is a (GPU delta) increment. Authoritative evenwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)
 // returns a *bool when successful
 func (m *Action) GetDelta() *bool {
@@ -178,6 +186,16 @@ func (m *Action) GetFieldDeserializers() map[string]func(i878a80d2330e89d2689638
 		}
 		if val != nil {
 			m.SetCheckpointStatus(val)
+		}
+		return nil
+	}
+	res["checksum"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetChecksum(val)
 		}
 		return nil
 	}
@@ -403,6 +421,12 @@ func (m *Action) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c
 		}
 	}
 	{
+		err := writer.WriteStringValue("checksum", m.GetChecksum())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteBoolValue("delta", m.GetDelta())
 		if err != nil {
 			return err
@@ -518,6 +542,11 @@ func (m *Action) SetCheckpointStatus(value *string) {
 	m.checkpoint_status = value
 }
 
+// SetChecksum sets the checksum property value. Integrity checksum of the checkpoint as stored, `<algorithm>:<hex>`.Null when none was recorded, which says nothing about the checkpoint
+func (m *Action) SetChecksum(value *string) {
+	m.checksum = value
+}
+
 // SetDelta sets the delta property value. Whether the checkpoint is a (GPU delta) increment. Authoritative evenwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)
 func (m *Action) SetDelta(value *bool) {
 	m.delta = value
@@ -587,6 +616,7 @@ type Actionable interface {
 	GetCheckpointId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetCheckpointName() *string
 	GetCheckpointStatus() *string
+	GetChecksum() *string
 	GetDelta() *bool
 	GetDetails() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	GetGpu() *string
@@ -605,6 +635,7 @@ type Actionable interface {
 	SetCheckpointId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetCheckpointName(value *string)
 	SetCheckpointStatus(value *string)
+	SetChecksum(value *string)
 	SetDelta(value *bool)
 	SetDetails(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
 	SetGpu(value *string)
