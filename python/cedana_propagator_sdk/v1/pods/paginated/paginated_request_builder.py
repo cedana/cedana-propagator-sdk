@@ -29,7 +29,7 @@ class PaginatedRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/pods/paginated{?ascending*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/pods/paginated{?ascending*,cluster_id*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[PaginatedRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedPodResponse]:
         """
@@ -79,6 +79,9 @@ class PaginatedRequestBuilder(BaseRequestBuilder):
         List pods (paginated)
         """
         ascending: Optional[bool] = None
+
+        # Only return pods belonging to this cluster
+        cluster_id: Optional[UUID] = None
 
         id: Optional[UUID] = None
 

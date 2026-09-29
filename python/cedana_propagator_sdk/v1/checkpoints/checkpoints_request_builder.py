@@ -31,11 +31,11 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/checkpoints{?ids*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/checkpoints{?cluster_id*,ids*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[CheckpointsRequestBuilderGetQueryParameters]] = None) -> Optional[list[Checkpoint]]:
         """
-        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDs for single or multiple checkpoints)
+        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[list[Checkpoint]]
         """
@@ -76,7 +76,7 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[CheckpointsRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDs for single or multiple checkpoints)
+        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -136,8 +136,11 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
     @dataclass
     class CheckpointsRequestBuilderGetQueryParameters():
         """
-        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDs for single or multiple checkpoints)
+        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
         """
+        # Only return checkpoints whose checkpoint action ran on this cluster
+        cluster_id: Optional[str] = None
+
         # Comma-separated list of checkpoint UUIDs to filter by
         ids: Optional[str] = None
 

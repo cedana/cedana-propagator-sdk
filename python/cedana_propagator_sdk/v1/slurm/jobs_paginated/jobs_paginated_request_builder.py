@@ -11,6 +11,7 @@ from kiota_abstractions.request_information import RequestInformation
 from kiota_abstractions.request_option import RequestOption
 from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
+from uuid import UUID
 from warnings import warn
 
 if TYPE_CHECKING:
@@ -28,7 +29,7 @@ class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/slurm/jobs_paginated{?ascending*,id*,job_name*,limit*,offset*,sort*,status*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/slurm/jobs_paginated{?ascending*,cluster_id*,id*,job_name*,limit*,offset*,sort*,status*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[Jobs_paginatedRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedSlurmJobResponse]:
         """
@@ -80,6 +81,9 @@ class Jobs_paginatedRequestBuilder(BaseRequestBuilder):
         """
         # Sort ascending (default: false)
         ascending: Optional[bool] = None
+
+        # Only return jobs belonging to this cluster
+        cluster_id: Optional[UUID] = None
 
         # Exact SLURM job id to fetch; when set, all other filters are ignored
         id: Optional[int] = None

@@ -21,6 +21,8 @@ class Action(AdditionalDataHolder, Parsable):
     checkpoint_id: Optional[UUID] = None
     # The checkpoint's CEDANA_CHECKPOINT name (the env value it restores from),used to group automatic/named checkpoints. Null for unnamed checkpoints.
     checkpoint_name: Optional[str] = None
+    # The checkpoint_status property
+    checkpoint_status: Optional[str] = None
     # Whether the checkpoint is a (GPU delta) increment. Authoritative evenwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)
     delta: Optional[bool] = None
     # The gpu property
@@ -66,6 +68,7 @@ class Action(AdditionalDataHolder, Parsable):
             "checkpoint_completed_timestamp": lambda n : setattr(self, 'checkpoint_completed_timestamp', n.get_datetime_value()),
             "checkpoint_id": lambda n : setattr(self, 'checkpoint_id', n.get_uuid_value()),
             "checkpoint_name": lambda n : setattr(self, 'checkpoint_name', n.get_str_value()),
+            "checkpoint_status": lambda n : setattr(self, 'checkpoint_status', n.get_str_value()),
             "delta": lambda n : setattr(self, 'delta', n.get_bool_value()),
             "gpu": lambda n : setattr(self, 'gpu', n.get_str_value()),
             "node_name": lambda n : setattr(self, 'node_name', n.get_str_value()),
@@ -93,6 +96,7 @@ class Action(AdditionalDataHolder, Parsable):
         writer.write_datetime_value("checkpoint_completed_timestamp", self.checkpoint_completed_timestamp)
         writer.write_uuid_value("checkpoint_id", self.checkpoint_id)
         writer.write_str_value("checkpoint_name", self.checkpoint_name)
+        writer.write_str_value("checkpoint_status", self.checkpoint_status)
         writer.write_bool_value("delta", self.delta)
         writer.write_str_value("gpu", self.gpu)
         writer.write_str_value("node_name", self.node_name)

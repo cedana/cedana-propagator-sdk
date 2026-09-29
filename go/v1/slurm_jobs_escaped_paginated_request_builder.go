@@ -6,6 +6,7 @@ package v1
 import (
 	"context"
 	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
+	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
@@ -18,6 +19,8 @@ type SlurmJobs_paginatedRequestBuilder struct {
 type SlurmJobs_paginatedRequestBuilderGetQueryParameters struct {
 	// Sort ascending (default: false)
 	Ascending *bool "uriparametername:\"ascending\""
+	// Only return jobs belonging to this cluster
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
 	// Exact SLURM job id to fetch; when set, all other filters are ignored
 	Id *int64 "uriparametername:\"id\""
 	// Job name or job id to query against (uses postgres ILIKE pattern search)
@@ -42,7 +45,7 @@ type SlurmJobs_paginatedRequestBuilderGetRequestConfiguration struct {
 // NewSlurmJobs_paginatedRequestBuilderInternal instantiates a new SlurmJobs_paginatedRequestBuilder and sets the default values.
 func NewSlurmJobs_paginatedRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *SlurmJobs_paginatedRequestBuilder {
 	m := &SlurmJobs_paginatedRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/slurm/jobs_paginated{?ascending*,id*,job_name*,limit*,offset*,sort*,status*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/slurm/jobs_paginated{?ascending*,cluster_id*,id*,job_name*,limit*,offset*,sort*,status*}", pathParameters),
 	}
 	return m
 }
