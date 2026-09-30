@@ -6,6 +6,7 @@ package v1
 import (
 	"context"
 	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
+	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
@@ -16,7 +17,9 @@ type JobsCountRequestBuilder struct {
 
 // JobsCountRequestBuilderGetQueryParameters get total count of jobs
 type JobsCountRequestBuilderGetQueryParameters struct {
-	Status *string "uriparametername:\"status\""
+	// Only count resources belonging to this cluster
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
+	Status     *string                                                                 "uriparametername:\"status\""
 }
 
 // JobsCountRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
@@ -32,7 +35,7 @@ type JobsCountRequestBuilderGetRequestConfiguration struct {
 // NewJobsCountRequestBuilderInternal instantiates a new JobsCountRequestBuilder and sets the default values.
 func NewJobsCountRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *JobsCountRequestBuilder {
 	m := &JobsCountRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/jobs/count{?status*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/jobs/count{?cluster_id*,status*}", pathParameters),
 	}
 	return m
 }

@@ -15,12 +15,32 @@ type JobsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
+// JobsRequestBuilderGetQueryParameters paginated. Only returns jobs from clusters with status 'active'. `cluster_id` scopes both thejobs and the available filters to one cluster.
+type JobsRequestBuilderGetQueryParameters struct {
+	// Sort ascending (default false)
+	Ascending *bool "uriparametername:\"ascending\""
+	// Only return jobs belonging to this cluster
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
+	// job name to query against (uses postgres ILIKE pattern search)
+	Job_name *string "uriparametername:\"job_name\""
+	// Page size (default 50, max 500)
+	Limit     *int64  "uriparametername:\"limit\""
+	Namespace *string "uriparametername:\"namespace\""
+	// Row offset (default 0)
+	Offset *int64 "uriparametername:\"offset\""
+	// Sort column: `id`, `name`, `namespace`, `status` or `start_time` (default `start_time`)
+	Sort   *string "uriparametername:\"sort\""
+	Status *string "uriparametername:\"status\""
+}
+
 // JobsRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
 type JobsRequestBuilderGetRequestConfiguration struct {
 	// Request headers
 	Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
 	// Request options
 	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
+	// Request query parameters
+	QueryParameters *JobsRequestBuilderGetQueryParameters
 }
 
 // ByJob_id gets an item from the github.com/cedana/cedana-propagator-sdk/go.v1.jobs.item collection
@@ -57,7 +77,7 @@ func (m *JobsRequestBuilder) ByPriority() *JobsByPriorityRequestBuilder {
 // NewJobsRequestBuilderInternal instantiates a new JobsRequestBuilder and sets the default values.
 func NewJobsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *JobsRequestBuilder {
 	m := &JobsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/jobs", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/jobs{?ascending*,cluster_id*,job_name*,limit*,namespace*,offset*,sort*,status*}", pathParameters),
 	}
 	return m
 }
@@ -81,42 +101,35 @@ func (m *JobsRequestBuilder) Filter() *JobsFilterRequestBuilder {
 	return NewJobsFilterRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Get list jobs
-// returns a []JobResponseable when successful
+// Get paginated. Only returns jobs from clusters with status 'active'. `cluster_id` scopes both thejobs and the available filters to one cluster.
+// returns a PaginatedJobResponseable when successful
+// returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 500 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *JobsRequestBuilder) Get(ctx context.Context, requestConfiguration *JobsRequestBuilderGetRequestConfiguration) ([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.JobResponseable, error) {
+func (m *JobsRequestBuilder) Get(ctx context.Context, requestConfiguration *JobsRequestBuilderGetRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedJobResponseable, error) {
 	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
 	if err != nil {
 		return nil, err
 	}
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
+		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.SendCollection(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateJobResponseFromDiscriminatorValue, errorMapping)
+	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreatePaginatedJobResponseFromDiscriminatorValue, errorMapping)
 	if err != nil {
 		return nil, err
 	}
-	val := make([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.JobResponseable, len(res))
-	for i, v := range res {
-		if v != nil {
-			val[i] = v.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.JobResponseable)
-		}
+	if res == nil {
+		return nil, nil
 	}
-	return val, nil
+	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedJobResponseable), nil
 }
 
 // Namespaces the namespaces property
 // returns a *JobsNamespacesRequestBuilder when successful
 func (m *JobsRequestBuilder) Namespaces() *JobsNamespacesRequestBuilder {
 	return NewJobsNamespacesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// Paginated the paginated property
-// returns a *JobsPaginatedRequestBuilder when successful
-func (m *JobsRequestBuilder) Paginated() *JobsPaginatedRequestBuilder {
-	return NewJobsPaginatedRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // Priorities the priorities property
@@ -131,11 +144,14 @@ func (m *JobsRequestBuilder) Statuses() *JobsStatusesRequestBuilder {
 	return NewJobsStatusesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// ToGetRequestInformation list jobs
+// ToGetRequestInformation paginated. Only returns jobs from clusters with status 'active'. `cluster_id` scopes both thejobs and the available filters to one cluster.
 // returns a *RequestInformation when successful
 func (m *JobsRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *JobsRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
 	if requestConfiguration != nil {
+		if requestConfiguration.QueryParameters != nil {
+			requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
+		}
 		requestInfo.Headers.AddAll(requestConfiguration.Headers)
 		requestInfo.AddRequestOptions(requestConfiguration.Options)
 	}

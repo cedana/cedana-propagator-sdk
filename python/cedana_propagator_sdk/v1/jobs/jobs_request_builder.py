@@ -16,13 +16,12 @@ from warnings import warn
 
 if TYPE_CHECKING:
     from ...models.http_error import HttpError
-    from ...models.job_response import JobResponse
+    from ...models.paginated_job_response import PaginatedJobResponse
     from .by_priority.by_priority_request_builder import ByPriorityRequestBuilder
     from .count.count_request_builder import CountRequestBuilder
     from .filter.filter_request_builder import FilterRequestBuilder
     from .item.with_job_item_request_builder import WithJob_ItemRequestBuilder
     from .namespaces.namespaces_request_builder import NamespacesRequestBuilder
-    from .paginated.paginated_request_builder import PaginatedRequestBuilder
     from .priorities.priorities_request_builder import PrioritiesRequestBuilder
     from .statuses.statuses_request_builder import StatusesRequestBuilder
 
@@ -37,7 +36,7 @@ class JobsRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/jobs", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/jobs{?ascending*,cluster_id*,job_name*,limit*,namespace*,offset*,sort*,status*}", path_parameters)
     
     def by_job_id(self,job_id: UUID) -> WithJob_ItemRequestBuilder:
         """
@@ -53,11 +52,11 @@ class JobsRequestBuilder(BaseRequestBuilder):
         url_tpl_params["job_id"] = job_id
         return WithJob_ItemRequestBuilder(self.request_adapter, url_tpl_params)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[list[JobResponse]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[JobsRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedJobResponse]:
         """
-        List jobs
+        Paginated. Only returns jobs from clusters with status 'active'. `cluster_id` scopes both thejobs and the available filters to one cluster.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[JobResponse]]
+        Returns: Optional[PaginatedJobResponse]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -65,18 +64,19 @@ class JobsRequestBuilder(BaseRequestBuilder):
         from ...models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
+            "400": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ...models.job_response import JobResponse
+        from ...models.paginated_job_response import PaginatedJobResponse
 
-        return await self.request_adapter.send_collection_async(request_info, JobResponse, error_mapping)
+        return await self.request_adapter.send_async(request_info, PaginatedJobResponse, error_mapping)
     
-    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
+    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[JobsRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        List jobs
+        Paginated. Only returns jobs from clusters with status 'active'. `cluster_id` scopes both thejobs and the available filters to one cluster.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -132,15 +132,6 @@ class JobsRequestBuilder(BaseRequestBuilder):
         return NamespacesRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
-    def paginated(self) -> PaginatedRequestBuilder:
-        """
-        The paginated property
-        """
-        from .paginated.paginated_request_builder import PaginatedRequestBuilder
-
-        return PaginatedRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
     def priorities(self) -> PrioritiesRequestBuilder:
         """
         The priorities property
@@ -159,7 +150,35 @@ class JobsRequestBuilder(BaseRequestBuilder):
         return StatusesRequestBuilder(self.request_adapter, self.path_parameters)
     
     @dataclass
-    class JobsRequestBuilderGetRequestConfiguration(RequestConfiguration[QueryParameters]):
+    class JobsRequestBuilderGetQueryParameters():
+        """
+        Paginated. Only returns jobs from clusters with status 'active'. `cluster_id` scopes both thejobs and the available filters to one cluster.
+        """
+        # Sort ascending (default false)
+        ascending: Optional[bool] = None
+
+        # Only return jobs belonging to this cluster
+        cluster_id: Optional[UUID] = None
+
+        # job name to query against (uses postgres ILIKE pattern search)
+        job_name: Optional[str] = None
+
+        # Page size (default 50, max 500)
+        limit: Optional[int] = None
+
+        namespace: Optional[str] = None
+
+        # Row offset (default 0)
+        offset: Optional[int] = None
+
+        # Sort column: `id`, `name`, `namespace`, `status` or `start_time` (default `start_time`)
+        sort: Optional[str] = None
+
+        status: Optional[str] = None
+
+    
+    @dataclass
+    class JobsRequestBuilderGetRequestConfiguration(RequestConfiguration[JobsRequestBuilderGetQueryParameters]):
         """
         Configuration for the request such as headers, query parameters, and middleware options.
         """

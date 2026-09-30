@@ -16,10 +16,9 @@ from warnings import warn
 
 if TYPE_CHECKING:
     from ...models.http_error import HttpError
-    from ...models.pod_response import PodResponse
+    from ...models.paginated_pod_response import PaginatedPodResponse
     from .count.count_request_builder import CountRequestBuilder
     from .namespaces.namespaces_request_builder import NamespacesRequestBuilder
-    from .paginated.paginated_request_builder import PaginatedRequestBuilder
     from .statuses.statuses_request_builder import StatusesRequestBuilder
 
 class PodsRequestBuilder(BaseRequestBuilder):
@@ -33,13 +32,13 @@ class PodsRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/pods{?id*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/pods{?ascending*,cluster_id*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[PodsRequestBuilderGetQueryParameters]] = None) -> Optional[list[PodResponse]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[PodsRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedPodResponse]:
         """
-        Will not return pods with status 'deleted', and only from clusters with status 'active' andpods belonging to nodes whose last_sync is within the last 5 minutes.
+        Paginated. Only returns pods from clusters with status 'active' whose node synced within thelast 5 minutes, and never pods with status 'deleted'. `cluster_id` scopes both the pods andthe available filters to one cluster. `id` looks up that single pod (still subject to`cluster_id`) and ignores the other filters.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[PodResponse]]
+        Returns: Optional[PaginatedPodResponse]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -47,18 +46,19 @@ class PodsRequestBuilder(BaseRequestBuilder):
         from ...models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
+            "400": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ...models.pod_response import PodResponse
+        from ...models.paginated_pod_response import PaginatedPodResponse
 
-        return await self.request_adapter.send_collection_async(request_info, PodResponse, error_mapping)
+        return await self.request_adapter.send_async(request_info, PaginatedPodResponse, error_mapping)
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[PodsRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Will not return pods with status 'deleted', and only from clusters with status 'active' andpods belonging to nodes whose last_sync is within the last 5 minutes.
+        Paginated. Only returns pods from clusters with status 'active' whose node synced within thelast 5 minutes, and never pods with status 'deleted'. `cluster_id` scopes both the pods andthe available filters to one cluster. `id` looks up that single pod (still subject to`cluster_id`) and ignores the other filters.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -96,15 +96,6 @@ class PodsRequestBuilder(BaseRequestBuilder):
         return NamespacesRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
-    def paginated(self) -> PaginatedRequestBuilder:
-        """
-        The paginated property
-        """
-        from .paginated.paginated_request_builder import PaginatedRequestBuilder
-
-        return PaginatedRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
     def statuses(self) -> StatusesRequestBuilder:
         """
         The statuses property
@@ -116,9 +107,32 @@ class PodsRequestBuilder(BaseRequestBuilder):
     @dataclass
     class PodsRequestBuilderGetQueryParameters():
         """
-        Will not return pods with status 'deleted', and only from clusters with status 'active' andpods belonging to nodes whose last_sync is within the last 5 minutes.
+        Paginated. Only returns pods from clusters with status 'active' whose node synced within thelast 5 minutes, and never pods with status 'deleted'. `cluster_id` scopes both the pods andthe available filters to one cluster. `id` looks up that single pod (still subject to`cluster_id`) and ignores the other filters.
         """
+        # Sort ascending (default false)
+        ascending: Optional[bool] = None
+
+        # Only return pods belonging to this cluster
+        cluster_id: Optional[UUID] = None
+
+        # Exact pod id. When set, every other filter except `cluster_id` is ignored
         id: Optional[UUID] = None
+
+        # Page size (default 50, max 500)
+        limit: Optional[int] = None
+
+        namespace: Optional[str] = None
+
+        # Row offset (default 0)
+        offset: Optional[int] = None
+
+        # pod name to query against (uses postgres ILIKE pattern search)
+        pod_name: Optional[str] = None
+
+        # Sort column: `id`, `name`, `namespace` or `status` (default `name`)
+        sort: Optional[str] = None
+
+        status: Optional[str] = None
 
     
     @dataclass
