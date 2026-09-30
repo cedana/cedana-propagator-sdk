@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from ...models.http_error import HttpError
     from .deprecate.deprecate_request_builder import DeprecateRequestBuilder
     from .info.info_request_builder import InfoRequestBuilder
+    from .item.checkpoints_item_request_builder import CheckpointsItemRequestBuilder
     from .uploaded.uploaded_request_builder import UploadedRequestBuilder
 
 class CheckpointsRequestBuilder(BaseRequestBuilder):
@@ -32,6 +33,20 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
         Returns: None
         """
         super().__init__(request_adapter, "{+baseurl}/v1/checkpoints{?cluster_id*,ids*}", path_parameters)
+    
+    def by_id(self,id: str) -> CheckpointsItemRequestBuilder:
+        """
+        Gets an item from the cedana_propagator_sdk.v1.checkpoints.item collection
+        param id: Checkpoint ID
+        Returns: CheckpointsItemRequestBuilder
+        """
+        if id is None:
+            raise TypeError("id cannot be null.")
+        from .item.checkpoints_item_request_builder import CheckpointsItemRequestBuilder
+
+        url_tpl_params = get_path_parameters(self.path_parameters)
+        url_tpl_params["id"] = id
+        return CheckpointsItemRequestBuilder(self.request_adapter, url_tpl_params)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[CheckpointsRequestBuilderGetQueryParameters]] = None) -> Optional[list[Checkpoint]]:
         """
