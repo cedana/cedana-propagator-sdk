@@ -11,12 +11,18 @@ import (
 type PolicyResponse struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// Cluster and namespace the policy targets, from `details`.
+	cluster_id *string
+	// The end_time property
+	end_time *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	// The id property
 	id *string
 	// The input property
 	input *int64
 	// The job_count property
 	job_count *int64
+	// The namespace property
+	namespace *string
 	// The pod_count property
 	pod_count *int64
 	// The policy_type property
@@ -25,6 +31,8 @@ type PolicyResponse struct {
 	resource *string
 	// The resource_list property
 	resource_list []string
+	// Window bounds for maintenance policies; absent for other types.
+	start_time *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	// The status property
 	status *string
 	// The timestamp property
@@ -50,10 +58,42 @@ func (m *PolicyResponse) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetClusterId gets the cluster_id property value. Cluster and namespace the policy targets, from `details`.
+// returns a *string when successful
+func (m *PolicyResponse) GetClusterId() *string {
+	return m.cluster_id
+}
+
+// GetEndTime gets the end_time property value. The end_time property
+// returns a *Time when successful
+func (m *PolicyResponse) GetEndTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
+	return m.end_time
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *PolicyResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["cluster_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetClusterId(val)
+		}
+		return nil
+	}
+	res["end_time"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetTimeValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetEndTime(val)
+		}
+		return nil
+	}
 	res["id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -81,6 +121,16 @@ func (m *PolicyResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		if val != nil {
 			m.SetJobCount(val)
+		}
+		return nil
+	}
+	res["namespace"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetNamespace(val)
 		}
 		return nil
 	}
@@ -130,6 +180,16 @@ func (m *PolicyResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		return nil
 	}
+	res["start_time"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetTimeValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetStartTime(val)
+		}
+		return nil
+	}
 	res["status"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -171,6 +231,12 @@ func (m *PolicyResponse) GetJobCount() *int64 {
 	return m.job_count
 }
 
+// GetNamespace gets the namespace property value. The namespace property
+// returns a *string when successful
+func (m *PolicyResponse) GetNamespace() *string {
+	return m.namespace
+}
+
 // GetPodCount gets the pod_count property value. The pod_count property
 // returns a *int64 when successful
 func (m *PolicyResponse) GetPodCount() *int64 {
@@ -195,6 +261,12 @@ func (m *PolicyResponse) GetResourceList() []string {
 	return m.resource_list
 }
 
+// GetStartTime gets the start_time property value. Window bounds for maintenance policies; absent for other types.
+// returns a *Time when successful
+func (m *PolicyResponse) GetStartTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
+	return m.start_time
+}
+
 // GetStatus gets the status property value. The status property
 // returns a *string when successful
 func (m *PolicyResponse) GetStatus() *string {
@@ -210,6 +282,18 @@ func (m *PolicyResponse) GetTimestamp() *i336074805fc853987abe6f7fe3ad97a6a6f307
 // Serialize serializes information the current object
 func (m *PolicyResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
+		err := writer.WriteStringValue("cluster_id", m.GetClusterId())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteTimeValue("end_time", m.GetEndTime())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("id", m.GetId())
 		if err != nil {
 			return err
@@ -223,6 +307,12 @@ func (m *PolicyResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
 	}
 	{
 		err := writer.WriteInt64Value("job_count", m.GetJobCount())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("namespace", m.GetNamespace())
 		if err != nil {
 			return err
 		}
@@ -247,6 +337,12 @@ func (m *PolicyResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
 	}
 	if m.GetResourceList() != nil {
 		err := writer.WriteCollectionOfStringValues("resource_list", m.GetResourceList())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteTimeValue("start_time", m.GetStartTime())
 		if err != nil {
 			return err
 		}
@@ -277,6 +373,16 @@ func (m *PolicyResponse) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetClusterId sets the cluster_id property value. Cluster and namespace the policy targets, from `details`.
+func (m *PolicyResponse) SetClusterId(value *string) {
+	m.cluster_id = value
+}
+
+// SetEndTime sets the end_time property value. The end_time property
+func (m *PolicyResponse) SetEndTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
+	m.end_time = value
+}
+
 // SetId sets the id property value. The id property
 func (m *PolicyResponse) SetId(value *string) {
 	m.id = value
@@ -290,6 +396,11 @@ func (m *PolicyResponse) SetInput(value *int64) {
 // SetJobCount sets the job_count property value. The job_count property
 func (m *PolicyResponse) SetJobCount(value *int64) {
 	m.job_count = value
+}
+
+// SetNamespace sets the namespace property value. The namespace property
+func (m *PolicyResponse) SetNamespace(value *string) {
+	m.namespace = value
 }
 
 // SetPodCount sets the pod_count property value. The pod_count property
@@ -312,6 +423,11 @@ func (m *PolicyResponse) SetResourceList(value []string) {
 	m.resource_list = value
 }
 
+// SetStartTime sets the start_time property value. Window bounds for maintenance policies; absent for other types.
+func (m *PolicyResponse) SetStartTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
+	m.start_time = value
+}
+
 // SetStatus sets the status property value. The status property
 func (m *PolicyResponse) SetStatus(value *string) {
 	m.status = value
@@ -325,22 +441,30 @@ func (m *PolicyResponse) SetTimestamp(value *i336074805fc853987abe6f7fe3ad97a6a6
 type PolicyResponseable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetClusterId() *string
+	GetEndTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	GetId() *string
 	GetInput() *int64
 	GetJobCount() *int64
+	GetNamespace() *string
 	GetPodCount() *int64
 	GetPolicyType() *string
 	GetResource() *string
 	GetResourceList() []string
+	GetStartTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	GetStatus() *string
 	GetTimestamp() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
+	SetClusterId(value *string)
+	SetEndTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
 	SetId(value *string)
 	SetInput(value *int64)
 	SetJobCount(value *int64)
+	SetNamespace(value *string)
 	SetPodCount(value *int64)
 	SetPolicyType(value *string)
 	SetResource(value *string)
 	SetResourceList(value []string)
+	SetStartTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
 	SetStatus(value *string)
 	SetTimestamp(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
 }
