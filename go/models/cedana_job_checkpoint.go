@@ -10,6 +10,8 @@ import (
 type CedanaJobCheckpoint struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// `<algorithm>:<hex>` of the checkpoint as stored, recorded by the storageonce it has persisted the checkpoint. Null when none was recorded.Read only: a put does not take it.
+	checksum *string
 	// The ID property
 	iD *string
 	// The JID property
@@ -41,10 +43,26 @@ func (m *CedanaJobCheckpoint) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetChecksum gets the Checksum property value. `<algorithm>:<hex>` of the checkpoint as stored, recorded by the storageonce it has persisted the checkpoint. Null when none was recorded.Read only: a put does not take it.
+// returns a *string when successful
+func (m *CedanaJobCheckpoint) GetChecksum() *string {
+	return m.checksum
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *CedanaJobCheckpoint) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["Checksum"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetChecksum(val)
+		}
+		return nil
+	}
 	res["ID"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -131,6 +149,12 @@ func (m *CedanaJobCheckpoint) GetTime() *int64 {
 // Serialize serializes information the current object
 func (m *CedanaJobCheckpoint) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
+		err := writer.WriteStringValue("Checksum", m.GetChecksum())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("ID", m.GetID())
 		if err != nil {
 			return err
@@ -174,6 +198,11 @@ func (m *CedanaJobCheckpoint) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetChecksum sets the Checksum property value. `<algorithm>:<hex>` of the checkpoint as stored, recorded by the storageonce it has persisted the checkpoint. Null when none was recorded.Read only: a put does not take it.
+func (m *CedanaJobCheckpoint) SetChecksum(value *string) {
+	m.checksum = value
+}
+
 // SetID sets the ID property value. The ID property
 func (m *CedanaJobCheckpoint) SetID(value *string) {
 	m.iD = value
@@ -202,11 +231,13 @@ func (m *CedanaJobCheckpoint) SetTime(value *int64) {
 type CedanaJobCheckpointable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetChecksum() *string
 	GetID() *string
 	GetJID() *string
 	GetPath() *string
 	GetSize() *int64
 	GetTime() *int64
+	SetChecksum(value *string)
 	SetID(value *string)
 	SetJID(value *string)
 	SetPath(value *string)

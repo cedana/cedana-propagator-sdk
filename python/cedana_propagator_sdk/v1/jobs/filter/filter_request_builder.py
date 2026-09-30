@@ -11,6 +11,7 @@ from kiota_abstractions.request_information import RequestInformation
 from kiota_abstractions.request_option import RequestOption
 from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
+from uuid import UUID
 from warnings import warn
 
 if TYPE_CHECKING:
@@ -28,7 +29,7 @@ class FilterRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/jobs/filter{?namespace*,priority*,status*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/jobs/filter{?cluster_id*,namespace*,priority*,status*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[FilterRequestBuilderGetQueryParameters]] = None) -> Optional[FilteredJobResponse]:
         """
@@ -72,6 +73,9 @@ class FilterRequestBuilder(BaseRequestBuilder):
     
     @dataclass
     class FilterRequestBuilderGetQueryParameters():
+        # Only return jobs belonging to this cluster
+        cluster_id: Optional[UUID] = None
+
         namespace: Optional[str] = None
 
         priority: Optional[int] = None

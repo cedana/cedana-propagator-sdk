@@ -4,47 +4,42 @@ from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
+if TYPE_CHECKING:
+    from .checkpoint import Checkpoint
+
 @dataclass
-class CedanaJobCheckpoint(AdditionalDataHolder, Parsable):
+class PaginatedCheckpointResponse(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # `<algorithm>:<hex>` of the checkpoint as stored, recorded by the storageonce it has persisted the checkpoint. Null when none was recorded.Read only: a put does not take it.
-    checksum: Optional[str] = None
-    # The ID property
-    i_d: Optional[str] = None
-    # The JID property
-    j_i_d: Optional[str] = None
-    # The Path property
-    path: Optional[str] = None
-    # The Size property
-    size: Optional[int] = None
-    # The Time property
-    time: Optional[int] = None
+    # The checkpoints property
+    checkpoints: Optional[list[Checkpoint]] = None
+    # The total_count property
+    total_count: Optional[int] = None
     
     @staticmethod
-    def create_from_discriminator_value(parse_node: ParseNode) -> CedanaJobCheckpoint:
+    def create_from_discriminator_value(parse_node: ParseNode) -> PaginatedCheckpointResponse:
         """
         Creates a new instance of the appropriate class based on discriminator value
         param parse_node: The parse node to use to read the discriminator value and create the object
-        Returns: CedanaJobCheckpoint
+        Returns: PaginatedCheckpointResponse
         """
         if parse_node is None:
             raise TypeError("parse_node cannot be null.")
-        return CedanaJobCheckpoint()
+        return PaginatedCheckpointResponse()
     
     def get_field_deserializers(self,) -> dict[str, Callable[[ParseNode], None]]:
         """
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
+        from .checkpoint import Checkpoint
+
+        from .checkpoint import Checkpoint
+
         fields: dict[str, Callable[[Any], None]] = {
-            "Checksum": lambda n : setattr(self, 'checksum', n.get_str_value()),
-            "ID": lambda n : setattr(self, 'i_d', n.get_str_value()),
-            "JID": lambda n : setattr(self, 'j_i_d', n.get_str_value()),
-            "Path": lambda n : setattr(self, 'path', n.get_str_value()),
-            "Size": lambda n : setattr(self, 'size', n.get_int_value()),
-            "Time": lambda n : setattr(self, 'time', n.get_int_value()),
+            "checkpoints": lambda n : setattr(self, 'checkpoints', n.get_collection_of_object_values(Checkpoint)),
+            "total_count": lambda n : setattr(self, 'total_count', n.get_int_value()),
         }
         return fields
     
@@ -56,12 +51,8 @@ class CedanaJobCheckpoint(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
-        writer.write_str_value("Checksum", self.checksum)
-        writer.write_str_value("ID", self.i_d)
-        writer.write_str_value("JID", self.j_i_d)
-        writer.write_str_value("Path", self.path)
-        writer.write_int_value("Size", self.size)
-        writer.write_int_value("Time", self.time)
+        writer.write_collection_of_object_values("checkpoints", self.checkpoints)
+        writer.write_int_value("total_count", self.total_count)
         writer.write_additional_data_value(self.additional_data)
     
 
