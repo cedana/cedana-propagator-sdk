@@ -11,11 +11,12 @@ from kiota_abstractions.request_information import RequestInformation
 from kiota_abstractions.request_option import RequestOption
 from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
+from uuid import UUID
 from warnings import warn
 
 if TYPE_CHECKING:
-    from ...models.checkpoint import Checkpoint
     from ...models.http_error import HttpError
+    from ...models.paginated_checkpoint_response import PaginatedCheckpointResponse
     from .deprecate.deprecate_request_builder import DeprecateRequestBuilder
     from .info.info_request_builder import InfoRequestBuilder
     from .item.checkpoints_item_request_builder import CheckpointsItemRequestBuilder
@@ -32,7 +33,7 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/checkpoints{?cluster_id*,ids*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/checkpoints{?ascending*,cluster_id*,ids*,limit*,offset*,sort*}", path_parameters)
     
     def by_id(self,id: str) -> CheckpointsItemRequestBuilder:
         """
@@ -48,11 +49,11 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
         url_tpl_params["id"] = id
         return CheckpointsItemRequestBuilder(self.request_adapter, url_tpl_params)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[CheckpointsRequestBuilderGetQueryParameters]] = None) -> Optional[list[Checkpoint]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[CheckpointsRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedCheckpointResponse]:
         """
-        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
+        Paginated. `ids` (comma-separated UUIDs) and `cluster_id` (the cluster the checkpoint actionran on) filter the list; `total_count` is the number of matches before paging.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[Checkpoint]]
+        Returns: Optional[PaginatedCheckpointResponse]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -66,9 +67,9 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ...models.checkpoint import Checkpoint
+        from ...models.paginated_checkpoint_response import PaginatedCheckpointResponse
 
-        return await self.request_adapter.send_collection_async(request_info, Checkpoint, error_mapping)
+        return await self.request_adapter.send_async(request_info, PaginatedCheckpointResponse, error_mapping)
     
     async def post(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[str]:
         """
@@ -91,7 +92,7 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[CheckpointsRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
+        Paginated. `ids` (comma-separated UUIDs) and `cluster_id` (the cluster the checkpoint actionran on) filter the list; `total_count` is the number of matches before paging.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -151,13 +152,25 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
     @dataclass
     class CheckpointsRequestBuilderGetQueryParameters():
         """
-        Use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
+        Paginated. `ids` (comma-separated UUIDs) and `cluster_id` (the cluster the checkpoint actionran on) filter the list; `total_count` is the number of matches before paging.
         """
+        # Sort ascending (default false)
+        ascending: Optional[bool] = None
+
         # Only return checkpoints whose checkpoint action ran on this cluster
-        cluster_id: Optional[str] = None
+        cluster_id: Optional[UUID] = None
 
         # Comma-separated list of checkpoint UUIDs to filter by
         ids: Optional[str] = None
+
+        # Page size (default 50, max 500)
+        limit: Optional[int] = None
+
+        # Row offset (default 0)
+        offset: Optional[int] = None
+
+        # Sort column: `id`, `name`, `status`, `platform` or `gpu` (default `id`)
+        sort: Optional[str] = None
 
     
     @dataclass

@@ -15,9 +15,24 @@ type PodsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// PodsRequestBuilderGetQueryParameters will not return pods with status 'deleted', and only from clusters with status 'active' andpods belonging to nodes whose last_sync is within the last 5 minutes.
+// PodsRequestBuilderGetQueryParameters paginated. Only returns pods from clusters with status 'active' whose node synced within thelast 5 minutes, and never pods with status 'deleted'. `cluster_id` scopes both the pods andthe available filters to one cluster. `id` looks up that single pod (still subject to`cluster_id`) and ignores the other filters.
 type PodsRequestBuilderGetQueryParameters struct {
+	// Sort ascending (default false)
+	Ascending *bool "uriparametername:\"ascending\""
+	// Only return pods belonging to this cluster
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
+	// Exact pod id. When set, every other filter except `cluster_id` is ignored
 	Id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"id\""
+	// Page size (default 50, max 500)
+	Limit     *int64  "uriparametername:\"limit\""
+	Namespace *string "uriparametername:\"namespace\""
+	// Row offset (default 0)
+	Offset *int64 "uriparametername:\"offset\""
+	// pod name to query against (uses postgres ILIKE pattern search)
+	Pod_name *string "uriparametername:\"pod_name\""
+	// Sort column: `id`, `name`, `namespace` or `status` (default `name`)
+	Sort   *string "uriparametername:\"sort\""
+	Status *string "uriparametername:\"status\""
 }
 
 // PodsRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
@@ -33,7 +48,7 @@ type PodsRequestBuilderGetRequestConfiguration struct {
 // NewPodsRequestBuilderInternal instantiates a new PodsRequestBuilder and sets the default values.
 func NewPodsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *PodsRequestBuilder {
 	m := &PodsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/pods{?id*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/pods{?ascending*,cluster_id*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", pathParameters),
 	}
 	return m
 }
@@ -51,30 +66,29 @@ func (m *PodsRequestBuilder) Count() *PodsCountRequestBuilder {
 	return NewPodsCountRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Get will not return pods with status 'deleted', and only from clusters with status 'active' andpods belonging to nodes whose last_sync is within the last 5 minutes.
-// returns a []PodResponseable when successful
+// Get paginated. Only returns pods from clusters with status 'active' whose node synced within thelast 5 minutes, and never pods with status 'deleted'. `cluster_id` scopes both the pods andthe available filters to one cluster. `id` looks up that single pod (still subject to`cluster_id`) and ignores the other filters.
+// returns a PaginatedPodResponseable when successful
+// returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 500 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *PodsRequestBuilder) Get(ctx context.Context, requestConfiguration *PodsRequestBuilderGetRequestConfiguration) ([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PodResponseable, error) {
+func (m *PodsRequestBuilder) Get(ctx context.Context, requestConfiguration *PodsRequestBuilderGetRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedPodResponseable, error) {
 	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
 	if err != nil {
 		return nil, err
 	}
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
+		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.SendCollection(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreatePodResponseFromDiscriminatorValue, errorMapping)
+	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreatePaginatedPodResponseFromDiscriminatorValue, errorMapping)
 	if err != nil {
 		return nil, err
 	}
-	val := make([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PodResponseable, len(res))
-	for i, v := range res {
-		if v != nil {
-			val[i] = v.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PodResponseable)
-		}
+	if res == nil {
+		return nil, nil
 	}
-	return val, nil
+	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedPodResponseable), nil
 }
 
 // Namespaces the namespaces property
@@ -83,19 +97,13 @@ func (m *PodsRequestBuilder) Namespaces() *PodsNamespacesRequestBuilder {
 	return NewPodsNamespacesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Paginated the paginated property
-// returns a *PodsPaginatedRequestBuilder when successful
-func (m *PodsRequestBuilder) Paginated() *PodsPaginatedRequestBuilder {
-	return NewPodsPaginatedRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // Statuses the statuses property
 // returns a *PodsStatusesRequestBuilder when successful
 func (m *PodsRequestBuilder) Statuses() *PodsStatusesRequestBuilder {
 	return NewPodsStatusesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// ToGetRequestInformation will not return pods with status 'deleted', and only from clusters with status 'active' andpods belonging to nodes whose last_sync is within the last 5 minutes.
+// ToGetRequestInformation paginated. Only returns pods from clusters with status 'active' whose node synced within thelast 5 minutes, and never pods with status 'deleted'. `cluster_id` scopes both the pods andthe available filters to one cluster. `id` looks up that single pod (still subject to`cluster_id`) and ignores the other filters.
 // returns a *RequestInformation when successful
 func (m *PodsRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *PodsRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

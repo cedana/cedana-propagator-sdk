@@ -6,6 +6,7 @@ package v1
 import (
 	"context"
 	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
+	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
@@ -14,12 +15,20 @@ type CheckpointsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// CheckpointsRequestBuilderGetQueryParameters use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
+// CheckpointsRequestBuilderGetQueryParameters paginated. `ids` (comma-separated UUIDs) and `cluster_id` (the cluster the checkpoint actionran on) filter the list; `total_count` is the number of matches before paging.
 type CheckpointsRequestBuilderGetQueryParameters struct {
+	// Sort ascending (default false)
+	Ascending *bool "uriparametername:\"ascending\""
 	// Only return checkpoints whose checkpoint action ran on this cluster
-	Cluster_id *string "uriparametername:\"cluster_id\""
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
 	// Comma-separated list of checkpoint UUIDs to filter by
 	Ids *string "uriparametername:\"ids\""
+	// Page size (default 50, max 500)
+	Limit *int64 "uriparametername:\"limit\""
+	// Row offset (default 0)
+	Offset *int64 "uriparametername:\"offset\""
+	// Sort column: `id`, `name`, `status`, `platform` or `gpu` (default `id`)
+	Sort *string "uriparametername:\"sort\""
 }
 
 // CheckpointsRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
@@ -56,7 +65,7 @@ func (m *CheckpointsRequestBuilder) ById(id string) *CheckpointsCheckpointsItemR
 // NewCheckpointsRequestBuilderInternal instantiates a new CheckpointsRequestBuilder and sets the default values.
 func NewCheckpointsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *CheckpointsRequestBuilder {
 	m := &CheckpointsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/checkpoints{?cluster_id*,ids*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/checkpoints{?ascending*,cluster_id*,ids*,limit*,offset*,sort*}", pathParameters),
 	}
 	return m
 }
@@ -74,12 +83,12 @@ func (m *CheckpointsRequestBuilder) Deprecate() *CheckpointsDeprecateRequestBuil
 	return NewCheckpointsDeprecateRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Get use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
-// returns a []Checkpointable when successful
+// Get paginated. `ids` (comma-separated UUIDs) and `cluster_id` (the cluster the checkpoint actionran on) filter the list; `total_count` is the number of matches before paging.
+// returns a PaginatedCheckpointResponseable when successful
 // returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 500 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *CheckpointsRequestBuilder) Get(ctx context.Context, requestConfiguration *CheckpointsRequestBuilderGetRequestConfiguration) ([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.Checkpointable, error) {
+func (m *CheckpointsRequestBuilder) Get(ctx context.Context, requestConfiguration *CheckpointsRequestBuilderGetRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedCheckpointResponseable, error) {
 	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
 	if err != nil {
 		return nil, err
@@ -89,17 +98,14 @@ func (m *CheckpointsRequestBuilder) Get(ctx context.Context, requestConfiguratio
 		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.SendCollection(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateCheckpointFromDiscriminatorValue, errorMapping)
+	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreatePaginatedCheckpointResponseFromDiscriminatorValue, errorMapping)
 	if err != nil {
 		return nil, err
 	}
-	val := make([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.Checkpointable, len(res))
-	for i, v := range res {
-		if v != nil {
-			val[i] = v.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.Checkpointable)
-		}
+	if res == nil {
+		return nil, nil
 	}
-	return val, nil
+	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedCheckpointResponseable), nil
 }
 
 // Info the info property
@@ -131,7 +137,7 @@ func (m *CheckpointsRequestBuilder) Post(ctx context.Context, requestConfigurati
 	return res.(*string), nil
 }
 
-// ToGetRequestInformation use query params to filter checkpoints. Supports filtering by `ids` (comma-separated UUIDsfor single or multiple checkpoints) and by `cluster_id` (the cluster the checkpoint actionran on)
+// ToGetRequestInformation paginated. `ids` (comma-separated UUIDs) and `cluster_id` (the cluster the checkpoint actionran on) filter the list; `total_count` is the number of matches before paging.
 // returns a *RequestInformation when successful
 func (m *CheckpointsRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *CheckpointsRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
