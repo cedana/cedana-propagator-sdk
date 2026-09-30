@@ -1167,13 +1167,6 @@
       },
       "CheckpointSuccessInfo": {
         "properties": {
-          "checksum": {
-            "description": "`<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,\nunless the restore path changes",
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "restore_path": {
             "type": [
               "string",
