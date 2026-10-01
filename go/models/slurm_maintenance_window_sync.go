@@ -8,18 +8,17 @@ import (
 	i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e "time"
 )
 
-type SlurmMaintenanceWindow struct {
+// SlurmMaintenanceWindowSync a SLURM maintenance reservation as reported by the cedana-slurm plugin
+type SlurmMaintenanceWindowSync struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
-	// Cluster the window was synced from; None for manually created windows
-	cluster_id *string
-	// The created_at property
-	created_at *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	// The end_time property
 	end_time *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
-	// The id property
-	id *string
-	// Reservation name; set for windows synced from the cluster
+	// The flags property
+	flags []string
+	// The metadata property
+	metadata i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	// Reservation name, unique within the cluster
 	name *string
 	// The nodes property
 	nodes []string
@@ -29,71 +28,39 @@ type SlurmMaintenanceWindow struct {
 	reason *string
 	// The start_time property
 	start_time *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
-	// The status property
+	// One of scheduled, active, completed, cancelled (defaults to scheduled)
 	status *string
 }
 
-// NewSlurmMaintenanceWindow instantiates a new SlurmMaintenanceWindow and sets the default values.
-func NewSlurmMaintenanceWindow() *SlurmMaintenanceWindow {
-	m := &SlurmMaintenanceWindow{}
+// NewSlurmMaintenanceWindowSync instantiates a new SlurmMaintenanceWindowSync and sets the default values.
+func NewSlurmMaintenanceWindowSync() *SlurmMaintenanceWindowSync {
+	m := &SlurmMaintenanceWindowSync{}
 	m.SetAdditionalData(make(map[string]any))
 	return m
 }
 
-// CreateSlurmMaintenanceWindowFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
+// CreateSlurmMaintenanceWindowSyncFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
 // returns a Parsable when successful
-func CreateSlurmMaintenanceWindowFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) (i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
-	return NewSlurmMaintenanceWindow(), nil
+func CreateSlurmMaintenanceWindowSyncFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) (i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
+	return NewSlurmMaintenanceWindowSync(), nil
 }
 
 // GetAdditionalData gets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 // returns a map[string]any when successful
-func (m *SlurmMaintenanceWindow) GetAdditionalData() map[string]any {
+func (m *SlurmMaintenanceWindowSync) GetAdditionalData() map[string]any {
 	return m.additionalData
-}
-
-// GetClusterId gets the cluster_id property value. Cluster the window was synced from; None for manually created windows
-// returns a *string when successful
-func (m *SlurmMaintenanceWindow) GetClusterId() *string {
-	return m.cluster_id
-}
-
-// GetCreatedAt gets the created_at property value. The created_at property
-// returns a *Time when successful
-func (m *SlurmMaintenanceWindow) GetCreatedAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
-	return m.created_at
 }
 
 // GetEndTime gets the end_time property value. The end_time property
 // returns a *Time when successful
-func (m *SlurmMaintenanceWindow) GetEndTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
+func (m *SlurmMaintenanceWindowSync) GetEndTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
 	return m.end_time
 }
 
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
-func (m *SlurmMaintenanceWindow) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+func (m *SlurmMaintenanceWindowSync) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
-	res["cluster_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetStringValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetClusterId(val)
-		}
-		return nil
-	}
-	res["created_at"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetTimeValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetCreatedAt(val)
-		}
-		return nil
-	}
 	res["end_time"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetTimeValue()
 		if err != nil {
@@ -104,13 +71,29 @@ func (m *SlurmMaintenanceWindow) GetFieldDeserializers() map[string]func(i878a80
 		}
 		return nil
 	}
-	res["id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetStringValue()
+	res["flags"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetCollectionOfPrimitiveValues("string")
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetId(val)
+			res := make([]string, len(val))
+			for i, v := range val {
+				if v != nil {
+					res[i] = *(v.(*string))
+				}
+			}
+			m.SetFlags(res)
+		}
+		return nil
+	}
+	res["metadata"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetMetadata(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
 		}
 		return nil
 	}
@@ -189,70 +172,70 @@ func (m *SlurmMaintenanceWindow) GetFieldDeserializers() map[string]func(i878a80
 	return res
 }
 
-// GetId gets the id property value. The id property
-// returns a *string when successful
-func (m *SlurmMaintenanceWindow) GetId() *string {
-	return m.id
+// GetFlags gets the flags property value. The flags property
+// returns a []string when successful
+func (m *SlurmMaintenanceWindowSync) GetFlags() []string {
+	return m.flags
 }
 
-// GetName gets the name property value. Reservation name; set for windows synced from the cluster
+// GetMetadata gets the metadata property value. The metadata property
+// returns a UntypedNodeable when successful
+func (m *SlurmMaintenanceWindowSync) GetMetadata() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
+	return m.metadata
+}
+
+// GetName gets the name property value. Reservation name, unique within the cluster
 // returns a *string when successful
-func (m *SlurmMaintenanceWindow) GetName() *string {
+func (m *SlurmMaintenanceWindowSync) GetName() *string {
 	return m.name
 }
 
 // GetNodes gets the nodes property value. The nodes property
 // returns a []string when successful
-func (m *SlurmMaintenanceWindow) GetNodes() []string {
+func (m *SlurmMaintenanceWindowSync) GetNodes() []string {
 	return m.nodes
 }
 
 // GetPartitions gets the partitions property value. The partitions property
 // returns a []string when successful
-func (m *SlurmMaintenanceWindow) GetPartitions() []string {
+func (m *SlurmMaintenanceWindowSync) GetPartitions() []string {
 	return m.partitions
 }
 
 // GetReason gets the reason property value. The reason property
 // returns a *string when successful
-func (m *SlurmMaintenanceWindow) GetReason() *string {
+func (m *SlurmMaintenanceWindowSync) GetReason() *string {
 	return m.reason
 }
 
 // GetStartTime gets the start_time property value. The start_time property
 // returns a *Time when successful
-func (m *SlurmMaintenanceWindow) GetStartTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
+func (m *SlurmMaintenanceWindowSync) GetStartTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
 	return m.start_time
 }
 
-// GetStatus gets the status property value. The status property
+// GetStatus gets the status property value. One of scheduled, active, completed, cancelled (defaults to scheduled)
 // returns a *string when successful
-func (m *SlurmMaintenanceWindow) GetStatus() *string {
+func (m *SlurmMaintenanceWindowSync) GetStatus() *string {
 	return m.status
 }
 
 // Serialize serializes information the current object
-func (m *SlurmMaintenanceWindow) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
-	{
-		err := writer.WriteStringValue("cluster_id", m.GetClusterId())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteTimeValue("created_at", m.GetCreatedAt())
-		if err != nil {
-			return err
-		}
-	}
+func (m *SlurmMaintenanceWindowSync) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
 		err := writer.WriteTimeValue("end_time", m.GetEndTime())
 		if err != nil {
 			return err
 		}
 	}
+	if m.GetFlags() != nil {
+		err := writer.WriteCollectionOfStringValues("flags", m.GetFlags())
+		if err != nil {
+			return err
+		}
+	}
 	{
-		err := writer.WriteStringValue("id", m.GetId())
+		err := writer.WriteObjectValue("metadata", m.GetMetadata())
 		if err != nil {
 			return err
 		}
@@ -303,77 +286,70 @@ func (m *SlurmMaintenanceWindow) Serialize(writer i878a80d2330e89d26896388a3f487
 }
 
 // SetAdditionalData sets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
-func (m *SlurmMaintenanceWindow) SetAdditionalData(value map[string]any) {
+func (m *SlurmMaintenanceWindowSync) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
-// SetClusterId sets the cluster_id property value. Cluster the window was synced from; None for manually created windows
-func (m *SlurmMaintenanceWindow) SetClusterId(value *string) {
-	m.cluster_id = value
-}
-
-// SetCreatedAt sets the created_at property value. The created_at property
-func (m *SlurmMaintenanceWindow) SetCreatedAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
-	m.created_at = value
-}
-
 // SetEndTime sets the end_time property value. The end_time property
-func (m *SlurmMaintenanceWindow) SetEndTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
+func (m *SlurmMaintenanceWindowSync) SetEndTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
 	m.end_time = value
 }
 
-// SetId sets the id property value. The id property
-func (m *SlurmMaintenanceWindow) SetId(value *string) {
-	m.id = value
+// SetFlags sets the flags property value. The flags property
+func (m *SlurmMaintenanceWindowSync) SetFlags(value []string) {
+	m.flags = value
 }
 
-// SetName sets the name property value. Reservation name; set for windows synced from the cluster
-func (m *SlurmMaintenanceWindow) SetName(value *string) {
+// SetMetadata sets the metadata property value. The metadata property
+func (m *SlurmMaintenanceWindowSync) SetMetadata(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
+	m.metadata = value
+}
+
+// SetName sets the name property value. Reservation name, unique within the cluster
+func (m *SlurmMaintenanceWindowSync) SetName(value *string) {
 	m.name = value
 }
 
 // SetNodes sets the nodes property value. The nodes property
-func (m *SlurmMaintenanceWindow) SetNodes(value []string) {
+func (m *SlurmMaintenanceWindowSync) SetNodes(value []string) {
 	m.nodes = value
 }
 
 // SetPartitions sets the partitions property value. The partitions property
-func (m *SlurmMaintenanceWindow) SetPartitions(value []string) {
+func (m *SlurmMaintenanceWindowSync) SetPartitions(value []string) {
 	m.partitions = value
 }
 
 // SetReason sets the reason property value. The reason property
-func (m *SlurmMaintenanceWindow) SetReason(value *string) {
+func (m *SlurmMaintenanceWindowSync) SetReason(value *string) {
 	m.reason = value
 }
 
 // SetStartTime sets the start_time property value. The start_time property
-func (m *SlurmMaintenanceWindow) SetStartTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
+func (m *SlurmMaintenanceWindowSync) SetStartTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
 	m.start_time = value
 }
 
-// SetStatus sets the status property value. The status property
-func (m *SlurmMaintenanceWindow) SetStatus(value *string) {
+// SetStatus sets the status property value. One of scheduled, active, completed, cancelled (defaults to scheduled)
+func (m *SlurmMaintenanceWindowSync) SetStatus(value *string) {
 	m.status = value
 }
 
-type SlurmMaintenanceWindowable interface {
+type SlurmMaintenanceWindowSyncable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
-	GetClusterId() *string
-	GetCreatedAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	GetEndTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
-	GetId() *string
+	GetFlags() []string
+	GetMetadata() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	GetName() *string
 	GetNodes() []string
 	GetPartitions() []string
 	GetReason() *string
 	GetStartTime() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	GetStatus() *string
-	SetClusterId(value *string)
-	SetCreatedAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
 	SetEndTime(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
-	SetId(value *string)
+	SetFlags(value []string)
+	SetMetadata(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
 	SetName(value *string)
 	SetNodes(value []string)
 	SetPartitions(value []string)

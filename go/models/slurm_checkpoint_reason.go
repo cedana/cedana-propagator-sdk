@@ -8,11 +8,12 @@ type SlurmCheckpointReason int
 const (
 	HEARTBEAT_SLURMCHECKPOINTREASON SlurmCheckpointReason = iota
 	MANUAL_SLURMCHECKPOINTREASON
+	MAINTENANCE_SLURMCHECKPOINTREASON
 	PREEMPTION_SLURMCHECKPOINTREASON
 )
 
 func (i SlurmCheckpointReason) String() string {
-	return []string{"heartbeat", "manual", "preemption"}[i]
+	return []string{"heartbeat", "manual", "maintenance", "preemption"}[i]
 }
 
 func ParseSlurmCheckpointReason(v string) (any, error) {
@@ -22,6 +23,8 @@ func ParseSlurmCheckpointReason(v string) (any, error) {
 		result = HEARTBEAT_SLURMCHECKPOINTREASON
 	case "manual":
 		result = MANUAL_SLURMCHECKPOINTREASON
+	case "maintenance":
+		result = MAINTENANCE_SLURMCHECKPOINTREASON
 	case "preemption":
 		result = PREEMPTION_SLURMCHECKPOINTREASON
 	default:

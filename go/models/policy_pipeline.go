@@ -16,7 +16,7 @@ type PolicyPipeline struct {
 	// Filter defines WHAT resources are targeted
 	filter PipelineFilterable
 	// Trigger defines WHEN a policy activates
-	trigger Createable
+	trigger PipelineTriggerable
 }
 
 // NewPolicyPipeline instantiates a new PolicyPipeline and sets the default values.
@@ -69,12 +69,12 @@ func (m *PolicyPipeline) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		return nil
 	}
 	res["trigger"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(CreateCreateFromDiscriminatorValue)
+		val, err := n.GetObjectValue(CreatePipelineTriggerFromDiscriminatorValue)
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetTrigger(val.(Createable))
+			m.SetTrigger(val.(PipelineTriggerable))
 		}
 		return nil
 	}
@@ -88,8 +88,8 @@ func (m *PolicyPipeline) GetFilter() PipelineFilterable {
 }
 
 // GetTrigger gets the trigger property value. Trigger defines WHEN a policy activates
-// returns a Createable when successful
-func (m *PolicyPipeline) GetTrigger() Createable {
+// returns a PipelineTriggerable when successful
+func (m *PolicyPipeline) GetTrigger() PipelineTriggerable {
 	return m.trigger
 }
 
@@ -138,7 +138,7 @@ func (m *PolicyPipeline) SetFilter(value PipelineFilterable) {
 }
 
 // SetTrigger sets the trigger property value. Trigger defines WHEN a policy activates
-func (m *PolicyPipeline) SetTrigger(value Createable) {
+func (m *PolicyPipeline) SetTrigger(value PipelineTriggerable) {
 	m.trigger = value
 }
 
@@ -147,8 +147,8 @@ type PolicyPipelineable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetAction() Createable
 	GetFilter() PipelineFilterable
-	GetTrigger() Createable
+	GetTrigger() PipelineTriggerable
 	SetAction(value Createable)
 	SetFilter(value PipelineFilterable)
-	SetTrigger(value Createable)
+	SetTrigger(value PipelineTriggerable)
 }
