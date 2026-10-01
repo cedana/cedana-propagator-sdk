@@ -6,19 +6,18 @@ from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, Par
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 @dataclass
-class SlurmMaintenanceWindow(AdditionalDataHolder, Parsable):
+class SlurmMaintenanceWindowSync(AdditionalDataHolder, Parsable):
+    """
+    A SLURM maintenance reservation as reported by the cedana-slurm plugin
+    """
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # Cluster the window was synced from; None for manually created windows
-    cluster_id: Optional[str] = None
-    # The created_at property
-    created_at: Optional[datetime.datetime] = None
     # The end_time property
     end_time: Optional[datetime.datetime] = None
-    # The id property
-    id: Optional[str] = None
-    # Reservation name; set for windows synced from the cluster
+    # The flags property
+    flags: Optional[list[str]] = None
+    # Reservation name, unique within the cluster
     name: Optional[str] = None
     # The nodes property
     nodes: Optional[list[str]] = None
@@ -28,19 +27,19 @@ class SlurmMaintenanceWindow(AdditionalDataHolder, Parsable):
     reason: Optional[str] = None
     # The start_time property
     start_time: Optional[datetime.datetime] = None
-    # The status property
+    # One of scheduled, active, completed, cancelled (defaults to scheduled)
     status: Optional[str] = None
     
     @staticmethod
-    def create_from_discriminator_value(parse_node: ParseNode) -> SlurmMaintenanceWindow:
+    def create_from_discriminator_value(parse_node: ParseNode) -> SlurmMaintenanceWindowSync:
         """
         Creates a new instance of the appropriate class based on discriminator value
         param parse_node: The parse node to use to read the discriminator value and create the object
-        Returns: SlurmMaintenanceWindow
+        Returns: SlurmMaintenanceWindowSync
         """
         if parse_node is None:
             raise TypeError("parse_node cannot be null.")
-        return SlurmMaintenanceWindow()
+        return SlurmMaintenanceWindowSync()
     
     def get_field_deserializers(self,) -> dict[str, Callable[[ParseNode], None]]:
         """
@@ -48,10 +47,8 @@ class SlurmMaintenanceWindow(AdditionalDataHolder, Parsable):
         Returns: dict[str, Callable[[ParseNode], None]]
         """
         fields: dict[str, Callable[[Any], None]] = {
-            "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_str_value()),
-            "created_at": lambda n : setattr(self, 'created_at', n.get_datetime_value()),
             "end_time": lambda n : setattr(self, 'end_time', n.get_datetime_value()),
-            "id": lambda n : setattr(self, 'id', n.get_str_value()),
+            "flags": lambda n : setattr(self, 'flags', n.get_collection_of_primitive_values(str)),
             "name": lambda n : setattr(self, 'name', n.get_str_value()),
             "nodes": lambda n : setattr(self, 'nodes', n.get_collection_of_primitive_values(str)),
             "partitions": lambda n : setattr(self, 'partitions', n.get_collection_of_primitive_values(str)),
@@ -69,10 +66,8 @@ class SlurmMaintenanceWindow(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
-        writer.write_str_value("cluster_id", self.cluster_id)
-        writer.write_datetime_value("created_at", self.created_at)
         writer.write_datetime_value("end_time", self.end_time)
-        writer.write_str_value("id", self.id)
+        writer.write_collection_of_primitive_values("flags", self.flags)
         writer.write_str_value("name", self.name)
         writer.write_collection_of_primitive_values("nodes", self.nodes)
         writer.write_collection_of_primitive_values("partitions", self.partitions)

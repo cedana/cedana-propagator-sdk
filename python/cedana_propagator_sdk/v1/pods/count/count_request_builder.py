@@ -11,6 +11,7 @@ from kiota_abstractions.request_information import RequestInformation
 from kiota_abstractions.request_option import RequestOption
 from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
+from uuid import UUID
 from warnings import warn
 
 if TYPE_CHECKING:
@@ -28,7 +29,7 @@ class CountRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/pods/count{?status*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/pods/count{?cluster_id*,status*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[CountRequestBuilderGetQueryParameters]] = None) -> Optional[TotalCountResponse]:
         """
@@ -77,6 +78,9 @@ class CountRequestBuilder(BaseRequestBuilder):
         """
         Get total count of pods
         """
+        # Only count resources belonging to this cluster
+        cluster_id: Optional[UUID] = None
+
         status: Optional[str] = None
 
     

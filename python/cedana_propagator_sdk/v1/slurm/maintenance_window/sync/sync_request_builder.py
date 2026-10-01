@@ -11,96 +11,75 @@ from kiota_abstractions.request_information import RequestInformation
 from kiota_abstractions.request_option import RequestOption
 from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
-from uuid import UUID
 from warnings import warn
 
 if TYPE_CHECKING:
-    from ....models.http_error import HttpError
-    from ....models.paginated_pod_response import PaginatedPodResponse
+    from .....models.http_error import HttpError
+    from .....models.slurm_maintenance_window_sync_request import SlurmMaintenanceWindowSyncRequest
 
-class PaginatedRequestBuilder(BaseRequestBuilder):
+class SyncRequestBuilder(BaseRequestBuilder):
     """
-    Builds and executes requests for operations under /v1/pods/paginated
+    Builds and executes requests for operations under /v1/slurm/maintenance_window/sync
     """
     def __init__(self,request_adapter: RequestAdapter, path_parameters: Union[str, dict[str, Any]]) -> None:
         """
-        Instantiates a new PaginatedRequestBuilder and sets the default values.
+        Instantiates a new SyncRequestBuilder and sets the default values.
         param path_parameters: The raw url or the url-template parameters for the request.
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/pods/paginated{?ascending*,cluster_id*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/slurm/maintenance_window/sync", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[PaginatedRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedPodResponse]:
+    async def post(self,body: SlurmMaintenanceWindowSyncRequest, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[str]:
         """
-        List pods (paginated)
+        Receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'ended'.
+        param body: The request body
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[PaginatedPodResponse]
+        Returns: Optional[str]
         """
-        request_info = self.to_get_request_information(
-            request_configuration
+        if body is None:
+            raise TypeError("body cannot be null.")
+        request_info = self.to_post_request_information(
+            body, request_configuration
         )
-        from ....models.http_error import HttpError
+        from .....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
+            "404": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ....models.paginated_pod_response import PaginatedPodResponse
-
-        return await self.request_adapter.send_async(request_info, PaginatedPodResponse, error_mapping)
+        return await self.request_adapter.send_primitive_async(request_info, "str", error_mapping)
     
-    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[PaginatedRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
+    def to_post_request_information(self,body: SlurmMaintenanceWindowSyncRequest, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        List pods (paginated)
+        Receives the full set of maintenance reservations for a cluster from the cedana-slurmplugin and upserts them by name. Windows previously synced for the cluster that aremissing from the payload are marked 'ended'.
+        param body: The request body
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
-        request_info = RequestInformation(Method.GET, self.url_template, self.path_parameters)
+        if body is None:
+            raise TypeError("body cannot be null.")
+        request_info = RequestInformation(Method.POST, self.url_template, self.path_parameters)
         request_info.configure(request_configuration)
-        request_info.headers.try_add("Accept", "application/json")
+        request_info.headers.try_add("Accept", "text/plain;q=0.9")
+        request_info.set_content_from_parsable(self.request_adapter, "application/json", body)
         return request_info
     
-    def with_url(self,raw_url: str) -> PaginatedRequestBuilder:
+    def with_url(self,raw_url: str) -> SyncRequestBuilder:
         """
         Returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
         param raw_url: The raw URL to use for the request builder.
-        Returns: PaginatedRequestBuilder
+        Returns: SyncRequestBuilder
         """
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
-        return PaginatedRequestBuilder(self.request_adapter, raw_url)
+        return SyncRequestBuilder(self.request_adapter, raw_url)
     
     @dataclass
-    class PaginatedRequestBuilderGetQueryParameters():
-        """
-        List pods (paginated)
-        """
-        ascending: Optional[bool] = None
-
-        # Only return pods belonging to this cluster
-        cluster_id: Optional[UUID] = None
-
-        id: Optional[UUID] = None
-
-        limit: Optional[int] = None
-
-        namespace: Optional[str] = None
-
-        offset: Optional[int] = None
-
-        # pod name to query against (uses postgres ILIKE pattern search)
-        pod_name: Optional[str] = None
-
-        sort: Optional[str] = None
-
-        status: Optional[str] = None
-
-    
-    @dataclass
-    class PaginatedRequestBuilderGetRequestConfiguration(RequestConfiguration[PaginatedRequestBuilderGetQueryParameters]):
+    class SyncRequestBuilderPostRequestConfiguration(RequestConfiguration[QueryParameters]):
         """
         Configuration for the request such as headers, query parameters, and middleware options.
         """
