@@ -5,7 +5,7 @@ from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, Par
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from .list_ import List_
+    from .create import Create
     from .pipeline_filter import PipelineFilter
     from .pipeline_trigger import PipelineTrigger
 
@@ -18,7 +18,7 @@ class PolicyPipeline(AdditionalDataHolder, Parsable):
     additional_data: dict[str, Any] = field(default_factory=dict)
 
     # Action defines WHAT to do when triggered
-    action: Optional[List_] = None
+    action: Optional[Create] = None
     # Filter defines WHAT resources are targeted
     filter: Optional[PipelineFilter] = None
     # Trigger defines WHEN a policy activates
@@ -40,16 +40,16 @@ class PolicyPipeline(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
-        from .list_ import List_
+        from .create import Create
         from .pipeline_filter import PipelineFilter
         from .pipeline_trigger import PipelineTrigger
 
-        from .list_ import List_
+        from .create import Create
         from .pipeline_filter import PipelineFilter
         from .pipeline_trigger import PipelineTrigger
 
         fields: dict[str, Callable[[Any], None]] = {
-            "action": lambda n : setattr(self, 'action', n.get_object_value(List_)),
+            "action": lambda n : setattr(self, 'action', n.get_object_value(Create)),
             "filter": lambda n : setattr(self, 'filter', n.get_object_value(PipelineFilter)),
             "trigger": lambda n : setattr(self, 'trigger', n.get_object_value(PipelineTrigger)),
         }
