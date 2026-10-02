@@ -27,6 +27,12 @@ func NewCheckpointsCheckpointsItemRequestBuilder(rawUrl string, requestAdapter i
 	return NewCheckpointsCheckpointsItemRequestBuilderInternal(urlParams, requestAdapter)
 }
 
+// Files the files property
+// returns a *CheckpointsItemFilesRequestBuilder when successful
+func (m *CheckpointsCheckpointsItemRequestBuilder) Files() *CheckpointsItemFilesRequestBuilder {
+	return NewCheckpointsItemFilesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Storage the storage property
 // returns a *CheckpointsItemStorageRequestBuilder when successful
 func (m *CheckpointsCheckpointsItemRequestBuilder) Storage() *CheckpointsItemStorageRequestBuilder {
