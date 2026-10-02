@@ -5695,6 +5695,25 @@
         ],
         "type": "object"
       },
+      "PaginatedSlurmClusterResponse": {
+        "properties": {
+          "clusters": {
+            "items": {
+              "$ref": "#/components/schemas/SlurmCluster"
+            },
+            "type": "array"
+          },
+          "total_count": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "clusters",
+          "total_count"
+        ],
+        "type": "object"
+      },
       "PaginatedSlurmJobResponse": {
         "description": "One page of SLURM jobs plus the total number of jobs matching the query,\nso clients can compute page counts without walking every page.",
         "properties": {
@@ -5721,6 +5740,44 @@
         },
         "required": [
           "jobs",
+          "total_count"
+        ],
+        "type": "object"
+      },
+      "PaginatedSlurmNodeResponse": {
+        "properties": {
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/SlurmNode"
+            },
+            "type": "array"
+          },
+          "total_count": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "nodes",
+          "total_count"
+        ],
+        "type": "object"
+      },
+      "PaginatedSlurmPartitionResponse": {
+        "properties": {
+          "partitions": {
+            "items": {
+              "$ref": "#/components/schemas/SlurmPartition"
+            },
+            "type": "array"
+          },
+          "total_count": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "partitions",
           "total_count"
         ],
         "type": "object"
@@ -24497,20 +24554,56 @@
     },
     "/v1/slurm/clusters": {
       "get": {
+        "description": "Paginated. `total_count` is the number of SLURM clusters before paging.",
         "operationId": "list",
+        "parameters": [
+          {
+            "description": "Row offset (default 0)",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Page size (default 50, max 500)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SlurmCluster"
-                  },
-                  "type": "array"
+                  "$ref": "#/components/schemas/PaginatedSlurmClusterResponse"
                 }
               }
             },
-            "description": "Returns clusters"
+            "description": "Returns clusters with total count"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Invalid query parameters"
           },
           "4XX": {
             "content": {
@@ -24621,87 +24714,6 @@
         ]
       }
     },
-    "/v1/slurm/clusters_paginated": {
-      "get": {
-        "operationId": "list_paginated",
-        "parameters": [
-          {
-            "description": "Number of records to skip (default: 0)",
-            "in": "query",
-            "name": "offset",
-            "required": false,
-            "schema": {
-              "format": "int64",
-              "type": "integer"
-            }
-          },
-          {
-            "description": "Maximum number of records to return (default: 50, max: 100)",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int64",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SlurmCluster"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": "Returns clusters"
-          },
-          "4XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Client error"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Failed to fetch from database"
-          },
-          "5XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "Token": []
-          }
-        ],
-        "summary": "List clusters (paginated)",
-        "tags": [
-          "Clusters (Slurm)"
-        ]
-      }
-    },
     "/v1/slurm/events": {
       "get": {
         "description": "Derives an event stream from `slurm_jobs` rows in terminal states\n(PREEMPTED, NODE_FAIL, OOM, TIMEOUT, etc). Powered by data already\narriving via `/slurm/jobs/sync` — no separate ingestion path.",
@@ -24807,77 +24819,10 @@
         ]
       }
     },
-    "/v1/slurm/jobs/sync": {
-      "post": {
-        "description": "Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database.\nUnless the batch is partial, jobs on the cluster missing from it are marked completed.",
-        "operationId": "sync",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SlurmJobSyncRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Jobs synced successfully"
-          },
-          "4XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Client error"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Failed to sync jobs to database"
-          },
-          "5XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "Token": []
-          }
-        ],
-        "summary": "Sync jobs",
-        "tags": [
-          "Jobs (Slurm)"
-        ]
-      }
-    },
-    "/v1/slurm/jobs_paginated": {
+    "/v1/slurm/jobs": {
       "get": {
-        "description": "Returns SLURM jobs from the database with pagination",
-        "operationId": "list_paginated",
+        "description": "Paginated. `total_count` is the number of jobs matching the filters before paging.",
+        "operationId": "list",
         "parameters": [
           {
             "description": "Exact SLURM job id to fetch; when set, all other filters are ignored",
@@ -24893,6 +24838,7 @@
             }
           },
           {
+            "description": "Row offset (default 0)",
             "in": "query",
             "name": "offset",
             "required": false,
@@ -24905,6 +24851,7 @@
             }
           },
           {
+            "description": "Page size (default 50, max 500)",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -24986,7 +24933,7 @@
                 }
               }
             },
-            "description": "Returns jobs"
+            "description": "Returns jobs with total count and available filters"
           },
           "400": {
             "content": {
@@ -24996,7 +24943,7 @@
                 }
               }
             },
-            "description": "Invalid sort column"
+            "description": "Invalid query parameters"
           },
           "4XX": {
             "content": {
@@ -25034,7 +24981,74 @@
             "Token": []
           }
         ],
-        "summary": "List jobs (paginated)",
+        "summary": "List jobs",
+        "tags": [
+          "Jobs (Slurm)"
+        ]
+      }
+    },
+    "/v1/slurm/jobs/sync": {
+      "post": {
+        "description": "Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database.\nUnless the batch is partial, jobs on the cluster missing from it are marked completed.",
+        "operationId": "sync",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SlurmJobSyncRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Jobs synced successfully"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Failed to sync jobs to database"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Sync jobs",
         "tags": [
           "Jobs (Slurm)"
         ]
@@ -25524,8 +25538,22 @@
     },
     "/v1/slurm/nodes": {
       "get": {
+        "description": "Paginated. `total_count` is the number of nodes matching the filters before paging.",
         "operationId": "list",
         "parameters": [
+          {
+            "description": "Exact node id to fetch",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
           {
             "description": "Only return nodes belonging to this cluster",
             "in": "query",
@@ -25538,6 +25566,32 @@
                 "null"
               ]
             }
+          },
+          {
+            "description": "Row offset (default 0)",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Page size (default 50, max 500)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
@@ -25545,14 +25599,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SlurmNode"
-                  },
-                  "type": "array"
+                  "$ref": "#/components/schemas/PaginatedSlurmNodeResponse"
                 }
               }
             },
-            "description": "Returns nodes"
+            "description": "Returns nodes with total count"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Invalid query parameters"
           },
           "4XX": {
             "content": {
@@ -25663,38 +25724,35 @@
         ]
       }
     },
-    "/v1/slurm/nodes_paginated": {
+    "/v1/slurm/partitions": {
       "get": {
-        "operationId": "list_paginated",
+        "description": "Paginated. `total_count` is the number of partitions before paging.",
+        "operationId": "list",
         "parameters": [
           {
-            "description": "Number of records to skip (default: 0)",
+            "description": "Row offset (default 0)",
             "in": "query",
             "name": "offset",
             "required": false,
             "schema": {
               "format": "int64",
-              "type": "integer"
+              "type": [
+                "integer",
+                "null"
+              ]
             }
           },
           {
-            "description": "Maximum number of records to return (default: 50, max: 100)",
+            "description": "Page size (default 50, max 500)",
             "in": "query",
             "name": "limit",
             "required": false,
             "schema": {
               "format": "int64",
-              "type": "integer"
-            }
-          },
-          {
-            "description": "Only return nodes belonging to this cluster",
-            "in": "query",
-            "name": "cluster_id",
-            "required": false,
-            "schema": {
-              "format": "uuid",
-              "type": "string"
+              "type": [
+                "integer",
+                "null"
+              ]
             }
           }
         ],
@@ -25703,16 +25761,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SlurmNode"
-                  },
-                  "type": "array"
+                  "$ref": "#/components/schemas/PaginatedSlurmPartitionResponse"
                 }
               }
             },
-            "description": "Returns nodes"
+            "description": "Returns partitions with total count"
           },
-          "4XX": {
+          "400": {
             "content": {
               "application/json": {
                 "schema": {
@@ -25720,56 +25775,7 @@
                 }
               }
             },
-            "description": "Client error"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Failed to fetch from database"
-          },
-          "5XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "Token": []
-          }
-        ],
-        "summary": "List nodes (paginated)",
-        "tags": [
-          "Nodes (Slurm)"
-        ]
-      }
-    },
-    "/v1/slurm/partitions": {
-      "get": {
-        "operationId": "list",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SlurmPartition"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": "Returns partitions"
+            "description": "Invalid query parameters"
           },
           "4XX": {
             "content": {
@@ -25885,87 +25891,6 @@
           }
         ],
         "summary": "Sync partitions",
-        "tags": [
-          "Partitions (Slurm)"
-        ]
-      }
-    },
-    "/v1/slurm/partitions_paginated": {
-      "get": {
-        "operationId": "list_paginated",
-        "parameters": [
-          {
-            "description": "Number of records to skip (default: 0)",
-            "in": "query",
-            "name": "offset",
-            "required": false,
-            "schema": {
-              "format": "int64",
-              "type": "integer"
-            }
-          },
-          {
-            "description": "Maximum number of records (default: 50, max: 100)",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int64",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SlurmPartition"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": "Returns partitions"
-          },
-          "4XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Client error"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Failed to fetch from database"
-          },
-          "5XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "Token": []
-          }
-        ],
-        "summary": "List partitions (paginated)",
         "tags": [
           "Partitions (Slurm)"
         ]

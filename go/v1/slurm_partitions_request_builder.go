@@ -14,18 +14,28 @@ type SlurmPartitionsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
+// SlurmPartitionsRequestBuilderGetQueryParameters paginated. `total_count` is the number of partitions before paging.
+type SlurmPartitionsRequestBuilderGetQueryParameters struct {
+	// Page size (default 50, max 500)
+	Limit *int64 "uriparametername:\"limit\""
+	// Row offset (default 0)
+	Offset *int64 "uriparametername:\"offset\""
+}
+
 // SlurmPartitionsRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
 type SlurmPartitionsRequestBuilderGetRequestConfiguration struct {
 	// Request headers
 	Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
 	// Request options
 	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
+	// Request query parameters
+	QueryParameters *SlurmPartitionsRequestBuilderGetQueryParameters
 }
 
 // NewSlurmPartitionsRequestBuilderInternal instantiates a new SlurmPartitionsRequestBuilder and sets the default values.
 func NewSlurmPartitionsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *SlurmPartitionsRequestBuilder {
 	m := &SlurmPartitionsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/slurm/partitions", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/slurm/partitions{?limit*,offset*}", pathParameters),
 	}
 	return m
 }
@@ -37,30 +47,29 @@ func NewSlurmPartitionsRequestBuilder(rawUrl string, requestAdapter i2ae4187f7da
 	return NewSlurmPartitionsRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Get list partitions
-// returns a []SlurmPartitionable when successful
+// Get paginated. `total_count` is the number of partitions before paging.
+// returns a PaginatedSlurmPartitionResponseable when successful
+// returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 500 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *SlurmPartitionsRequestBuilder) Get(ctx context.Context, requestConfiguration *SlurmPartitionsRequestBuilderGetRequestConfiguration) ([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.SlurmPartitionable, error) {
+func (m *SlurmPartitionsRequestBuilder) Get(ctx context.Context, requestConfiguration *SlurmPartitionsRequestBuilderGetRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedSlurmPartitionResponseable, error) {
 	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
 	if err != nil {
 		return nil, err
 	}
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
+		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.SendCollection(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateSlurmPartitionFromDiscriminatorValue, errorMapping)
+	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreatePaginatedSlurmPartitionResponseFromDiscriminatorValue, errorMapping)
 	if err != nil {
 		return nil, err
 	}
-	val := make([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.SlurmPartitionable, len(res))
-	for i, v := range res {
-		if v != nil {
-			val[i] = v.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.SlurmPartitionable)
-		}
+	if res == nil {
+		return nil, nil
 	}
-	return val, nil
+	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedSlurmPartitionResponseable), nil
 }
 
 // Sync the sync property
@@ -69,11 +78,14 @@ func (m *SlurmPartitionsRequestBuilder) Sync() *SlurmPartitionsSyncRequestBuilde
 	return NewSlurmPartitionsSyncRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// ToGetRequestInformation list partitions
+// ToGetRequestInformation paginated. `total_count` is the number of partitions before paging.
 // returns a *RequestInformation when successful
 func (m *SlurmPartitionsRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *SlurmPartitionsRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
 	if requestConfiguration != nil {
+		if requestConfiguration.QueryParameters != nil {
+			requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
+		}
 		requestInfo.Headers.AddAll(requestConfiguration.Headers)
 		requestInfo.AddRequestOptions(requestConfiguration.Options)
 	}
