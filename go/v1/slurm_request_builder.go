@@ -30,12 +30,6 @@ func (m *SlurmRequestBuilder) Clusters() *SlurmClustersRequestBuilder {
 	return NewSlurmClustersRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Clusters_paginated the clusters_paginated property
-// returns a *SlurmClusters_paginatedRequestBuilder when successful
-func (m *SlurmRequestBuilder) Clusters_paginated() *SlurmClusters_paginatedRequestBuilder {
-	return NewSlurmClusters_paginatedRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // NewSlurmRequestBuilderInternal instantiates a new SlurmRequestBuilder and sets the default values.
 func NewSlurmRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *SlurmRequestBuilder {
 	m := &SlurmRequestBuilder{
@@ -63,12 +57,6 @@ func (m *SlurmRequestBuilder) Jobs() *SlurmJobsRequestBuilder {
 	return NewSlurmJobsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Jobs_paginated the jobs_paginated property
-// returns a *SlurmJobs_paginatedRequestBuilder when successful
-func (m *SlurmRequestBuilder) Jobs_paginated() *SlurmJobs_paginatedRequestBuilder {
-	return NewSlurmJobs_paginatedRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // Maintenance_window the maintenance_window property
 // returns a *SlurmMaintenance_windowRequestBuilder when successful
 func (m *SlurmRequestBuilder) Maintenance_window() *SlurmMaintenance_windowRequestBuilder {
@@ -81,22 +69,10 @@ func (m *SlurmRequestBuilder) Nodes() *SlurmNodesRequestBuilder {
 	return NewSlurmNodesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Nodes_paginated the nodes_paginated property
-// returns a *SlurmNodes_paginatedRequestBuilder when successful
-func (m *SlurmRequestBuilder) Nodes_paginated() *SlurmNodes_paginatedRequestBuilder {
-	return NewSlurmNodes_paginatedRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // Partitions the partitions property
 // returns a *SlurmPartitionsRequestBuilder when successful
 func (m *SlurmRequestBuilder) Partitions() *SlurmPartitionsRequestBuilder {
 	return NewSlurmPartitionsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// Partitions_paginated the partitions_paginated property
-// returns a *SlurmPartitions_paginatedRequestBuilder when successful
-func (m *SlurmRequestBuilder) Partitions_paginated() *SlurmPartitions_paginatedRequestBuilder {
-	return NewSlurmPartitions_paginatedRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // Restore the restore property
