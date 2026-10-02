@@ -13,6 +13,8 @@ type PodResponse struct {
 	additionalData map[string]any
 	// The age property
 	age *string
+	// Cluster the pod runs on; null if the controller has not linked it yet
+	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The id property
 	id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The monitored_by_policies property
@@ -58,6 +60,12 @@ func (m *PodResponse) GetAge() *string {
 	return m.age
 }
 
+// GetClusterId gets the cluster_id property value. Cluster the pod runs on; null if the controller has not linked it yet
+// returns a *UUID when successful
+func (m *PodResponse) GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID {
+	return m.cluster_id
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *PodResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
@@ -69,6 +77,16 @@ func (m *PodResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		if val != nil {
 			m.SetAge(val)
+		}
+		return nil
+	}
+	res["cluster_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetUUIDValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetClusterId(val)
 		}
 		return nil
 	}
@@ -234,6 +252,12 @@ func (m *PodResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 		}
 	}
 	{
+		err := writer.WriteUUIDValue("cluster_id", m.GetClusterId())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteUUIDValue("id", m.GetId())
 		if err != nil {
 			return err
@@ -306,6 +330,11 @@ func (m *PodResponse) SetAge(value *string) {
 	m.age = value
 }
 
+// SetClusterId sets the cluster_id property value. Cluster the pod runs on; null if the controller has not linked it yet
+func (m *PodResponse) SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
+	m.cluster_id = value
+}
+
 // SetId sets the id property value. The id property
 func (m *PodResponse) SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
 	m.id = value
@@ -355,6 +384,7 @@ type PodResponseable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetAge() *string
+	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetMonitoredByPolicies() []string
 	GetName() *string
@@ -365,6 +395,7 @@ type PodResponseable interface {
 	GetStartTime() *string
 	GetStatus() *string
 	SetAge(value *string)
+	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetMonitoredByPolicies(value []string)
 	SetName(value *string)

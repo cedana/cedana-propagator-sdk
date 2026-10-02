@@ -843,6 +843,34 @@
         ],
         "type": "object"
       },
+      "CheckpointFileEntry": {
+        "description": "A file inside a checkpoint: an archive member, or a child of a checkpoint directory",
+        "properties": {
+          "is_dir": {
+            "type": "boolean"
+          },
+          "mod_time": {
+            "description": "Modification time, Unix ms",
+            "format": "int64",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "size": {
+            "description": "Size in bytes",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "size",
+          "mod_time",
+          "is_dir"
+        ],
+        "type": "object"
+      },
       "CheckpointInfo": {
         "properties": {
           "gpu": {
@@ -2564,6 +2592,18 @@
         },
         "required": [
           "image"
+        ],
+        "type": "object"
+      },
+      "DownloadCheckpointFile": {
+        "properties": {
+          "entry": {
+            "description": "Name of the file inside the checkpoint, as returned by the file listing",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry"
         ],
         "type": "object"
       },
@@ -6381,6 +6421,14 @@
           "age": {
             "type": "string"
           },
+          "cluster_id": {
+            "description": "Cluster the pod runs on; null if the controller has not linked it yet",
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "id": {
             "format": "uuid",
             "type": "string"
@@ -8470,6 +8518,10 @@
             "description": "Raw SLURM records are retained because their schema varies by release.",
             "items": {},
             "type": "array"
+          },
+          "partial": {
+            "description": "The batch is only some of the cluster's jobs: upsert them, but don't\nmark the jobs missing from it as completed.",
+            "type": "boolean"
           }
         },
         "required": [
@@ -11189,7 +11241,7 @@
     },
     "/v1/checkpoints/deprecate/{id}": {
       "patch": {
-        "description": "Routes a deletion request to at least one queue before marking the checkpoint deprecated.\nCheckpoints without a restore path are deprecated without publishing a deletion request.\nLocks the checkpoint in a transaction to serialize concurrent deprecation requests.",
+        "description": "Has a helper on the checkpoint's cluster delete its files (chosen as for the files\nendpoints: any helper for a remote checkpoint, the node holding it for a local one),\nthen marks the checkpoint deprecated. A checkpoint without a path has no files to\ndelete and is just deprecated. One with files but no cluster to ask (not taken\nthrough a checkpoint action) is kept, with a 409, rather than deprecated with its\nfiles left behind. If the helper fails to delete, the checkpoint is left as it was\nand the helper's error is returned. Concurrent requests for the same checkpoint may\nboth ask for the delete; whichever marks it deprecated first wins, the other gets 404.",
         "operationId": "deprecate",
         "parameters": [
           {
@@ -11233,6 +11285,16 @@
             },
             "description": "Checkpoint not found or already deprecated"
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Checkpoint has files but no cluster to delete them from"
+          },
           "4XX": {
             "content": {
               "application/json": {
@@ -11251,7 +11313,27 @@
                 }
               }
             },
-            "description": "Database operation or deletion request routing failed"
+            "description": "Database operation failed"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Helper could not delete the checkpoint"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "No helper on the cluster answered in time"
           },
           "5XX": {
             "content": {
@@ -11437,6 +11519,244 @@
           }
         ],
         "summary": "Uploaded checkpoint",
+        "tags": [
+          "Checkpoints"
+        ]
+      }
+    },
+    "/v1/checkpoints/{id}/files": {
+      "get": {
+        "description": "Asks a helper on the checkpoint's cluster to read the checkpoint and returns the files\ninside it (the members of the checkpoint archive).",
+        "operationId": "files",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CheckpointFileEntry"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Files inside the checkpoint"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Invalid UUID provided"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Checkpoint not found or deprecated"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Checkpoint has no path or cluster yet"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Helper could not read the checkpoint"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "No helper on the cluster answered in time"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "List checkpoint files",
+        "tags": [
+          "Checkpoints"
+        ]
+      }
+    },
+    "/v1/checkpoints/{id}/files/download": {
+      "post": {
+        "description": "Asks a helper on the checkpoint's cluster to copy one file out of the checkpoint into\nCedana managed storage, then returns a signed URL it can be downloaded from. Blocks\nuntil the helper has uploaded the file.",
+        "operationId": "download_file",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadCheckpointFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "example": "https://storage.googleapis.com/bucket/checkpoint-files/550e8400-e29b-41d4-a716-446655440000/pages-1.img?signature=...",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Returns the URL to download the file from"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Invalid UUID or file entry provided"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Checkpoint not found or deprecated"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Checkpoint has no path or cluster yet"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Failed to generate signed URL"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Helper could not read or upload the file"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "No helper on the cluster answered in time"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Download a checkpoint file",
         "tags": [
           "Checkpoints"
         ]
@@ -24489,7 +24809,7 @@
     },
     "/v1/slurm/jobs/sync": {
       "post": {
-        "description": "Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database",
+        "description": "Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database.\nUnless the batch is partial, jobs on the cluster missing from it are marked completed.",
         "operationId": "sync",
         "requestBody": {
           "content": {
