@@ -6421,6 +6421,14 @@
           "age": {
             "type": "string"
           },
+          "cluster_id": {
+            "description": "Cluster the pod runs on; null if the controller has not linked it yet",
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "id": {
             "format": "uuid",
             "type": "string"
