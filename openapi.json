@@ -8470,6 +8470,10 @@
             "description": "Raw SLURM records are retained because their schema varies by release.",
             "items": {},
             "type": "array"
+          },
+          "partial": {
+            "description": "The batch is only some of the cluster's jobs: upsert them, but don't\nmark the jobs missing from it as completed.",
+            "type": "boolean"
           }
         },
         "required": [
@@ -24489,7 +24493,7 @@
     },
     "/v1/slurm/jobs/sync": {
       "post": {
-        "description": "Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database",
+        "description": "Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database.\nUnless the batch is partial, jobs on the cluster missing from it are marked completed.",
         "operationId": "sync",
         "requestBody": {
           "content": {
