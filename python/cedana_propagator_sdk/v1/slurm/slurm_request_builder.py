@@ -9,15 +9,11 @@ if TYPE_CHECKING:
     from .checkpoint.checkpoint_request_builder import CheckpointRequestBuilder
     from .checkpoints.checkpoints_request_builder import CheckpointsRequestBuilder
     from .clusters.clusters_request_builder import ClustersRequestBuilder
-    from .clusters_paginated.clusters_paginated_request_builder import Clusters_paginatedRequestBuilder
     from .events.events_request_builder import EventsRequestBuilder
     from .jobs.jobs_request_builder import JobsRequestBuilder
-    from .jobs_paginated.jobs_paginated_request_builder import Jobs_paginatedRequestBuilder
     from .maintenance_window.maintenance_window_request_builder import Maintenance_windowRequestBuilder
     from .nodes.nodes_request_builder import NodesRequestBuilder
-    from .nodes_paginated.nodes_paginated_request_builder import Nodes_paginatedRequestBuilder
     from .partitions.partitions_request_builder import PartitionsRequestBuilder
-    from .partitions_paginated.partitions_paginated_request_builder import Partitions_paginatedRequestBuilder
     from .restore.restore_request_builder import RestoreRequestBuilder
 
 class SlurmRequestBuilder(BaseRequestBuilder):
@@ -61,15 +57,6 @@ class SlurmRequestBuilder(BaseRequestBuilder):
         return ClustersRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
-    def clusters_paginated(self) -> Clusters_paginatedRequestBuilder:
-        """
-        The clusters_paginated property
-        """
-        from .clusters_paginated.clusters_paginated_request_builder import Clusters_paginatedRequestBuilder
-
-        return Clusters_paginatedRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
     def events(self) -> EventsRequestBuilder:
         """
         The events property
@@ -86,15 +73,6 @@ class SlurmRequestBuilder(BaseRequestBuilder):
         from .jobs.jobs_request_builder import JobsRequestBuilder
 
         return JobsRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
-    def jobs_paginated(self) -> Jobs_paginatedRequestBuilder:
-        """
-        The jobs_paginated property
-        """
-        from .jobs_paginated.jobs_paginated_request_builder import Jobs_paginatedRequestBuilder
-
-        return Jobs_paginatedRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def maintenance_window(self) -> Maintenance_windowRequestBuilder:
@@ -115,15 +93,6 @@ class SlurmRequestBuilder(BaseRequestBuilder):
         return NodesRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
-    def nodes_paginated(self) -> Nodes_paginatedRequestBuilder:
-        """
-        The nodes_paginated property
-        """
-        from .nodes_paginated.nodes_paginated_request_builder import Nodes_paginatedRequestBuilder
-
-        return Nodes_paginatedRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
     def partitions(self) -> PartitionsRequestBuilder:
         """
         The partitions property
@@ -131,15 +100,6 @@ class SlurmRequestBuilder(BaseRequestBuilder):
         from .partitions.partitions_request_builder import PartitionsRequestBuilder
 
         return PartitionsRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
-    def partitions_paginated(self) -> Partitions_paginatedRequestBuilder:
-        """
-        The partitions_paginated property
-        """
-        from .partitions_paginated.partitions_paginated_request_builder import Partitions_paginatedRequestBuilder
-
-        return Partitions_paginatedRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def restore(self) -> RestoreRequestBuilder:
