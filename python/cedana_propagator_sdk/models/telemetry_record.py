@@ -4,6 +4,9 @@ from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
+if TYPE_CHECKING:
+    from .prefix_fingerprint import PrefixFingerprint
+
 @dataclass
 class TelemetryRecord(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
@@ -11,6 +14,8 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
 
     # The activation_path property
     activation_path: Optional[str] = None
+    # What the engine reported as cached, when the response carriedprompt_tokens_details. NULL means "not reported", never zero.
+    cached_tokens: Optional[int] = None
     # The classifier_latency_ms property
     classifier_latency_ms: Optional[int] = None
     # The classifier_profile_id property
@@ -21,6 +26,8 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
     decision_source: Optional[str] = None
     # The end_to_end_latency_ms property
     end_to_end_latency_ms: Optional[int] = None
+    # Switchyard's pre-routing reuse estimate for the profile that servedthis request, in tokens. NULL when the router made no estimate.
+    expected_reuse_tokens: Optional[int] = None
     # The fallback_used property
     fallback_used: Optional[bool] = None
     # The logical_model property
@@ -29,6 +36,8 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
     mean_inter_token_ms: Optional[float] = None
     # The p95_inter_token_ms property
     p95_inter_token_ms: Optional[float] = None
+    # Cumulative prefix fingerprints of the completed request, recorded intothe serving profile's prefix inventory so a later checkpoint of thatworker knows which conversations its cache holds.
+    prefix_fingerprints: Optional[list[PrefixFingerprint]] = None
     # The profile_id property
     profile_id: Optional[str] = None
     # The prompt_tokens property
@@ -64,17 +73,24 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
+        from .prefix_fingerprint import PrefixFingerprint
+
+        from .prefix_fingerprint import PrefixFingerprint
+
         fields: dict[str, Callable[[Any], None]] = {
             "activation_path": lambda n : setattr(self, 'activation_path', n.get_str_value()),
+            "cached_tokens": lambda n : setattr(self, 'cached_tokens', n.get_int_value()),
             "classifier_latency_ms": lambda n : setattr(self, 'classifier_latency_ms', n.get_int_value()),
             "classifier_profile_id": lambda n : setattr(self, 'classifier_profile_id', n.get_str_value()),
             "completion_tokens": lambda n : setattr(self, 'completion_tokens', n.get_int_value()),
             "decision_source": lambda n : setattr(self, 'decision_source', n.get_str_value()),
             "end_to_end_latency_ms": lambda n : setattr(self, 'end_to_end_latency_ms', n.get_int_value()),
+            "expected_reuse_tokens": lambda n : setattr(self, 'expected_reuse_tokens', n.get_int_value()),
             "fallback_used": lambda n : setattr(self, 'fallback_used', n.get_bool_value()),
             "logical_model": lambda n : setattr(self, 'logical_model', n.get_str_value()),
             "mean_inter_token_ms": lambda n : setattr(self, 'mean_inter_token_ms', n.get_float_value()),
             "p95_inter_token_ms": lambda n : setattr(self, 'p95_inter_token_ms', n.get_float_value()),
+            "prefix_fingerprints": lambda n : setattr(self, 'prefix_fingerprints', n.get_collection_of_object_values(PrefixFingerprint)),
             "profile_id": lambda n : setattr(self, 'profile_id', n.get_str_value()),
             "prompt_tokens": lambda n : setattr(self, 'prompt_tokens', n.get_int_value()),
             "queue_ms": lambda n : setattr(self, 'queue_ms', n.get_int_value()),
@@ -96,15 +112,18 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_str_value("activation_path", self.activation_path)
+        writer.write_int_value("cached_tokens", self.cached_tokens)
         writer.write_int_value("classifier_latency_ms", self.classifier_latency_ms)
         writer.write_str_value("classifier_profile_id", self.classifier_profile_id)
         writer.write_int_value("completion_tokens", self.completion_tokens)
         writer.write_str_value("decision_source", self.decision_source)
         writer.write_int_value("end_to_end_latency_ms", self.end_to_end_latency_ms)
+        writer.write_int_value("expected_reuse_tokens", self.expected_reuse_tokens)
         writer.write_bool_value("fallback_used", self.fallback_used)
         writer.write_str_value("logical_model", self.logical_model)
         writer.write_float_value("mean_inter_token_ms", self.mean_inter_token_ms)
         writer.write_float_value("p95_inter_token_ms", self.p95_inter_token_ms)
+        writer.write_collection_of_object_values("prefix_fingerprints", self.prefix_fingerprints)
         writer.write_str_value("profile_id", self.profile_id)
         writer.write_int_value("prompt_tokens", self.prompt_tokens)
         writer.write_int_value("queue_ms", self.queue_ms)

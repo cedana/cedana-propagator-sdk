@@ -8,9 +8,13 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from .checkpoint.checkpoint_request_builder import CheckpointRequestBuilder
     from .hosting.hosting_request_builder import HostingRequestBuilder
+    from .kvbm.kvbm_request_builder import KvbmRequestBuilder
     from .kv_cache.kv_cache_request_builder import KvCacheRequestBuilder
+    from .lmcache.lmcache_request_builder import LmcacheRequestBuilder
     from .progress.progress_request_builder import ProgressRequestBuilder
     from .restart.restart_request_builder import RestartRequestBuilder
+    from .restore_hints.restore_hints_request_builder import RestoreHintsRequestBuilder
+    from .served_prefixes.served_prefixes_request_builder import ServedPrefixesRequestBuilder
     from .state.state_request_builder import StateRequestBuilder
     from .worker_endpoint.worker_endpoint_request_builder import WorkerEndpointRequestBuilder
 
@@ -55,6 +59,24 @@ class WithProfile_ItemRequestBuilder(BaseRequestBuilder):
         return KvCacheRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
+    def kvbm(self) -> KvbmRequestBuilder:
+        """
+        The kvbm property
+        """
+        from .kvbm.kvbm_request_builder import KvbmRequestBuilder
+
+        return KvbmRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def lmcache(self) -> LmcacheRequestBuilder:
+        """
+        The lmcache property
+        """
+        from .lmcache.lmcache_request_builder import LmcacheRequestBuilder
+
+        return LmcacheRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
     def progress(self) -> ProgressRequestBuilder:
         """
         The progress property
@@ -71,6 +93,24 @@ class WithProfile_ItemRequestBuilder(BaseRequestBuilder):
         from .restart.restart_request_builder import RestartRequestBuilder
 
         return RestartRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def restore_hints(self) -> RestoreHintsRequestBuilder:
+        """
+        The restoreHints property
+        """
+        from .restore_hints.restore_hints_request_builder import RestoreHintsRequestBuilder
+
+        return RestoreHintsRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def served_prefixes(self) -> ServedPrefixesRequestBuilder:
+        """
+        The servedPrefixes property
+        """
+        from .served_prefixes.served_prefixes_request_builder import ServedPrefixesRequestBuilder
+
+        return ServedPrefixesRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def state(self) -> StateRequestBuilder:

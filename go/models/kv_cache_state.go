@@ -7,7 +7,6 @@ import (
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
-// KvCacheState what a profile's engine is currently reusing.
 type KvCacheState struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
@@ -15,6 +14,8 @@ type KvCacheState struct {
 	block_size *int64
 	// The gpu_blocks property
 	gpu_blocks *int64
+	// The lmcache property
+	lmcache LmcacheStateable
 	// Which worker answered, so a caller can tell a restart apart from acounter that merely moved.
 	pod_name *string
 	// The prefix_caching property
@@ -73,6 +74,16 @@ func (m *KvCacheState) GetFieldDeserializers() map[string]func(i878a80d2330e89d2
 		}
 		if val != nil {
 			m.SetGpuBlocks(val)
+		}
+		return nil
+	}
+	res["lmcache"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateLmcacheStateFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetLmcache(val.(LmcacheStateable))
 		}
 		return nil
 	}
@@ -135,6 +146,12 @@ func (m *KvCacheState) GetGpuBlocks() *int64 {
 	return m.gpu_blocks
 }
 
+// GetLmcache gets the lmcache property value. The lmcache property
+// returns a LmcacheStateable when successful
+func (m *KvCacheState) GetLmcache() LmcacheStateable {
+	return m.lmcache
+}
+
 // GetPodName gets the pod_name property value. Which worker answered, so a caller can tell a restart apart from acounter that merely moved.
 // returns a *string when successful
 func (m *KvCacheState) GetPodName() *string {
@@ -175,6 +192,12 @@ func (m *KvCacheState) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e
 	}
 	{
 		err := writer.WriteInt64Value("gpu_blocks", m.GetGpuBlocks())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("lmcache", m.GetLmcache())
 		if err != nil {
 			return err
 		}
@@ -233,6 +256,11 @@ func (m *KvCacheState) SetGpuBlocks(value *int64) {
 	m.gpu_blocks = value
 }
 
+// SetLmcache sets the lmcache property value. The lmcache property
+func (m *KvCacheState) SetLmcache(value LmcacheStateable) {
+	m.lmcache = value
+}
+
 // SetPodName sets the pod_name property value. Which worker answered, so a caller can tell a restart apart from acounter that merely moved.
 func (m *KvCacheState) SetPodName(value *string) {
 	m.pod_name = value
@@ -263,6 +291,7 @@ type KvCacheStateable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetBlockSize() *int64
 	GetGpuBlocks() *int64
+	GetLmcache() LmcacheStateable
 	GetPodName() *string
 	GetPrefixCaching() *bool
 	GetProfileId() *string
@@ -270,6 +299,7 @@ type KvCacheStateable interface {
 	GetReusedTokens() *int64
 	SetBlockSize(value *int64)
 	SetGpuBlocks(value *int64)
+	SetLmcache(value LmcacheStateable)
 	SetPodName(value *string)
 	SetPrefixCaching(value *bool)
 	SetProfileId(value *string)

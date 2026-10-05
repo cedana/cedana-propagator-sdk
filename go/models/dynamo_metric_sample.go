@@ -13,6 +13,8 @@ type DynamoMetricSample struct {
 	additionalData map[string]any
 	// The metric_name property
 	metric_name *string
+	// The pod the sample came from. Absent on older watchers and ondeployment-level samples; with several replicas, or a KVBM tier thatbelongs to one worker, a counter is meaningless without it.
+	pod_name *string
 	// Unix timestamp in milliseconds
 	timestamp_ms *int64
 	// The value property
@@ -52,6 +54,16 @@ func (m *DynamoMetricSample) GetFieldDeserializers() map[string]func(i878a80d233
 		}
 		return nil
 	}
+	res["pod_name"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPodName(val)
+		}
+		return nil
+	}
 	res["timestamp_ms"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetInt64Value()
 		if err != nil {
@@ -81,6 +93,12 @@ func (m *DynamoMetricSample) GetMetricName() *string {
 	return m.metric_name
 }
 
+// GetPodName gets the pod_name property value. The pod the sample came from. Absent on older watchers and ondeployment-level samples; with several replicas, or a KVBM tier thatbelongs to one worker, a counter is meaningless without it.
+// returns a *string when successful
+func (m *DynamoMetricSample) GetPodName() *string {
+	return m.pod_name
+}
+
 // GetTimestampMs gets the timestamp_ms property value. Unix timestamp in milliseconds
 // returns a *int64 when successful
 func (m *DynamoMetricSample) GetTimestampMs() *int64 {
@@ -97,6 +115,12 @@ func (m *DynamoMetricSample) GetValue() *float64 {
 func (m *DynamoMetricSample) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
 		err := writer.WriteStringValue("metric_name", m.GetMetricName())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("pod_name", m.GetPodName())
 		if err != nil {
 			return err
 		}
@@ -132,6 +156,11 @@ func (m *DynamoMetricSample) SetMetricName(value *string) {
 	m.metric_name = value
 }
 
+// SetPodName sets the pod_name property value. The pod the sample came from. Absent on older watchers and ondeployment-level samples; with several replicas, or a KVBM tier thatbelongs to one worker, a counter is meaningless without it.
+func (m *DynamoMetricSample) SetPodName(value *string) {
+	m.pod_name = value
+}
+
 // SetTimestampMs sets the timestamp_ms property value. Unix timestamp in milliseconds
 func (m *DynamoMetricSample) SetTimestampMs(value *int64) {
 	m.timestamp_ms = value
@@ -146,9 +175,11 @@ type DynamoMetricSampleable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetMetricName() *string
+	GetPodName() *string
 	GetTimestampMs() *int64
 	GetValue() *float64
 	SetMetricName(value *string)
+	SetPodName(value *string)
 	SetTimestampMs(value *int64)
 	SetValue(value *float64)
 }

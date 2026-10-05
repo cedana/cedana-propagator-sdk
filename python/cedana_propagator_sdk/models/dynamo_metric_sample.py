@@ -14,6 +14,8 @@ class DynamoMetricSample(AdditionalDataHolder, Parsable):
 
     # The metric_name property
     metric_name: Optional[str] = None
+    # The pod the sample came from. Absent on older watchers and ondeployment-level samples; with several replicas, or a KVBM tier thatbelongs to one worker, a counter is meaningless without it.
+    pod_name: Optional[str] = None
     # Unix timestamp in milliseconds
     timestamp_ms: Optional[int] = None
     # The value property
@@ -37,6 +39,7 @@ class DynamoMetricSample(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
             "metric_name": lambda n : setattr(self, 'metric_name', n.get_str_value()),
+            "pod_name": lambda n : setattr(self, 'pod_name', n.get_str_value()),
             "timestamp_ms": lambda n : setattr(self, 'timestamp_ms', n.get_int_value()),
             "value": lambda n : setattr(self, 'value', n.get_float_value()),
         }
@@ -51,6 +54,7 @@ class DynamoMetricSample(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_str_value("metric_name", self.metric_name)
+        writer.write_str_value("pod_name", self.pod_name)
         writer.write_int_value("timestamp_ms", self.timestamp_ms)
         writer.write_float_value("value", self.value)
         writer.write_additional_data_value(self.additional_data)

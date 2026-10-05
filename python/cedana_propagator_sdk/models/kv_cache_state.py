@@ -4,11 +4,11 @@ from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
+if TYPE_CHECKING:
+    from .lmcache_state import LmcacheState
+
 @dataclass
 class KvCacheState(AdditionalDataHolder, Parsable):
-    """
-    What a profile's engine is currently reusing.
-    """
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
@@ -16,6 +16,8 @@ class KvCacheState(AdditionalDataHolder, Parsable):
     block_size: Optional[int] = None
     # The gpu_blocks property
     gpu_blocks: Optional[int] = None
+    # The lmcache property
+    lmcache: Optional[LmcacheState] = None
     # Which worker answered, so a caller can tell a restart apart from acounter that merely moved.
     pod_name: Optional[str] = None
     # The prefix_caching property
@@ -43,9 +45,14 @@ class KvCacheState(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
+        from .lmcache_state import LmcacheState
+
+        from .lmcache_state import LmcacheState
+
         fields: dict[str, Callable[[Any], None]] = {
             "block_size": lambda n : setattr(self, 'block_size', n.get_int_value()),
             "gpu_blocks": lambda n : setattr(self, 'gpu_blocks', n.get_int_value()),
+            "lmcache": lambda n : setattr(self, 'lmcache', n.get_object_value(LmcacheState)),
             "pod_name": lambda n : setattr(self, 'pod_name', n.get_str_value()),
             "prefix_caching": lambda n : setattr(self, 'prefix_caching', n.get_bool_value()),
             "profile_id": lambda n : setattr(self, 'profile_id', n.get_str_value()),
@@ -64,6 +71,7 @@ class KvCacheState(AdditionalDataHolder, Parsable):
             raise TypeError("writer cannot be null.")
         writer.write_int_value("block_size", self.block_size)
         writer.write_int_value("gpu_blocks", self.gpu_blocks)
+        writer.write_object_value("lmcache", self.lmcache)
         writer.write_str_value("pod_name", self.pod_name)
         writer.write_bool_value("prefix_caching", self.prefix_caching)
         writer.write_str_value("profile_id", self.profile_id)

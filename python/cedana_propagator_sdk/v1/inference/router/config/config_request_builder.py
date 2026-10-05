@@ -32,7 +32,7 @@ class ConfigRequestBuilder(BaseRequestBuilder):
     
     async def get(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[RouterConfig]:
         """
-        Full routing snapshot for Switchyard, service-token-only. Generation is the sum ofthe route generations; `If-None-Match: "<generation>"` gets a 304.
+        Full routing snapshot for Switchyard, service-token-only. The ETag is thesummed route generation plus a fingerprint of the per-target KV facts,which change without any generation moving; `If-None-Match` with the lastETag gets a 304.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[RouterConfig]
         """
@@ -52,7 +52,7 @@ class ConfigRequestBuilder(BaseRequestBuilder):
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Full routing snapshot for Switchyard, service-token-only. Generation is the sum ofthe route generations; `If-None-Match: "<generation>"` gets a 304.
+        Full routing snapshot for Switchyard, service-token-only. The ETag is thesummed route generation plus a fingerprint of the per-target KV facts,which change without any generation moving; `If-None-Match` with the lastETag gets a 304.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """

@@ -12,6 +12,8 @@ type TelemetryRecord struct {
 	activation_path *string
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// What the engine reported as cached, when the response carriedprompt_tokens_details. NULL means "not reported", never zero.
+	cached_tokens *int64
 	// The classifier_latency_ms property
 	classifier_latency_ms *int64
 	// The classifier_profile_id property
@@ -22,6 +24,8 @@ type TelemetryRecord struct {
 	decision_source *string
 	// The end_to_end_latency_ms property
 	end_to_end_latency_ms *int64
+	// Switchyard's pre-routing reuse estimate for the profile that servedthis request, in tokens. NULL when the router made no estimate.
+	expected_reuse_tokens *int64
 	// The fallback_used property
 	fallback_used *bool
 	// The logical_model property
@@ -30,6 +34,8 @@ type TelemetryRecord struct {
 	mean_inter_token_ms *float64
 	// The p95_inter_token_ms property
 	p95_inter_token_ms *float64
+	// Cumulative prefix fingerprints of the completed request, recorded intothe serving profile's prefix inventory so a later checkpoint of thatworker knows which conversations its cache holds.
+	prefix_fingerprints []PrefixFingerprintable
 	// The profile_id property
 	profile_id *string
 	// The prompt_tokens property
@@ -75,6 +81,12 @@ func (m *TelemetryRecord) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetCachedTokens gets the cached_tokens property value. What the engine reported as cached, when the response carriedprompt_tokens_details. NULL means "not reported", never zero.
+// returns a *int64 when successful
+func (m *TelemetryRecord) GetCachedTokens() *int64 {
+	return m.cached_tokens
+}
+
 // GetClassifierLatencyMs gets the classifier_latency_ms property value. The classifier_latency_ms property
 // returns a *int64 when successful
 func (m *TelemetryRecord) GetClassifierLatencyMs() *int64 {
@@ -105,6 +117,12 @@ func (m *TelemetryRecord) GetEndToEndLatencyMs() *int64 {
 	return m.end_to_end_latency_ms
 }
 
+// GetExpectedReuseTokens gets the expected_reuse_tokens property value. Switchyard's pre-routing reuse estimate for the profile that servedthis request, in tokens. NULL when the router made no estimate.
+// returns a *int64 when successful
+func (m *TelemetryRecord) GetExpectedReuseTokens() *int64 {
+	return m.expected_reuse_tokens
+}
+
 // GetFallbackUsed gets the fallback_used property value. The fallback_used property
 // returns a *bool when successful
 func (m *TelemetryRecord) GetFallbackUsed() *bool {
@@ -122,6 +140,16 @@ func (m *TelemetryRecord) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		if val != nil {
 			m.SetActivationPath(val)
+		}
+		return nil
+	}
+	res["cached_tokens"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCachedTokens(val)
 		}
 		return nil
 	}
@@ -175,6 +203,16 @@ func (m *TelemetryRecord) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		return nil
 	}
+	res["expected_reuse_tokens"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetExpectedReuseTokens(val)
+		}
+		return nil
+	}
 	res["fallback_used"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetBoolValue()
 		if err != nil {
@@ -212,6 +250,22 @@ func (m *TelemetryRecord) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		if val != nil {
 			m.SetP95InterTokenMs(val)
+		}
+		return nil
+	}
+	res["prefix_fingerprints"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetCollectionOfObjectValues(CreatePrefixFingerprintFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			res := make([]PrefixFingerprintable, len(val))
+			for i, v := range val {
+				if v != nil {
+					res[i] = v.(PrefixFingerprintable)
+				}
+			}
+			m.SetPrefixFingerprints(res)
 		}
 		return nil
 	}
@@ -326,6 +380,12 @@ func (m *TelemetryRecord) GetP95InterTokenMs() *float64 {
 	return m.p95_inter_token_ms
 }
 
+// GetPrefixFingerprints gets the prefix_fingerprints property value. Cumulative prefix fingerprints of the completed request, recorded intothe serving profile's prefix inventory so a later checkpoint of thatworker knows which conversations its cache holds.
+// returns a []PrefixFingerprintable when successful
+func (m *TelemetryRecord) GetPrefixFingerprints() []PrefixFingerprintable {
+	return m.prefix_fingerprints
+}
+
 // GetProfileId gets the profile_id property value. The profile_id property
 // returns a *string when successful
 func (m *TelemetryRecord) GetProfileId() *string {
@@ -389,6 +449,12 @@ func (m *TelemetryRecord) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 		}
 	}
 	{
+		err := writer.WriteInt64Value("cached_tokens", m.GetCachedTokens())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteInt64Value("classifier_latency_ms", m.GetClassifierLatencyMs())
 		if err != nil {
 			return err
@@ -419,6 +485,12 @@ func (m *TelemetryRecord) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 		}
 	}
 	{
+		err := writer.WriteInt64Value("expected_reuse_tokens", m.GetExpectedReuseTokens())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteBoolValue("fallback_used", m.GetFallbackUsed())
 		if err != nil {
 			return err
@@ -438,6 +510,18 @@ func (m *TelemetryRecord) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 	}
 	{
 		err := writer.WriteFloat64Value("p95_inter_token_ms", m.GetP95InterTokenMs())
+		if err != nil {
+			return err
+		}
+	}
+	if m.GetPrefixFingerprints() != nil {
+		cast := make([]i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, len(m.GetPrefixFingerprints()))
+		for i, v := range m.GetPrefixFingerprints() {
+			if v != nil {
+				cast[i] = v.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable)
+			}
+		}
+		err := writer.WriteCollectionOfObjectValues("prefix_fingerprints", cast)
 		if err != nil {
 			return err
 		}
@@ -515,6 +599,11 @@ func (m *TelemetryRecord) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetCachedTokens sets the cached_tokens property value. What the engine reported as cached, when the response carriedprompt_tokens_details. NULL means "not reported", never zero.
+func (m *TelemetryRecord) SetCachedTokens(value *int64) {
+	m.cached_tokens = value
+}
+
 // SetClassifierLatencyMs sets the classifier_latency_ms property value. The classifier_latency_ms property
 func (m *TelemetryRecord) SetClassifierLatencyMs(value *int64) {
 	m.classifier_latency_ms = value
@@ -540,6 +629,11 @@ func (m *TelemetryRecord) SetEndToEndLatencyMs(value *int64) {
 	m.end_to_end_latency_ms = value
 }
 
+// SetExpectedReuseTokens sets the expected_reuse_tokens property value. Switchyard's pre-routing reuse estimate for the profile that servedthis request, in tokens. NULL when the router made no estimate.
+func (m *TelemetryRecord) SetExpectedReuseTokens(value *int64) {
+	m.expected_reuse_tokens = value
+}
+
 // SetFallbackUsed sets the fallback_used property value. The fallback_used property
 func (m *TelemetryRecord) SetFallbackUsed(value *bool) {
 	m.fallback_used = value
@@ -558,6 +652,11 @@ func (m *TelemetryRecord) SetMeanInterTokenMs(value *float64) {
 // SetP95InterTokenMs sets the p95_inter_token_ms property value. The p95_inter_token_ms property
 func (m *TelemetryRecord) SetP95InterTokenMs(value *float64) {
 	m.p95_inter_token_ms = value
+}
+
+// SetPrefixFingerprints sets the prefix_fingerprints property value. Cumulative prefix fingerprints of the completed request, recorded intothe serving profile's prefix inventory so a later checkpoint of thatworker knows which conversations its cache holds.
+func (m *TelemetryRecord) SetPrefixFingerprints(value []PrefixFingerprintable) {
+	m.prefix_fingerprints = value
 }
 
 // SetProfileId sets the profile_id property value. The profile_id property
@@ -609,15 +708,18 @@ type TelemetryRecordable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetActivationPath() *string
+	GetCachedTokens() *int64
 	GetClassifierLatencyMs() *int64
 	GetClassifierProfileId() *string
 	GetCompletionTokens() *int64
 	GetDecisionSource() *string
 	GetEndToEndLatencyMs() *int64
+	GetExpectedReuseTokens() *int64
 	GetFallbackUsed() *bool
 	GetLogicalModel() *string
 	GetMeanInterTokenMs() *float64
 	GetP95InterTokenMs() *float64
+	GetPrefixFingerprints() []PrefixFingerprintable
 	GetProfileId() *string
 	GetPromptTokens() *int64
 	GetQueueMs() *int64
@@ -628,15 +730,18 @@ type TelemetryRecordable interface {
 	GetTtftMs() *int64
 	GetUpstreamAttempts() *int32
 	SetActivationPath(value *string)
+	SetCachedTokens(value *int64)
 	SetClassifierLatencyMs(value *int64)
 	SetClassifierProfileId(value *string)
 	SetCompletionTokens(value *int64)
 	SetDecisionSource(value *string)
 	SetEndToEndLatencyMs(value *int64)
+	SetExpectedReuseTokens(value *int64)
 	SetFallbackUsed(value *bool)
 	SetLogicalModel(value *string)
 	SetMeanInterTokenMs(value *float64)
 	SetP95InterTokenMs(value *float64)
+	SetPrefixFingerprints(value []PrefixFingerprintable)
 	SetProfileId(value *string)
 	SetPromptTokens(value *int64)
 	SetQueueMs(value *int64)

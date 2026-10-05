@@ -37,7 +37,7 @@ func NewInferenceRouterConfigRequestBuilder(rawUrl string, requestAdapter i2ae41
 	return NewInferenceRouterConfigRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Get full routing snapshot for Switchyard, service-token-only. Generation is the sum ofthe route generations; `If-None-Match: "<generation>"` gets a 304.
+// Get full routing snapshot for Switchyard, service-token-only. The ETag is thesummed route generation plus a fingerprint of the per-target KV facts,which change without any generation moving; `If-None-Match` with the lastETag gets a 304.
 // returns a RouterConfigable when successful
 // returns a HttpError error when the service returns a 4XX or 5XX status code
 func (m *InferenceRouterConfigRequestBuilder) Get(ctx context.Context, requestConfiguration *InferenceRouterConfigRequestBuilderGetRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.RouterConfigable, error) {
@@ -58,7 +58,7 @@ func (m *InferenceRouterConfigRequestBuilder) Get(ctx context.Context, requestCo
 	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.RouterConfigable), nil
 }
 
-// ToGetRequestInformation full routing snapshot for Switchyard, service-token-only. Generation is the sum ofthe route generations; `If-None-Match: "<generation>"` gets a 304.
+// ToGetRequestInformation full routing snapshot for Switchyard, service-token-only. The ETag is thesummed route generation plus a fingerprint of the per-target KV facts,which change without any generation moving; `If-None-Match` with the lastETag gets a 304.
 // returns a *RequestInformation when successful
 func (m *InferenceRouterConfigRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *InferenceRouterConfigRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

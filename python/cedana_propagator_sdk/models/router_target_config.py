@@ -4,6 +4,9 @@ from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
+if TYPE_CHECKING:
+    from .router_target_kv import RouterTargetKv
+
 @dataclass
 class RouterTargetConfig(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
@@ -13,6 +16,8 @@ class RouterTargetConfig(AdditionalDataHolder, Parsable):
     current_replicas: Optional[int] = None
     # The draining property
     draining: Optional[bool] = None
+    # The kv property
+    kv: Optional[RouterTargetKv] = None
     # The max_queue_depth property
     max_queue_depth: Optional[int] = None
     # The max_replicas property
@@ -52,9 +57,14 @@ class RouterTargetConfig(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
+        from .router_target_kv import RouterTargetKv
+
+        from .router_target_kv import RouterTargetKv
+
         fields: dict[str, Callable[[Any], None]] = {
             "current_replicas": lambda n : setattr(self, 'current_replicas', n.get_int_value()),
             "draining": lambda n : setattr(self, 'draining', n.get_bool_value()),
+            "kv": lambda n : setattr(self, 'kv', n.get_object_value(RouterTargetKv)),
             "max_queue_depth": lambda n : setattr(self, 'max_queue_depth', n.get_int_value()),
             "max_replicas": lambda n : setattr(self, 'max_replicas', n.get_int_value()),
             "min_replicas": lambda n : setattr(self, 'min_replicas', n.get_int_value()),
@@ -79,6 +89,7 @@ class RouterTargetConfig(AdditionalDataHolder, Parsable):
             raise TypeError("writer cannot be null.")
         writer.write_int_value("current_replicas", self.current_replicas)
         writer.write_bool_value("draining", self.draining)
+        writer.write_object_value("kv", self.kv)
         writer.write_int_value("max_queue_depth", self.max_queue_depth)
         writer.write_int_value("max_replicas", self.max_replicas)
         writer.write_int_value("min_replicas", self.min_replicas)

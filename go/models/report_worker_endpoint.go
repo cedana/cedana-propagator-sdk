@@ -7,14 +7,26 @@ import (
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
-// ReportWorkerEndpoint where a profile's worker publishes engine metrics (controller only).
+// ReportWorkerEndpoint where a profile's worker publishes engine metrics (controller only), plusthe KV cache facts the controller lifts off that endpoint on its ownscrape. The KV fields are optional so the endpoint-only report (sent perreconcile, before any scrape has run) never erases values a metrics scrapealready wrote.
 type ReportWorkerEndpoint struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// Tokens per KV block, from vllm:cache_config_info.
+	block_size *int64
+	// The lmcache property
+	lmcache LmcacheStateable
 	// The metrics_url property
 	metrics_url *string
+	// The num_gpu_blocks property
+	num_gpu_blocks *int64
 	// The pod_name property
 	pod_name *string
+	// The prefix_caching property
+	prefix_caching *bool
+	// Cumulative engine counters, in tokens, from the same scrape.
+	queried_tokens *int64
+	// The reused_tokens property
+	reused_tokens *int64
 }
 
 // NewReportWorkerEndpoint instantiates a new ReportWorkerEndpoint and sets the default values.
@@ -36,10 +48,36 @@ func (m *ReportWorkerEndpoint) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetBlockSize gets the block_size property value. Tokens per KV block, from vllm:cache_config_info.
+// returns a *int64 when successful
+func (m *ReportWorkerEndpoint) GetBlockSize() *int64 {
+	return m.block_size
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *ReportWorkerEndpoint) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["block_size"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetBlockSize(val)
+		}
+		return nil
+	}
+	res["lmcache"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateLmcacheStateFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetLmcache(val.(LmcacheStateable))
+		}
+		return nil
+	}
 	res["metrics_url"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -47,6 +85,16 @@ func (m *ReportWorkerEndpoint) GetFieldDeserializers() map[string]func(i878a80d2
 		}
 		if val != nil {
 			m.SetMetricsUrl(val)
+		}
+		return nil
+	}
+	res["num_gpu_blocks"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetNumGpuBlocks(val)
 		}
 		return nil
 	}
@@ -60,7 +108,43 @@ func (m *ReportWorkerEndpoint) GetFieldDeserializers() map[string]func(i878a80d2
 		}
 		return nil
 	}
+	res["prefix_caching"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetBoolValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPrefixCaching(val)
+		}
+		return nil
+	}
+	res["queried_tokens"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetQueriedTokens(val)
+		}
+		return nil
+	}
+	res["reused_tokens"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetReusedTokens(val)
+		}
+		return nil
+	}
 	return res
+}
+
+// GetLmcache gets the lmcache property value. The lmcache property
+// returns a LmcacheStateable when successful
+func (m *ReportWorkerEndpoint) GetLmcache() LmcacheStateable {
+	return m.lmcache
 }
 
 // GetMetricsUrl gets the metrics_url property value. The metrics_url property
@@ -69,14 +153,50 @@ func (m *ReportWorkerEndpoint) GetMetricsUrl() *string {
 	return m.metrics_url
 }
 
+// GetNumGpuBlocks gets the num_gpu_blocks property value. The num_gpu_blocks property
+// returns a *int64 when successful
+func (m *ReportWorkerEndpoint) GetNumGpuBlocks() *int64 {
+	return m.num_gpu_blocks
+}
+
 // GetPodName gets the pod_name property value. The pod_name property
 // returns a *string when successful
 func (m *ReportWorkerEndpoint) GetPodName() *string {
 	return m.pod_name
 }
 
+// GetPrefixCaching gets the prefix_caching property value. The prefix_caching property
+// returns a *bool when successful
+func (m *ReportWorkerEndpoint) GetPrefixCaching() *bool {
+	return m.prefix_caching
+}
+
+// GetQueriedTokens gets the queried_tokens property value. Cumulative engine counters, in tokens, from the same scrape.
+// returns a *int64 when successful
+func (m *ReportWorkerEndpoint) GetQueriedTokens() *int64 {
+	return m.queried_tokens
+}
+
+// GetReusedTokens gets the reused_tokens property value. The reused_tokens property
+// returns a *int64 when successful
+func (m *ReportWorkerEndpoint) GetReusedTokens() *int64 {
+	return m.reused_tokens
+}
+
 // Serialize serializes information the current object
 func (m *ReportWorkerEndpoint) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
+	{
+		err := writer.WriteInt64Value("block_size", m.GetBlockSize())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("lmcache", m.GetLmcache())
+		if err != nil {
+			return err
+		}
+	}
 	{
 		err := writer.WriteStringValue("metrics_url", m.GetMetricsUrl())
 		if err != nil {
@@ -84,7 +204,31 @@ func (m *ReportWorkerEndpoint) Serialize(writer i878a80d2330e89d26896388a3f487ee
 		}
 	}
 	{
+		err := writer.WriteInt64Value("num_gpu_blocks", m.GetNumGpuBlocks())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("pod_name", m.GetPodName())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteBoolValue("prefix_caching", m.GetPrefixCaching())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt64Value("queried_tokens", m.GetQueriedTokens())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt64Value("reused_tokens", m.GetReusedTokens())
 		if err != nil {
 			return err
 		}
@@ -103,9 +247,24 @@ func (m *ReportWorkerEndpoint) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetBlockSize sets the block_size property value. Tokens per KV block, from vllm:cache_config_info.
+func (m *ReportWorkerEndpoint) SetBlockSize(value *int64) {
+	m.block_size = value
+}
+
+// SetLmcache sets the lmcache property value. The lmcache property
+func (m *ReportWorkerEndpoint) SetLmcache(value LmcacheStateable) {
+	m.lmcache = value
+}
+
 // SetMetricsUrl sets the metrics_url property value. The metrics_url property
 func (m *ReportWorkerEndpoint) SetMetricsUrl(value *string) {
 	m.metrics_url = value
+}
+
+// SetNumGpuBlocks sets the num_gpu_blocks property value. The num_gpu_blocks property
+func (m *ReportWorkerEndpoint) SetNumGpuBlocks(value *int64) {
+	m.num_gpu_blocks = value
 }
 
 // SetPodName sets the pod_name property value. The pod_name property
@@ -113,11 +272,38 @@ func (m *ReportWorkerEndpoint) SetPodName(value *string) {
 	m.pod_name = value
 }
 
+// SetPrefixCaching sets the prefix_caching property value. The prefix_caching property
+func (m *ReportWorkerEndpoint) SetPrefixCaching(value *bool) {
+	m.prefix_caching = value
+}
+
+// SetQueriedTokens sets the queried_tokens property value. Cumulative engine counters, in tokens, from the same scrape.
+func (m *ReportWorkerEndpoint) SetQueriedTokens(value *int64) {
+	m.queried_tokens = value
+}
+
+// SetReusedTokens sets the reused_tokens property value. The reused_tokens property
+func (m *ReportWorkerEndpoint) SetReusedTokens(value *int64) {
+	m.reused_tokens = value
+}
+
 type ReportWorkerEndpointable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetBlockSize() *int64
+	GetLmcache() LmcacheStateable
 	GetMetricsUrl() *string
+	GetNumGpuBlocks() *int64
 	GetPodName() *string
+	GetPrefixCaching() *bool
+	GetQueriedTokens() *int64
+	GetReusedTokens() *int64
+	SetBlockSize(value *int64)
+	SetLmcache(value LmcacheStateable)
 	SetMetricsUrl(value *string)
+	SetNumGpuBlocks(value *int64)
 	SetPodName(value *string)
+	SetPrefixCaching(value *bool)
+	SetQueriedTokens(value *int64)
+	SetReusedTokens(value *int64)
 }

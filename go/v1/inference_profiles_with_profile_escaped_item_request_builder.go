@@ -39,10 +39,22 @@ func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Hosting() *InferencePr
 	return NewInferenceProfilesItemHostingRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Kvbm the kvbm property
+// returns a *InferenceProfilesItemKvbmRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Kvbm() *InferenceProfilesItemKvbmRequestBuilder {
+	return NewInferenceProfilesItemKvbmRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // KvCache the kvCache property
 // returns a *InferenceProfilesItemKvCacheRequestBuilder when successful
 func (m *InferenceProfilesWithProfile_ItemRequestBuilder) KvCache() *InferenceProfilesItemKvCacheRequestBuilder {
 	return NewInferenceProfilesItemKvCacheRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// Lmcache the lmcache property
+// returns a *InferenceProfilesItemLmcacheRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Lmcache() *InferenceProfilesItemLmcacheRequestBuilder {
+	return NewInferenceProfilesItemLmcacheRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // Progress the progress property
@@ -55,6 +67,18 @@ func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Progress() *InferenceP
 // returns a *InferenceProfilesItemRestartRequestBuilder when successful
 func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Restart() *InferenceProfilesItemRestartRequestBuilder {
 	return NewInferenceProfilesItemRestartRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// RestoreHints the restoreHints property
+// returns a *InferenceProfilesItemRestoreHintsRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) RestoreHints() *InferenceProfilesItemRestoreHintsRequestBuilder {
+	return NewInferenceProfilesItemRestoreHintsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// ServedPrefixes the servedPrefixes property
+// returns a *InferenceProfilesItemServedPrefixesRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) ServedPrefixes() *InferenceProfilesItemServedPrefixesRequestBuilder {
+	return NewInferenceProfilesItemServedPrefixesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // State the state property

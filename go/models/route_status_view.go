@@ -8,6 +8,8 @@ import (
 )
 
 type RouteStatusView struct {
+	// The activation_forecast property
+	activation_forecast ActivationForecastable
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
 	// The endpoint property
@@ -53,6 +55,12 @@ func CreateRouteStatusViewFromDiscriminatorValue(parseNode i878a80d2330e89d26896
 	return NewRouteStatusView(), nil
 }
 
+// GetActivationForecast gets the activation_forecast property value. The activation_forecast property
+// returns a ActivationForecastable when successful
+func (m *RouteStatusView) GetActivationForecast() ActivationForecastable {
+	return m.activation_forecast
+}
+
 // GetAdditionalData gets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 // returns a map[string]any when successful
 func (m *RouteStatusView) GetAdditionalData() map[string]any {
@@ -81,6 +89,16 @@ func (m *RouteStatusView) GetFallbackReady() *bool {
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *RouteStatusView) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["activation_forecast"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateActivationForecastFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetActivationForecast(val.(ActivationForecastable))
+		}
+		return nil
+	}
 	res["endpoint"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -293,6 +311,12 @@ func (m *RouteStatusView) GetState() *string {
 // Serialize serializes information the current object
 func (m *RouteStatusView) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
+		err := writer.WriteObjectValue("activation_forecast", m.GetActivationForecast())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("endpoint", m.GetEndpoint())
 		if err != nil {
 			return err
@@ -385,6 +409,11 @@ func (m *RouteStatusView) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 	return nil
 }
 
+// SetActivationForecast sets the activation_forecast property value. The activation_forecast property
+func (m *RouteStatusView) SetActivationForecast(value ActivationForecastable) {
+	m.activation_forecast = value
+}
+
 // SetAdditionalData sets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 func (m *RouteStatusView) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
@@ -463,6 +492,7 @@ func (m *RouteStatusView) SetState(value *string) {
 type RouteStatusViewable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetActivationForecast() ActivationForecastable
 	GetEndpoint() *string
 	GetFallbackProfileId() *string
 	GetFallbackReady() *bool
@@ -477,6 +507,7 @@ type RouteStatusViewable interface {
 	GetRestoreCheckpointPath() *string
 	GetStartKind() *string
 	GetState() *string
+	SetActivationForecast(value ActivationForecastable)
 	SetEndpoint(value *string)
 	SetFallbackProfileId(value *string)
 	SetFallbackReady(value *bool)

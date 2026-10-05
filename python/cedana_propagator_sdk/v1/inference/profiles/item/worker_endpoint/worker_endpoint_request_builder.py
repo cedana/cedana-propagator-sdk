@@ -33,7 +33,7 @@ class WorkerEndpointRequestBuilder(BaseRequestBuilder):
     async def put(self,body: ReportWorkerEndpoint, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> None:
         """
         Record where a profile's worker publishes its metrics (controller only). Thepropagator can reach the port but cannot find the pod IP itself.
-        param body: Where a profile's worker publishes engine metrics (controller only).
+        param body: Where a profile's worker publishes engine metrics (controller only), plusthe KV cache facts the controller lifts off that endpoint on its ownscrape. The KV fields are optional so the endpoint-only report (sent perreconcile, before any scrape has run) never erases values a metrics scrapealready wrote.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: None
         """
@@ -54,7 +54,7 @@ class WorkerEndpointRequestBuilder(BaseRequestBuilder):
     def to_put_request_information(self,body: ReportWorkerEndpoint, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
         Record where a profile's worker publishes its metrics (controller only). Thepropagator can reach the port but cannot find the pod IP itself.
-        param body: Where a profile's worker publishes engine metrics (controller only).
+        param body: Where a profile's worker publishes engine metrics (controller only), plusthe KV cache facts the controller lifts off that endpoint on its ownscrape. The KV fields are optional so the endpoint-only report (sent perreconcile, before any scrape has run) never erases values a metrics scrapealready wrote.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """

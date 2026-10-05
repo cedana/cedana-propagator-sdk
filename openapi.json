@@ -246,6 +246,71 @@
         ],
         "type": "object"
       },
+      "ActivationForecast": {
+        "properties": {
+          "basis": {
+            "description": "`measured` from this profile's own workers on this path, `estimated`\nfrom the profile's registered cold-start estimate, or `unknown`.",
+            "type": "string"
+          },
+          "elapsed_ms": {
+            "description": "How long the pending worker has been starting, when one is visible.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "expected_remaining_ms": {
+            "description": "Median and p95 time still to go, never negative. Null when nothing is\nknown; a router must then fall back to its default poll.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "expected_total_ms": {
+            "description": "Median start-to-ready on this path, from scheduling to Ready.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "p95_remaining_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "p95_total_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "path": {
+            "description": "`restore` or `cold`: the path the pending worker is (or will be) on.",
+            "type": "string"
+          },
+          "path_basis": {
+            "description": "How the path was decided: `pod` (the pending pod carries a checkpoint\npath, or does not), `artifact` (no pod yet, but a ready checkpoint\nexists for this profile's compatibility key), or `none` (no pod, no\nartifact — a cold start is the only thing that can happen).",
+            "type": "string"
+          },
+          "samples": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path",
+          "path_basis",
+          "basis",
+          "samples"
+        ],
+        "type": "object"
+      },
       "ActivationReport": {
         "properties": {
           "desired_state": {
@@ -2534,6 +2599,653 @@
         ],
         "type": "object"
       },
+      "DispatchHoldOutcomes": {
+        "description": "What became of the requests that were parked: the restore-versus-cold\npayoff, measured on the requests that waited for it.",
+        "properties": {
+          "avg_wait_ms": {
+            "description": "Wait from first park to assignment, over the requests that were served.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "held": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "later_served": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "max_wait_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "served_after_cold_start": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "served_after_restore": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "held",
+          "later_served",
+          "served_after_restore",
+          "served_after_cold_start"
+        ],
+        "type": "object"
+      },
+      "DispatchHoldSummary": {
+        "description": "Holds by reason: how many requests waited or were turned away, and for\nhow long.",
+        "properties": {
+          "avg_hold_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "hold_reason": {
+            "type": "string"
+          },
+          "max_hold_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "polls": {
+            "description": "Total resolve polls across those requests.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "requests": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "outcome",
+          "hold_reason",
+          "requests",
+          "polls"
+        ],
+        "type": "object"
+      },
+      "DispatchProfileSummary": {
+        "description": "Per profile: how requests were dispatched to it and what served them.",
+        "properties": {
+          "assigned": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "avg_ttft_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "cached_tokens": {
+            "description": "Engine-reported cached prompt tokens, summed. Null when nothing\nreported it, never zero.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "classifier": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "completed": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "completion_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "expected_reuse_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "failed": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "fallback": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "kv_affinity": {
+            "description": "Assigned because Switchyard's prefix affinity asked for this profile.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "logical_model": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "p50_ttft_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "parked": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "profile_id": {
+            "type": "string"
+          },
+          "prompt_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "rejected": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "served_by_cold_worker": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "served_by_restored_worker": {
+            "description": "Assigned to a worker that had restored from a checkpoint.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "served_unattributed": {
+            "description": "Assigned with no single worker to attribute (several replicas, or no\npod visible). Counted separately so the two above never look complete\nwhen they are not.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "profile_id",
+          "assigned",
+          "parked",
+          "rejected",
+          "kv_affinity",
+          "fallback",
+          "classifier",
+          "served_by_restored_worker",
+          "served_by_cold_worker",
+          "served_unattributed",
+          "completed",
+          "failed"
+        ],
+        "type": "object"
+      },
+      "DispatchSeriesPoint": {
+        "properties": {
+          "assigned": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "bucket": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "fallback": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "kv_affinity": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "parked": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "rejected": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "served_by_restored_worker": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "bucket",
+          "assigned",
+          "parked",
+          "rejected",
+          "kv_affinity",
+          "fallback",
+          "served_by_restored_worker"
+        ],
+        "type": "object"
+      },
+      "DispatchSummary": {
+        "properties": {
+          "by_profile": {
+            "items": {
+              "$ref": "#/components/schemas/DispatchProfileSummary"
+            },
+            "type": "array"
+          },
+          "by_worker": {
+            "items": {
+              "$ref": "#/components/schemas/DispatchWorkerSummary"
+            },
+            "type": "array"
+          },
+          "hold_outcomes": {
+            "$ref": "#/components/schemas/DispatchHoldOutcomes"
+          },
+          "holds": {
+            "items": {
+              "$ref": "#/components/schemas/DispatchHoldSummary"
+            },
+            "type": "array"
+          },
+          "series": {
+            "description": "One point per minute over the window, by first-seen time.",
+            "items": {
+              "$ref": "#/components/schemas/DispatchSeriesPoint"
+            },
+            "type": "array"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/DispatchTotals"
+          },
+          "window": {
+            "$ref": "#/components/schemas/DispatchWindow"
+          }
+        },
+        "required": [
+          "window",
+          "totals",
+          "by_profile",
+          "by_worker",
+          "holds",
+          "hold_outcomes",
+          "series"
+        ],
+        "type": "object"
+      },
+      "DispatchTotals": {
+        "properties": {
+          "assigned": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "fallback": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "kv_affinity": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "parked": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "rejected": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "served_by_cold_worker": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "served_by_restored_worker": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "served_unattributed": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "assigned",
+          "parked",
+          "rejected",
+          "kv_affinity",
+          "fallback",
+          "served_by_restored_worker",
+          "served_by_cold_worker",
+          "served_unattributed"
+        ],
+        "type": "object"
+      },
+      "DispatchView": {
+        "description": "One dispatch, joined with the completion facts once Switchyard has\nreported them. `completed` false means the request is still in flight or\nits telemetry never arrived; every usage field is then null.",
+        "properties": {
+          "activation_path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active_streams": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "attempts": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "cached_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "completed": {
+            "type": "boolean"
+          },
+          "completion_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "decision_source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dispatch_id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "end_to_end_latency_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "estimated_prompt_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "expected_ready_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "expected_reuse_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "fallback_used": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "forecast_path": {
+            "description": "The path a held request was forecast on: restore or cold. Distinct\nfrom the usage row's `activation_path`, which is what actually served.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hold_budget_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "hold_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "logical_model": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "preference_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "preferred_profile_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "profile_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "prompt_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "queued_requests": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "ready_replicas": {
+            "format": "int32",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "retry_after_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "status_code": {
+            "format": "int32",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "ttft_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "worker_basis": {
+            "description": "`pod` or `profile`: how far the worker columns can be trusted.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worker_checkpoint_path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worker_node_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worker_pod_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worker_start_kind": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "dispatch_id",
+          "request_id",
+          "logical_model",
+          "outcome",
+          "attempts",
+          "created_at",
+          "updated_at",
+          "completed"
+        ],
+        "type": "object"
+      },
+      "DispatchWindow": {
+        "properties": {
+          "from": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "minutes": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "to": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "minutes",
+          "from",
+          "to"
+        ],
+        "type": "object"
+      },
+      "DispatchWorkerSummary": {
+        "description": "Per worker pod: what it served, and whether it was a restore.",
+        "properties": {
+          "assigned": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "avg_ttft_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "cached_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "completed": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "last_dispatch_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "profile_id": {
+            "type": "string"
+          },
+          "worker_checkpoint_path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worker_node_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worker_pod_name": {
+            "type": "string"
+          },
+          "worker_start_kind": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "profile_id",
+          "worker_pod_name",
+          "assigned",
+          "completed",
+          "last_dispatch_at"
+        ],
+        "type": "object"
+      },
       "DockerConfiguration": {
         "properties": {
           "args": {
@@ -2869,6 +3581,13 @@
         "properties": {
           "metric_name": {
             "type": "string"
+          },
+          "pod_name": {
+            "description": "The pod the sample came from. Absent on older watchers and on\ndeployment-level samples; with several replicas, or a KVBM tier that\nbelongs to one worker, a counter is meaningless without it.",
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "timestamp_ms": {
             "description": "Unix timestamp in milliseconds",
@@ -4160,7 +4879,6 @@
         "type": "object"
       },
       "KvCacheState": {
-        "description": "What a profile's engine is currently reusing.",
         "properties": {
           "block_size": {
             "description": "Tokens per KV block. Reuse happens in whole blocks, so a prompt shorter than two\nof them reports no hits however often it repeats.",
@@ -4175,6 +4893,17 @@
             "type": [
               "integer",
               "null"
+            ]
+          },
+          "lmcache": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LmcacheState",
+                "description": "LMCache tier counters: from the scraped body when it carries\n`lmcache_*` samples, otherwise the controller's last persisted report.\nAbsent when LMCache never reported. Node-level — see `LmcacheState`."
+              }
             ]
           },
           "pod_name": {
@@ -4407,6 +5136,164 @@
           "kind",
           "occurred_at"
         ],
+        "type": "object"
+      },
+      "LmcacheSeries": {
+        "description": "One `lmcache_*` metric for one worker pod over the window. Counters are\ncumulative as the engine reports them; a reader takes deltas for rates.",
+        "properties": {
+          "metric_name": {
+            "type": "string"
+          },
+          "pod_name": {
+            "type": "string"
+          },
+          "points": {
+            "description": "`[unix_ms, value]` pairs, ascending.",
+            "items": {
+              "items": false,
+              "prefixItems": [
+                {
+                  "format": "int64",
+                  "type": "integer"
+                },
+                {
+                  "format": "double",
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "pod_name",
+          "metric_name",
+          "points"
+        ],
+        "type": "object"
+      },
+      "LmcacheSeriesResponse": {
+        "properties": {
+          "bucket_seconds": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "latest_ms": {
+            "description": "Newest sample in the window, or null when the profile never reported LMCache.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "minutes": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "profile_id": {
+            "type": "string"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/LmcacheSeries"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "profile_id",
+          "minutes",
+          "bucket_seconds",
+          "series"
+        ],
+        "type": "object"
+      },
+      "LmcacheState": {
+        "description": "What a profile's engine is currently reusing.\nLMCache counters for one worker, as `lmcache server` exports them on its\nPrometheus port (`--prometheus-port`, 9090 by default). Every field is\noptional: the propagator stores what the controller scraped and never\ninvents a tier that did not report.\n\nTiers: L1 is pinned CPU DRAM inside the `lmcache server` process, L2 the\nnode's local NVMe behind the POSIX `nixl_store` adapter. Unlike KVBM's\ntiers these live **outside** the vLLM worker — one server per node, shared\nby every pod on it — so `node` records which server produced the numbers,\nand two workers on the same node necessarily report the same ones.",
+        "properties": {
+          "hit_tokens": {
+            "description": "Tokens served from the cache rather than prefilled — LMCache's\nequivalent of what KVBM called `matched_tokens`.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "l1_capacity_bytes": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "l1_hit_rate": {
+            "description": "0.0–1.0. Derived, not reported: the server exports per-tier hit TOKENS\nagainst one shared denominator, never a rate.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "l1_used_bytes": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "l2_capacity_bytes": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "l2_hit_rate": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "l2_used_bytes": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "load_chunks": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "node": {
+            "description": "The node whose `lmcache server` produced these counters. The cache is\nper-node, so this, not the pod, is the identity that matters.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "requested_tokens": {
+            "description": "Tokens looked up, hit or miss. With `hit_tokens` this gives a rate\nthat does not depend on the server exporting one.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "store_chunks": {
+            "description": "Chunks written into the cache, and read back out of it.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
         "type": "object"
       },
       "MaintenanceTriggerConfig": {
@@ -5888,17 +6775,34 @@
       },
       "PendingResponse": {
         "properties": {
+          "forecast": {
+            "$ref": "#/components/schemas/ActivationForecast",
+            "description": "The wait ahead, as far as the propagator can tell. Null fields mean\nnothing is known, not that the wait is zero."
+          },
+          "hold_budget_ms": {
+            "description": "How long this request can still be held before its budget runs out.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "hold_reason": {
+            "description": "`restoring` or `cold_starting`: what the request is waiting on.",
+            "type": "string"
+          },
           "pending_profile_id": {
             "type": "string"
           },
           "retry_after_ms": {
+            "description": "When to poll again. Derived from the forecast remaining time when the\nprofile's own startup history gives one, so the request re-polls\nabout when readiness lands rather than every two seconds regardless.",
             "format": "int64",
             "type": "integer"
           }
         },
         "required": [
           "pending_profile_id",
-          "retry_after_ms"
+          "retry_after_ms",
+          "hold_reason",
+          "hold_budget_ms",
+          "forecast"
         ],
         "type": "object"
       },
@@ -6931,6 +7835,51 @@
         ],
         "type": "object"
       },
+      "PrefixFingerprint": {
+        "description": "One cumulative prefix fingerprint of the request body, in Switchyard's\nhash space: `tokens` is the estimated token length of the prefix and\n`hash` its fold, hex-encoded. Opaque here — recorded and intersected,\nnever recomputed.",
+        "properties": {
+          "hash": {
+            "type": "string"
+          },
+          "tokens": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "tokens",
+          "hash"
+        ],
+        "type": "object"
+      },
+      "PrefixHintView": {
+        "description": "One prefix a parked or served request carried, in Switchyard's fingerprint\nspace. Opaque to everything except set intersection.",
+        "properties": {
+          "last_seen": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "parked_count": {
+            "description": "How many parked requests carried this prefix. Always 1 on the\nserved-prefix inventory, which counts residency, not demand.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "prefix_hash": {
+            "type": "string"
+          },
+          "prefix_tokens": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "prefix_hash",
+          "prefix_tokens",
+          "parked_count",
+          "last_seen"
+        ],
+        "type": "object"
+      },
       "ProcessState": {
         "properties": {
           "Cmdline": {
@@ -7214,14 +8163,61 @@
         "type": "object"
       },
       "ReportWorkerEndpoint": {
-        "description": "Where a profile's worker publishes engine metrics (controller only).",
+        "description": "Where a profile's worker publishes engine metrics (controller only), plus\nthe KV cache facts the controller lifts off that endpoint on its own\nscrape. The KV fields are optional so the endpoint-only report (sent per\nreconcile, before any scrape has run) never erases values a metrics scrape\nalready wrote.",
         "properties": {
+          "block_size": {
+            "description": "Tokens per KV block, from vllm:cache_config_info.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "lmcache": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LmcacheState",
+                "description": "LMCache tier counters from the node's `lmcache server`, when the\nprofile runs LMCache. Absent keeps the last report, like every KV field."
+              }
+            ]
+          },
           "metrics_url": {
             "type": "string"
+          },
+          "num_gpu_blocks": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
           },
           "pod_name": {
             "type": [
               "string",
+              "null"
+            ]
+          },
+          "prefix_caching": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "queried_tokens": {
+            "description": "Cumulative engine counters, in tokens, from the same scrape.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "reused_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
               "null"
             ]
           }
@@ -7296,14 +8292,36 @@
             "format": "uuid",
             "type": "string"
           },
+          "expected_reuse_tokens": {
+            "description": "Switchyard's pre-routing reuse estimate against the preferred profile,\nin tokens, already quantized to that profile's block size.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "logical_model": {
             "type": "string"
+          },
+          "preference_reason": {
+            "description": "Why Switchyard preferred that profile: \"kv_affinity\" when the\npreference came from expected prefix reuse rather than the classifier.",
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "preferred_profile_id": {
             "type": [
               "string",
               "null"
             ]
+          },
+          "prefix_fingerprints": {
+            "description": "Cumulative prefix fingerprints of this request, longest last. Recorded\nas restore hints when nothing is ready, so artifact selection can\nprefer a checkpoint holding what the queue is waiting for.",
+            "items": {
+              "$ref": "#/components/schemas/PrefixFingerprint"
+            },
+            "type": "array"
           },
           "queued_requests": {
             "format": "int64",
@@ -7734,6 +8752,17 @@
       },
       "RouteStatusView": {
         "properties": {
+          "activation_forecast": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ActivationForecast",
+                "description": "Present while the primary is being brought up: the path it is on and\nhow long the wait is forecast to last, from this profile's own history."
+              }
+            ]
+          },
           "endpoint": {
             "type": [
               "string",
@@ -7914,6 +8943,16 @@
           "draining": {
             "type": "boolean"
           },
+          "kv": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RouterTargetKv"
+              }
+            ]
+          },
           "max_queue_depth": {
             "format": "int32",
             "type": "integer"
@@ -7969,6 +9008,123 @@
           "target_concurrency",
           "max_queue_depth",
           "node_hourly_usd"
+        ],
+        "type": "object"
+      },
+      "RouterTargetKv": {
+        "description": "KV cache facts for one target, so Switchyard can weigh prefix reuse when\nit proposes a profile. Everything here is observed off the target's newest\nworker, not configured: absent means \"no worker has reported yet\", and a\nrouter must treat that as \"no reuse to be had\", not as an error.",
+        "properties": {
+          "block_size": {
+            "description": "Tokens per KV block. Reuse happens in whole blocks and the block being\nwritten is never reusable, so this is the quantum every reuse estimate\nmust round down to. 1600 on a hybrid model, 16 on a dense one.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "gpu_blocks": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "lmcache": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RouterTargetLmcache",
+                "description": "LMCache tiering below the GPU, when the profile runs it. Absent means\nno LMCache: a router must not assume host or disk reuse exists."
+              }
+            ]
+          },
+          "prefix_caching": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "reuse_floor_tokens": {
+            "description": "Prompts shorter than this can never register a hit, however often they\nrepeat: two whole blocks (the resident one plus the one being written).",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "start_kind": {
+            "description": "How the newest worker pod started: \"restore\" (its KV cache came back\nwith it) or \"cold\" (any prefix knowledge about this profile predating\nthe pod is stale). Absent when no worker pod is visible.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "RouterTargetLmcache": {
+        "description": "What the router may assume about a target's LMCache tiers: what was\nconfigured (from the profile's template) and whether each tier has ever\nheld anything (from the newest worker's counters). The counters\nthemselves ride along for display; they change on every scrape and are\ndeliberately not part of the ETag, so read them as approximate.\n\nOne caveat the KVBM version did not have: the cache is per node, shared by\nevery pod on it, so these counters describe the node the newest worker\nlanded on rather than that worker alone. `node` says which.",
+        "properties": {
+          "hit_rate": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "hit_tokens": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "l1_active": {
+            "type": "boolean"
+          },
+          "l1_hit_rate": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "l1_size_gb": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "l2_active": {
+            "type": "boolean"
+          },
+          "l2_hit_rate": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "l2_size_gb": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "node": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "l1_active",
+          "l2_active"
         ],
         "type": "object"
       },
@@ -9391,6 +10547,14 @@
               "null"
             ]
           },
+          "cached_tokens": {
+            "description": "What the engine reported as cached, when the response carried\nprompt_tokens_details. NULL means \"not reported\", never zero.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "classifier_latency_ms": {
             "format": "int64",
             "type": [
@@ -9424,6 +10588,14 @@
               "null"
             ]
           },
+          "expected_reuse_tokens": {
+            "description": "Switchyard's pre-routing reuse estimate for the profile that served\nthis request, in tokens. NULL when the router made no estimate.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "fallback_used": {
             "type": [
               "boolean",
@@ -9446,6 +10618,13 @@
               "number",
               "null"
             ]
+          },
+          "prefix_fingerprints": {
+            "description": "Cumulative prefix fingerprints of the completed request, recorded into\nthe serving profile's prefix inventory so a later checkpoint of that\nworker knows which conversations its cache holds.",
+            "items": {
+              "$ref": "#/components/schemas/PrefixFingerprint"
+            },
+            "type": "array"
           },
           "profile_id": {
             "type": [
@@ -15540,6 +16719,171 @@
         ]
       }
     },
+    "/v1/inference/dispatches": {
+      "get": {
+        "description": "Newest-touched first. Poll with `since` set to the newest `updated_at`\nseen; held requests re-appear as their attempts advance.",
+        "operationId": "list_dispatches",
+        "parameters": [
+          {
+            "description": "Window in minutes (default 15)",
+            "in": "query",
+            "name": "minutes",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Only rows updated after this RFC 3339 instant",
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "profile_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "logical_model",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "assigned | parked | rejected",
+            "in": "query",
+            "name": "outcome",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Max rows (default 200, cap 1000)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DispatchView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Recent dispatches"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Live dispatch feed",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/dispatches/summary": {
+      "get": {
+        "description": "Everything here is counted from the ledger, not modelled. Empty windows\nreturn zero counts and null averages — an unmeasured latency is null, not\ninstant.",
+        "operationId": "dispatch_summary",
+        "parameters": [
+          {
+            "description": "Window in minutes (default 60)",
+            "in": "query",
+            "name": "minutes",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispatchSummary"
+                }
+              }
+            },
+            "description": "Dispatch aggregates"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Dispatch aggregates for the dashboard",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
     "/v1/inference/experiments": {
       "get": {
         "operationId": "list_experiments",
@@ -17293,6 +18637,182 @@
         ]
       }
     },
+    "/v1/inference/profiles/{profile_id}/kvbm/series": {
+      "get": {
+        "description": "KVBM was replaced by LMCache MP; this path answers identically so a UI\nimage rolled ahead of, or behind, the propagator keeps working. Remove it\none release after the UI stops calling it.",
+        "operationId": "kvbm_series_alias",
+        "parameters": [
+          {
+            "description": "Profile (its DGD name)",
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Window in minutes (default 60)",
+            "in": "query",
+            "name": "minutes",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Bucket width; 0 for raw samples",
+            "in": "query",
+            "name": "bucket_seconds",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LmcacheSeriesResponse"
+                }
+              }
+            },
+            "description": "Deprecated alias of /lmcache/series"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "bucket_seconds wider than the 30-day metrics TTL"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Deprecated alias of `/lmcache/series`",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/profiles/{profile_id}/lmcache/series": {
+      "get": {
+        "description": "Empty `series` means the profile has never published LMCache metrics — no\nlmcache block on its template, no `lmcache server` on the node, or a\nworker that has not come up since it was added — which a dashboard must\nshow as \"no LMCache\", not as zero offload.",
+        "operationId": "lmcache_series",
+        "parameters": [
+          {
+            "description": "Profile (its DGD name)",
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Window in minutes (default 60)",
+            "in": "query",
+            "name": "minutes",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Bucket width; 0 for raw samples",
+            "in": "query",
+            "name": "bucket_seconds",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LmcacheSeriesResponse"
+                }
+              }
+            },
+            "description": "Per-pod lmcache_* time series"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "bucket_seconds wider than the 30-day metrics TTL"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "LMCache tier counters over time, per worker pod",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
     "/v1/inference/profiles/{profile_id}/progress": {
       "get": {
         "operationId": "get_profile_progress",
@@ -17430,6 +18950,126 @@
           }
         ],
         "summary": "Replace this profile's worker so it restores from its last checkpoint, coming back\nwith the KV cache it had in about a minute rather than eleven.",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/profiles/{profile_id}/restore-hints": {
+      "get": {
+        "description": "Read at artifact-selection time: a checkpoint whose resident conversations\nintersect these hints saves the parked requests their prefill. Rows are\nbounded and pruned on write; staleness is the reader's judgment, which is\nwhy last_seen is part of every row.",
+        "operationId": "profile_restore_hints",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PrefixHintView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Pending prefix hints"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "ServiceToken": []
+          }
+        ],
+        "summary": "What the queue for this profile is waiting for (controller only)",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/profiles/{profile_id}/served-prefixes": {
+      "get": {
+        "description": "Read at dump time and copied into the artifact's metadata, so a checkpoint\nrecords which conversations its KV cache holds. The table does not know\nwhen a worker was replaced: the caller must filter last_seen against the\nworker pod's own start time, or it will write a previous worker's\ninventory into the new worker's checkpoint.",
+        "operationId": "profile_served_prefixes",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PrefixHintView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Served prefix inventory"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "ServiceToken": []
+          }
+        ],
+        "summary": "What this profile's worker has already prefilled (controller only)",
         "tags": [
           "inference"
         ]
@@ -17881,7 +19521,7 @@
             "ServiceToken": []
           }
         ],
-        "summary": "Full routing snapshot for Switchyard, service-token-only. Generation is the sum of\nthe route generations; `If-None-Match: \"<generation>\"` gets a 304.",
+        "summary": "Full routing snapshot for Switchyard, service-token-only. The ETag is the\nsummed route generation plus a fingerprint of the per-target KV facts,\nwhich change without any generation moving; `If-None-Match` with the last\nETag gets a 304.",
         "tags": [
           "Router"
         ]

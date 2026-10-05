@@ -4,11 +4,16 @@ from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
+if TYPE_CHECKING:
+    from .activation_forecast import ActivationForecast
+
 @dataclass
 class RouteStatusView(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
+    # The activation_forecast property
+    activation_forecast: Optional[ActivationForecast] = None
     # The endpoint property
     endpoint: Optional[str] = None
     # The fallback_profile_id property
@@ -54,7 +59,12 @@ class RouteStatusView(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
+        from .activation_forecast import ActivationForecast
+
+        from .activation_forecast import ActivationForecast
+
         fields: dict[str, Callable[[Any], None]] = {
+            "activation_forecast": lambda n : setattr(self, 'activation_forecast', n.get_object_value(ActivationForecast)),
             "endpoint": lambda n : setattr(self, 'endpoint', n.get_str_value()),
             "fallback_profile_id": lambda n : setattr(self, 'fallback_profile_id', n.get_str_value()),
             "fallback_ready": lambda n : setattr(self, 'fallback_ready', n.get_bool_value()),
@@ -80,6 +90,7 @@ class RouteStatusView(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
+        writer.write_object_value("activation_forecast", self.activation_forecast)
         writer.write_str_value("endpoint", self.endpoint)
         writer.write_str_value("fallback_profile_id", self.fallback_profile_id)
         writer.write_bool_value("fallback_ready", self.fallback_ready)

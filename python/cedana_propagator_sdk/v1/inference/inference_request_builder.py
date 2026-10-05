@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from .chat.chat_request_builder import ChatRequestBuilder
     from .correlation.correlation_request_builder import CorrelationRequestBuilder
     from .costs.costs_request_builder import CostsRequestBuilder
+    from .dispatches.dispatches_request_builder import DispatchesRequestBuilder
     from .experiments.experiments_request_builder import ExperimentsRequestBuilder
     from .fleets.fleets_request_builder import FleetsRequestBuilder
     from .keys.keys_request_builder import KeysRequestBuilder
@@ -104,6 +105,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .costs.costs_request_builder import CostsRequestBuilder
 
         return CostsRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def dispatches(self) -> DispatchesRequestBuilder:
+        """
+        The dispatches property
+        """
+        from .dispatches.dispatches_request_builder import DispatchesRequestBuilder
+
+        return DispatchesRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def experiments(self) -> ExperimentsRequestBuilder:

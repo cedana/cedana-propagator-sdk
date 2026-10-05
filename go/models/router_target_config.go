@@ -14,6 +14,8 @@ type RouterTargetConfig struct {
 	current_replicas *int32
 	// The draining property
 	draining *bool
+	// The kv property
+	kv RouterTargetKvable
 	// The max_queue_depth property
 	max_queue_depth *int32
 	// The max_replicas property
@@ -90,6 +92,16 @@ func (m *RouterTargetConfig) GetFieldDeserializers() map[string]func(i878a80d233
 		}
 		if val != nil {
 			m.SetDraining(val)
+		}
+		return nil
+	}
+	res["kv"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateRouterTargetKvFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetKv(val.(RouterTargetKvable))
 		}
 		return nil
 	}
@@ -206,6 +218,12 @@ func (m *RouterTargetConfig) GetFieldDeserializers() map[string]func(i878a80d233
 	return res
 }
 
+// GetKv gets the kv property value. The kv property
+// returns a RouterTargetKvable when successful
+func (m *RouterTargetConfig) GetKv() RouterTargetKvable {
+	return m.kv
+}
+
 // GetMaxQueueDepth gets the max_queue_depth property value. The max_queue_depth property
 // returns a *int32 when successful
 func (m *RouterTargetConfig) GetMaxQueueDepth() *int32 {
@@ -282,6 +300,12 @@ func (m *RouterTargetConfig) Serialize(writer i878a80d2330e89d26896388a3f487eef2
 	}
 	{
 		err := writer.WriteBoolValue("draining", m.GetDraining())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("kv", m.GetKv())
 		if err != nil {
 			return err
 		}
@@ -376,6 +400,11 @@ func (m *RouterTargetConfig) SetDraining(value *bool) {
 	m.draining = value
 }
 
+// SetKv sets the kv property value. The kv property
+func (m *RouterTargetConfig) SetKv(value RouterTargetKvable) {
+	m.kv = value
+}
+
 // SetMaxQueueDepth sets the max_queue_depth property value. The max_queue_depth property
 func (m *RouterTargetConfig) SetMaxQueueDepth(value *int32) {
 	m.max_queue_depth = value
@@ -436,6 +465,7 @@ type RouterTargetConfigable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetCurrentReplicas() *int32
 	GetDraining() *bool
+	GetKv() RouterTargetKvable
 	GetMaxQueueDepth() *int32
 	GetMaxReplicas() *int32
 	GetMinReplicas() *int32
@@ -449,6 +479,7 @@ type RouterTargetConfigable interface {
 	GetUpstreamModel() *string
 	SetCurrentReplicas(value *int32)
 	SetDraining(value *bool)
+	SetKv(value RouterTargetKvable)
 	SetMaxQueueDepth(value *int32)
 	SetMaxReplicas(value *int32)
 	SetMinReplicas(value *int32)

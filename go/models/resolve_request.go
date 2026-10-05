@@ -15,10 +15,16 @@ type ResolveRequest struct {
 	additionalData map[string]any
 	// The authorization_id property
 	authorization_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	// Switchyard's pre-routing reuse estimate against the preferred profile,in tokens, already quantized to that profile's block size.
+	expected_reuse_tokens *int64
 	// The logical_model property
 	logical_model *string
+	// Why Switchyard preferred that profile: "kv_affinity" when thepreference came from expected prefix reuse rather than the classifier.
+	preference_reason *string
 	// The preferred_profile_id property
 	preferred_profile_id *string
+	// Cumulative prefix fingerprints of this request, longest last. Recordedas restore hints when nothing is ready, so artifact selection canprefer a checkpoint holding what the queue is waiting for.
+	prefix_fingerprints []PrefixFingerprintable
 	// The queued_requests property
 	queued_requests *int64
 	// The request_id property
@@ -56,6 +62,12 @@ func (m *ResolveRequest) GetAuthorizationId() *i561e97a8befe7661a44c8f54600992b4
 	return m.authorization_id
 }
 
+// GetExpectedReuseTokens gets the expected_reuse_tokens property value. Switchyard's pre-routing reuse estimate against the preferred profile,in tokens, already quantized to that profile's block size.
+// returns a *int64 when successful
+func (m *ResolveRequest) GetExpectedReuseTokens() *int64 {
+	return m.expected_reuse_tokens
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *ResolveRequest) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
@@ -80,6 +92,16 @@ func (m *ResolveRequest) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		return nil
 	}
+	res["expected_reuse_tokens"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetExpectedReuseTokens(val)
+		}
+		return nil
+	}
 	res["logical_model"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -90,6 +112,16 @@ func (m *ResolveRequest) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		return nil
 	}
+	res["preference_reason"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPreferenceReason(val)
+		}
+		return nil
+	}
 	res["preferred_profile_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -97,6 +129,22 @@ func (m *ResolveRequest) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		if val != nil {
 			m.SetPreferredProfileId(val)
+		}
+		return nil
+	}
+	res["prefix_fingerprints"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetCollectionOfObjectValues(CreatePrefixFingerprintFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			res := make([]PrefixFingerprintable, len(val))
+			for i, v := range val {
+				if v != nil {
+					res[i] = v.(PrefixFingerprintable)
+				}
+			}
+			m.SetPrefixFingerprints(res)
 		}
 		return nil
 	}
@@ -129,10 +177,22 @@ func (m *ResolveRequest) GetLogicalModel() *string {
 	return m.logical_model
 }
 
+// GetPreferenceReason gets the preference_reason property value. Why Switchyard preferred that profile: "kv_affinity" when thepreference came from expected prefix reuse rather than the classifier.
+// returns a *string when successful
+func (m *ResolveRequest) GetPreferenceReason() *string {
+	return m.preference_reason
+}
+
 // GetPreferredProfileId gets the preferred_profile_id property value. The preferred_profile_id property
 // returns a *string when successful
 func (m *ResolveRequest) GetPreferredProfileId() *string {
 	return m.preferred_profile_id
+}
+
+// GetPrefixFingerprints gets the prefix_fingerprints property value. Cumulative prefix fingerprints of this request, longest last. Recordedas restore hints when nothing is ready, so artifact selection canprefer a checkpoint holding what the queue is waiting for.
+// returns a []PrefixFingerprintable when successful
+func (m *ResolveRequest) GetPrefixFingerprints() []PrefixFingerprintable {
+	return m.prefix_fingerprints
 }
 
 // GetQueuedRequests gets the queued_requests property value. The queued_requests property
@@ -162,13 +222,37 @@ func (m *ResolveRequest) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
 		}
 	}
 	{
+		err := writer.WriteInt64Value("expected_reuse_tokens", m.GetExpectedReuseTokens())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("logical_model", m.GetLogicalModel())
 		if err != nil {
 			return err
 		}
 	}
 	{
+		err := writer.WriteStringValue("preference_reason", m.GetPreferenceReason())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("preferred_profile_id", m.GetPreferredProfileId())
+		if err != nil {
+			return err
+		}
+	}
+	if m.GetPrefixFingerprints() != nil {
+		cast := make([]i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, len(m.GetPrefixFingerprints()))
+		for i, v := range m.GetPrefixFingerprints() {
+			if v != nil {
+				cast[i] = v.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable)
+			}
+		}
+		err := writer.WriteCollectionOfObjectValues("prefix_fingerprints", cast)
 		if err != nil {
 			return err
 		}
@@ -209,14 +293,29 @@ func (m *ResolveRequest) SetAuthorizationId(value *i561e97a8befe7661a44c8f546009
 	m.authorization_id = value
 }
 
+// SetExpectedReuseTokens sets the expected_reuse_tokens property value. Switchyard's pre-routing reuse estimate against the preferred profile,in tokens, already quantized to that profile's block size.
+func (m *ResolveRequest) SetExpectedReuseTokens(value *int64) {
+	m.expected_reuse_tokens = value
+}
+
 // SetLogicalModel sets the logical_model property value. The logical_model property
 func (m *ResolveRequest) SetLogicalModel(value *string) {
 	m.logical_model = value
 }
 
+// SetPreferenceReason sets the preference_reason property value. Why Switchyard preferred that profile: "kv_affinity" when thepreference came from expected prefix reuse rather than the classifier.
+func (m *ResolveRequest) SetPreferenceReason(value *string) {
+	m.preference_reason = value
+}
+
 // SetPreferredProfileId sets the preferred_profile_id property value. The preferred_profile_id property
 func (m *ResolveRequest) SetPreferredProfileId(value *string) {
 	m.preferred_profile_id = value
+}
+
+// SetPrefixFingerprints sets the prefix_fingerprints property value. Cumulative prefix fingerprints of this request, longest last. Recordedas restore hints when nothing is ready, so artifact selection canprefer a checkpoint holding what the queue is waiting for.
+func (m *ResolveRequest) SetPrefixFingerprints(value []PrefixFingerprintable) {
+	m.prefix_fingerprints = value
 }
 
 // SetQueuedRequests sets the queued_requests property value. The queued_requests property
@@ -234,14 +333,20 @@ type ResolveRequestable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetActiveStreamsByProfile() ResolveRequest_active_streams_by_profileable
 	GetAuthorizationId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	GetExpectedReuseTokens() *int64
 	GetLogicalModel() *string
+	GetPreferenceReason() *string
 	GetPreferredProfileId() *string
+	GetPrefixFingerprints() []PrefixFingerprintable
 	GetQueuedRequests() *int64
 	GetRequestId() *string
 	SetActiveStreamsByProfile(value ResolveRequest_active_streams_by_profileable)
 	SetAuthorizationId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
+	SetExpectedReuseTokens(value *int64)
 	SetLogicalModel(value *string)
+	SetPreferenceReason(value *string)
 	SetPreferredProfileId(value *string)
+	SetPrefixFingerprints(value []PrefixFingerprintable)
 	SetQueuedRequests(value *int64)
 	SetRequestId(value *string)
 }

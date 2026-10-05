@@ -69,6 +69,12 @@ func (m *InferenceRequestBuilder) Costs() *InferenceCostsRequestBuilder {
 	return NewInferenceCostsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Dispatches the dispatches property
+// returns a *InferenceDispatchesRequestBuilder when successful
+func (m *InferenceRequestBuilder) Dispatches() *InferenceDispatchesRequestBuilder {
+	return NewInferenceDispatchesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Experiments the experiments property
 // returns a *InferenceExperimentsRequestBuilder when successful
 func (m *InferenceRequestBuilder) Experiments() *InferenceExperimentsRequestBuilder {
