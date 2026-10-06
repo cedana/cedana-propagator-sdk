@@ -14,6 +14,8 @@ class SlurmJob(AdditionalDataHolder, Parsable):
 
     # The account property
     account: Optional[str] = None
+    # The cedana_enabled property
+    cedana_enabled: Optional[bool] = None
     # The cluster_id property
     cluster_id: Optional[str] = None
     # Numeric derived exit code (slurmdbd derived_ec — uint32, widened to i64)
@@ -75,6 +77,7 @@ class SlurmJob(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
             "account": lambda n : setattr(self, 'account', n.get_str_value()),
+            "cedana_enabled": lambda n : setattr(self, 'cedana_enabled', n.get_bool_value()),
             "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_str_value()),
             "derived_ec": lambda n : setattr(self, 'derived_ec', n.get_int_value()),
             "derived_es": lambda n : setattr(self, 'derived_es', n.get_str_value()),
@@ -108,6 +111,7 @@ class SlurmJob(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_str_value("account", self.account)
+        writer.write_bool_value("cedana_enabled", self.cedana_enabled)
         writer.write_str_value("cluster_id", self.cluster_id)
         writer.write_int_value("derived_ec", self.derived_ec)
         writer.write_str_value("derived_es", self.derived_es)

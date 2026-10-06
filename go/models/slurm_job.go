@@ -13,6 +13,8 @@ type SlurmJob struct {
 	account *string
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// The cedana_enabled property
+	cedana_enabled *bool
 	// The cluster_id property
 	cluster_id *string
 	// Numeric derived exit code (slurmdbd derived_ec — uint32, widened to i64)
@@ -82,6 +84,12 @@ func (m *SlurmJob) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetCedanaEnabled gets the cedana_enabled property value. The cedana_enabled property
+// returns a *bool when successful
+func (m *SlurmJob) GetCedanaEnabled() *bool {
+	return m.cedana_enabled
+}
+
 // GetClusterId gets the cluster_id property value. The cluster_id property
 // returns a *string when successful
 func (m *SlurmJob) GetClusterId() *string {
@@ -129,6 +137,16 @@ func (m *SlurmJob) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896
 		}
 		if val != nil {
 			m.SetAccount(val)
+		}
+		return nil
+	}
+	res["cedana_enabled"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetBoolValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCedanaEnabled(val)
 		}
 		return nil
 	}
@@ -444,6 +462,12 @@ func (m *SlurmJob) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c01
 		}
 	}
 	{
+		err := writer.WriteBoolValue("cedana_enabled", m.GetCedanaEnabled())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("cluster_id", m.GetClusterId())
 		if err != nil {
 			return err
@@ -588,6 +612,11 @@ func (m *SlurmJob) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetCedanaEnabled sets the cedana_enabled property value. The cedana_enabled property
+func (m *SlurmJob) SetCedanaEnabled(value *bool) {
+	m.cedana_enabled = value
+}
+
 // SetClusterId sets the cluster_id property value. The cluster_id property
 func (m *SlurmJob) SetClusterId(value *string) {
 	m.cluster_id = value
@@ -697,6 +726,7 @@ type SlurmJobable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetAccount() *string
+	GetCedanaEnabled() *bool
 	GetClusterId() *string
 	GetDerivedEc() *int64
 	GetDerivedEs() *string
@@ -719,6 +749,7 @@ type SlurmJobable interface {
 	GetTimeSuspended() *int64
 	GetWorkDir() *string
 	SetAccount(value *string)
+	SetCedanaEnabled(value *bool)
 	SetClusterId(value *string)
 	SetDerivedEc(value *int64)
 	SetDerivedEs(value *string)

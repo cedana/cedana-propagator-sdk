@@ -8440,6 +8440,12 @@
               "null"
             ]
           },
+          "cedana_enabled": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
           "cluster_id": {
             "type": "string"
           },
