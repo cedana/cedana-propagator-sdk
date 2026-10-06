@@ -9,8 +9,6 @@ class CedanaJobCheckpoint(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # `<algorithm>:<hex>` of the checkpoint as stored, recorded by the storageonce it has persisted the checkpoint. Null when none was recorded.Read only: a put does not take it.
-    checksum: Optional[str] = None
     # The ID property
     i_d: Optional[str] = None
     # The JID property
@@ -39,7 +37,6 @@ class CedanaJobCheckpoint(AdditionalDataHolder, Parsable):
         Returns: dict[str, Callable[[ParseNode], None]]
         """
         fields: dict[str, Callable[[Any], None]] = {
-            "Checksum": lambda n : setattr(self, 'checksum', n.get_str_value()),
             "ID": lambda n : setattr(self, 'i_d', n.get_str_value()),
             "JID": lambda n : setattr(self, 'j_i_d', n.get_str_value()),
             "Path": lambda n : setattr(self, 'path', n.get_str_value()),
@@ -56,7 +53,6 @@ class CedanaJobCheckpoint(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
-        writer.write_str_value("Checksum", self.checksum)
         writer.write_str_value("ID", self.i_d)
         writer.write_str_value("JID", self.j_i_d)
         writer.write_str_value("Path", self.path)

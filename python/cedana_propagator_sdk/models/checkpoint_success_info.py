@@ -9,6 +9,8 @@ class CheckpointSuccessInfo(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
+    # `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,unless the restore path changes
+    checksum: Optional[str] = None
     # The restore_path property
     restore_path: Optional[str] = None
     
@@ -29,6 +31,7 @@ class CheckpointSuccessInfo(AdditionalDataHolder, Parsable):
         Returns: dict[str, Callable[[ParseNode], None]]
         """
         fields: dict[str, Callable[[Any], None]] = {
+            "checksum": lambda n : setattr(self, 'checksum', n.get_str_value()),
             "restore_path": lambda n : setattr(self, 'restore_path', n.get_str_value()),
         }
         return fields
@@ -41,6 +44,7 @@ class CheckpointSuccessInfo(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
+        writer.write_str_value("checksum", self.checksum)
         writer.write_str_value("restore_path", self.restore_path)
         writer.write_additional_data_value(self.additional_data)
     

@@ -10,6 +10,8 @@ import (
 type CheckpointSuccessInfo struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,unless the restore path changes
+	checksum *string
 	// The restore_path property
 	restore_path *string
 }
@@ -33,10 +35,26 @@ func (m *CheckpointSuccessInfo) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetChecksum gets the checksum property value. `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,unless the restore path changes
+// returns a *string when successful
+func (m *CheckpointSuccessInfo) GetChecksum() *string {
+	return m.checksum
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *CheckpointSuccessInfo) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["checksum"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetChecksum(val)
+		}
+		return nil
+	}
 	res["restore_path"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -59,6 +77,12 @@ func (m *CheckpointSuccessInfo) GetRestorePath() *string {
 // Serialize serializes information the current object
 func (m *CheckpointSuccessInfo) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
+		err := writer.WriteStringValue("checksum", m.GetChecksum())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("restore_path", m.GetRestorePath())
 		if err != nil {
 			return err
@@ -78,6 +102,11 @@ func (m *CheckpointSuccessInfo) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetChecksum sets the checksum property value. `<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,unless the restore path changes
+func (m *CheckpointSuccessInfo) SetChecksum(value *string) {
+	m.checksum = value
+}
+
 // SetRestorePath sets the restore_path property value. The restore_path property
 func (m *CheckpointSuccessInfo) SetRestorePath(value *string) {
 	m.restore_path = value
@@ -86,6 +115,8 @@ func (m *CheckpointSuccessInfo) SetRestorePath(value *string) {
 type CheckpointSuccessInfoable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetChecksum() *string
 	GetRestorePath() *string
+	SetChecksum(value *string)
 	SetRestorePath(value *string)
 }

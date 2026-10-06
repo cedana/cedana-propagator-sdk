@@ -612,13 +612,6 @@
       },
       "CedanaJobCheckpoint": {
         "properties": {
-          "Checksum": {
-            "description": "`<algorithm>:<hex>` of the checkpoint as stored, recorded by the storage\nonce it has persisted the checkpoint. Null when none was recorded.\nRead only: a put does not take it.",
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "ID": {
             "type": "string"
           },
@@ -1203,6 +1196,13 @@
       },
       "CheckpointSuccessInfo": {
         "properties": {
+          "checksum": {
+            "description": "`<algorithm>:<hex>` of the checkpoint as stored; omitting it keeps the checksum already recorded,\nunless the restore path changes",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "restore_path": {
             "type": [
               "string",
