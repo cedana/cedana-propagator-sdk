@@ -11719,7 +11719,7 @@
           "200": {
             "content": {
               "text/plain": {
-                "example": "https://storage.googleapis.com/bucket/checkpoint-files/550e8400-e29b-41d4-a716-446655440000/pages-1.img?signature=...",
+                "example": "https://cedana-checkpoints-storage.s3.amazonaws.com/checkpoint-files/550e8400-e29b-41d4-a716-446655440000/pages-1.img?X-Amz-Signature=...",
                 "schema": {
                   "type": "string"
                 }
@@ -13928,7 +13928,7 @@
           "200": {
             "content": {
               "text/plain": {
-                "example": "https://storage.googleapis.com/bucket/file.tar.gz?signature=...",
+                "example": "https://cedana-checkpoints-storage.s3.amazonaws.com/file.tar.gz?X-Amz-Signature=...",
                 "schema": {
                   "type": "string"
                 }
@@ -13993,7 +13993,7 @@
           "200": {
             "content": {
               "text/plain": {
-                "example": "https://storage.googleapis.com/bucket/file.tar.gz?signature=...",
+                "example": "https://cedana-checkpoints-storage.s3.amazonaws.com/file.tar.gz?X-Amz-Signature=...",
                 "schema": {
                   "type": "string"
                 }
