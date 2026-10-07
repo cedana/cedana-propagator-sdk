@@ -1657,6 +1657,70 @@
         ],
         "type": "object"
       },
+      "CpuInfo": {
+        "description": "CPU of one node.",
+        "properties": {
+          "allocatable_cores": {
+            "description": "CPUs the scheduler can hand out, after system reservations",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "architecture": {
+            "description": "\"amd64\" or \"arm64\"",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "cores": {
+            "description": "Logical CPUs on the node",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "hyperthreading": {
+            "description": "Whether SMT/hyper-threading is on (Node Feature Discovery)",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "hypervisor": {
+            "description": "Hypervisor the node runs under, e.g. \"kvm\"; newer NFD versions only",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "isa_level": {
+            "description": "Highest x86-64 microarchitecture level, e.g. \"x86-64-v4\" (Node Feature Discovery)",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "vendor": {
+            "description": "\"Intel\" or \"AMD\" (Node Feature Discovery)",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "virtualized": {
+            "description": "Whether the node is a VM, from the CPUID hypervisor flag (Node Feature Discovery)",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
       "CreateClusterRequest": {
         "description": "CreateClusterRequest is the request body for creating a cluster",
         "properties": {
@@ -3197,6 +3261,92 @@
         ],
         "type": "object"
       },
+      "GpuInfo": {
+        "description": "GPU inventory of one node.",
+        "properties": {
+          "allocatable": {
+            "description": "nvidia.com/gpu the scheduler can hand out (excludes MIG slices)",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "compute_capability": {
+            "description": "Compute capability, e.g. \"9.0\"",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "count": {
+            "description": "Physical GPUs on the node",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "cuda_version": {
+            "description": "Highest CUDA version the driver supports, e.g. \"12.4\"",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "driver_version": {
+            "description": "NVIDIA driver version, e.g. \"550.54.15\"",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "family": {
+            "description": "Architecture family, e.g. \"hopper\"",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "memory_mib": {
+            "description": "Memory per GPU in MiB",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "mig_devices": {
+            "additionalProperties": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "description": "Allocatable MIG slices by profile, e.g. {\"1g.10gb\": 7}; empty when MIG is off",
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "mig_strategy": {
+            "description": "MIG strategy (\"none\", \"single\" or \"mixed\"), or \"disabled\" when mig-manager has MIG off",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "product": {
+            "description": "GPU model, e.g. \"NVIDIA-H100-80GB-HBM3\"",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "mig_devices"
+        ],
+        "type": "object"
+      },
       "GpuMetric": {
         "description": "GPU metrics for a single GPU",
         "properties": {
@@ -4650,6 +4800,67 @@
         ],
         "type": "object"
       },
+      "NetworkInfo": {
+        "description": "Networking of one node: NICs, RDMA and the devices plugins expose for them.",
+        "properties": {
+          "network_operator": {
+            "description": "Whether the NVIDIA Network Operator manages this node's NIC drivers",
+            "type": "boolean"
+          },
+          "nic_vendors": {
+            "description": "High-performance NIC vendors seen on the PCI bus, e.g. [\"NVIDIA Mellanox\"] (Node Feature Discovery)",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "rdma_available": {
+            "description": "Whether the RDMA kernel modules are loaded (Node Feature Discovery)",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "rdma_capable": {
+            "description": "Whether an RDMA-capable NIC is present (Node Feature Discovery)",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "rdma_resources": {
+            "additionalProperties": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "description": "RDMA, InfiniBand, SR-IOV and EFA devices the node advertises, by resource name, e.g. {\"rdma/ib\": 8}",
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "sriov_capable": {
+            "description": "Whether a NIC supports SR-IOV (Node Feature Discovery)",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "sriov_configured": {
+            "description": "Whether SR-IOV virtual functions are configured (Node Feature Discovery)",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "nic_vendors",
+          "network_operator",
+          "rdma_resources"
+        ],
+        "type": "object"
+      },
       "NodeGpuMetrics": {
         "description": "GPU metrics grouped by node",
         "properties": {
@@ -4740,6 +4951,28 @@
           "compute_type": {
             "type": "string"
           },
+          "cpu": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CpuInfo",
+                "description": "CPU of the node"
+              }
+            ]
+          },
+          "gpu": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GpuInfo",
+                "description": "GPU inventory; absent for nodes without NVIDIA GPUs"
+              }
+            ]
+          },
           "id": {
             "format": "uuid",
             "type": "string"
@@ -4747,14 +4980,57 @@
           "instance_type": {
             "type": "string"
           },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Node labels, without NFD's per-flag CPUID labels",
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
           "name": {
             "type": "string"
+          },
+          "network": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/NetworkInfo",
+                "description": "NICs, RDMA and SR-IOV of the node"
+              }
+            ]
           },
           "region": {
             "type": "string"
           },
           "status": {
             "type": "string"
+          },
+          "storage": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/StorageInfo",
+                "description": "Local storage and CSI drivers of the node"
+              }
+            ]
+          },
+          "system": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SystemInfo",
+                "description": "Memory and software of the node"
+              }
+            ]
           }
         },
         "required": [
@@ -4765,7 +5041,8 @@
           "compute_type",
           "instance_type",
           "region",
-          "capacity_type"
+          "capacity_type",
+          "labels"
         ],
         "type": "object"
       },
@@ -9328,6 +9605,44 @@
         ],
         "type": "object"
       },
+      "StorageInfo": {
+        "description": "Local storage of one node.",
+        "properties": {
+          "allocatable_ephemeral_storage_bytes": {
+            "description": "Ephemeral storage the scheduler can hand out, after system reservations",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "csi_drivers": {
+            "description": "CSI drivers serving the node, from their topology labels, e.g. [\"csi.weka.io\"]",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "ephemeral_storage_bytes": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "local_ssd": {
+            "description": "Whether the node has a non-rotational (SSD/NVMe) disk (Node Feature Discovery)",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "csi_drivers"
+        ],
+        "type": "object"
+      },
       "StorageSummary": {
         "properties": {
           "tiers": {
@@ -9381,6 +9696,81 @@
           "transfers",
           "residency_hours"
         ],
+        "type": "object"
+      },
+      "SystemInfo": {
+        "description": "Memory and software of one node.",
+        "properties": {
+          "allocatable_memory_bytes": {
+            "description": "Memory the scheduler can hand out, after system reservations",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "container_runtime": {
+            "description": "e.g. \"containerd://2.3.3\"",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hugepages_bytes": {
+            "description": "Huge pages reserved on the node, all page sizes together; absent when none are",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "kernel_version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kubelet_version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "max_pods": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "memory_bytes": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "numa": {
+            "description": "Whether memory spans several NUMA nodes (Node Feature Discovery)",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "os_image": {
+            "description": "e.g. \"Ubuntu 24.04.4 LTS\"",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "zone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
         "type": "object"
       },
       "TelemetryRecord": {
