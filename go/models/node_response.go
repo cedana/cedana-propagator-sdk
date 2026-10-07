@@ -17,16 +17,28 @@ type NodeResponse struct {
 	cluster_name *string
 	// The compute_type property
 	compute_type *string
+	// The cpu property
+	cpu CpuInfoable
+	// The gpu property
+	gpu GpuInfoable
 	// The id property
 	id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The instance_type property
 	instance_type *string
+	// Node labels, without NFD's per-flag CPUID labels
+	labels NodeResponse_labelsable
 	// The name property
 	name *string
+	// The network property
+	network NetworkInfoable
 	// The region property
 	region *string
 	// The status property
 	status *string
+	// The storage property
+	storage StorageInfoable
+	// The system property
+	system SystemInfoable
 }
 
 // NewNodeResponse instantiates a new NodeResponse and sets the default values.
@@ -66,6 +78,12 @@ func (m *NodeResponse) GetComputeType() *string {
 	return m.compute_type
 }
 
+// GetCpu gets the cpu property value. The cpu property
+// returns a CpuInfoable when successful
+func (m *NodeResponse) GetCpu() CpuInfoable {
+	return m.cpu
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *NodeResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
@@ -100,6 +118,26 @@ func (m *NodeResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d2
 		}
 		return nil
 	}
+	res["cpu"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateCpuInfoFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCpu(val.(CpuInfoable))
+		}
+		return nil
+	}
+	res["gpu"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateGpuInfoFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetGpu(val.(GpuInfoable))
+		}
+		return nil
+	}
 	res["id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetUUIDValue()
 		if err != nil {
@@ -120,6 +158,16 @@ func (m *NodeResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d2
 		}
 		return nil
 	}
+	res["labels"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateNodeResponse_labelsFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetLabels(val.(NodeResponse_labelsable))
+		}
+		return nil
+	}
 	res["name"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -127,6 +175,16 @@ func (m *NodeResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d2
 		}
 		if val != nil {
 			m.SetName(val)
+		}
+		return nil
+	}
+	res["network"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateNetworkInfoFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetNetwork(val.(NetworkInfoable))
 		}
 		return nil
 	}
@@ -150,7 +208,33 @@ func (m *NodeResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d2
 		}
 		return nil
 	}
+	res["storage"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateStorageInfoFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetStorage(val.(StorageInfoable))
+		}
+		return nil
+	}
+	res["system"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateSystemInfoFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetSystem(val.(SystemInfoable))
+		}
+		return nil
+	}
 	return res
+}
+
+// GetGpu gets the gpu property value. The gpu property
+// returns a GpuInfoable when successful
+func (m *NodeResponse) GetGpu() GpuInfoable {
+	return m.gpu
 }
 
 // GetId gets the id property value. The id property
@@ -165,10 +249,22 @@ func (m *NodeResponse) GetInstanceType() *string {
 	return m.instance_type
 }
 
+// GetLabels gets the labels property value. Node labels, without NFD's per-flag CPUID labels
+// returns a NodeResponse_labelsable when successful
+func (m *NodeResponse) GetLabels() NodeResponse_labelsable {
+	return m.labels
+}
+
 // GetName gets the name property value. The name property
 // returns a *string when successful
 func (m *NodeResponse) GetName() *string {
 	return m.name
+}
+
+// GetNetwork gets the network property value. The network property
+// returns a NetworkInfoable when successful
+func (m *NodeResponse) GetNetwork() NetworkInfoable {
+	return m.network
 }
 
 // GetRegion gets the region property value. The region property
@@ -181,6 +277,18 @@ func (m *NodeResponse) GetRegion() *string {
 // returns a *string when successful
 func (m *NodeResponse) GetStatus() *string {
 	return m.status
+}
+
+// GetStorage gets the storage property value. The storage property
+// returns a StorageInfoable when successful
+func (m *NodeResponse) GetStorage() StorageInfoable {
+	return m.storage
+}
+
+// GetSystem gets the system property value. The system property
+// returns a SystemInfoable when successful
+func (m *NodeResponse) GetSystem() SystemInfoable {
+	return m.system
 }
 
 // Serialize serializes information the current object
@@ -204,6 +312,18 @@ func (m *NodeResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e
 		}
 	}
 	{
+		err := writer.WriteObjectValue("cpu", m.GetCpu())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("gpu", m.GetGpu())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteUUIDValue("id", m.GetId())
 		if err != nil {
 			return err
@@ -216,7 +336,19 @@ func (m *NodeResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e
 		}
 	}
 	{
+		err := writer.WriteObjectValue("labels", m.GetLabels())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("name", m.GetName())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("network", m.GetNetwork())
 		if err != nil {
 			return err
 		}
@@ -229,6 +361,18 @@ func (m *NodeResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e
 	}
 	{
 		err := writer.WriteStringValue("status", m.GetStatus())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("storage", m.GetStorage())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("system", m.GetSystem())
 		if err != nil {
 			return err
 		}
@@ -262,6 +406,16 @@ func (m *NodeResponse) SetComputeType(value *string) {
 	m.compute_type = value
 }
 
+// SetCpu sets the cpu property value. The cpu property
+func (m *NodeResponse) SetCpu(value CpuInfoable) {
+	m.cpu = value
+}
+
+// SetGpu sets the gpu property value. The gpu property
+func (m *NodeResponse) SetGpu(value GpuInfoable) {
+	m.gpu = value
+}
+
 // SetId sets the id property value. The id property
 func (m *NodeResponse) SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
 	m.id = value
@@ -272,9 +426,19 @@ func (m *NodeResponse) SetInstanceType(value *string) {
 	m.instance_type = value
 }
 
+// SetLabels sets the labels property value. Node labels, without NFD's per-flag CPUID labels
+func (m *NodeResponse) SetLabels(value NodeResponse_labelsable) {
+	m.labels = value
+}
+
 // SetName sets the name property value. The name property
 func (m *NodeResponse) SetName(value *string) {
 	m.name = value
+}
+
+// SetNetwork sets the network property value. The network property
+func (m *NodeResponse) SetNetwork(value NetworkInfoable) {
+	m.network = value
 }
 
 // SetRegion sets the region property value. The region property
@@ -287,23 +451,45 @@ func (m *NodeResponse) SetStatus(value *string) {
 	m.status = value
 }
 
+// SetStorage sets the storage property value. The storage property
+func (m *NodeResponse) SetStorage(value StorageInfoable) {
+	m.storage = value
+}
+
+// SetSystem sets the system property value. The system property
+func (m *NodeResponse) SetSystem(value SystemInfoable) {
+	m.system = value
+}
+
 type NodeResponseable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetCapacityType() *string
 	GetClusterName() *string
 	GetComputeType() *string
+	GetCpu() CpuInfoable
+	GetGpu() GpuInfoable
 	GetId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetInstanceType() *string
+	GetLabels() NodeResponse_labelsable
 	GetName() *string
+	GetNetwork() NetworkInfoable
 	GetRegion() *string
 	GetStatus() *string
+	GetStorage() StorageInfoable
+	GetSystem() SystemInfoable
 	SetCapacityType(value *string)
 	SetClusterName(value *string)
 	SetComputeType(value *string)
+	SetCpu(value CpuInfoable)
+	SetGpu(value GpuInfoable)
 	SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetInstanceType(value *string)
+	SetLabels(value NodeResponse_labelsable)
 	SetName(value *string)
+	SetNetwork(value NetworkInfoable)
 	SetRegion(value *string)
 	SetStatus(value *string)
+	SetStorage(value StorageInfoable)
+	SetSystem(value SystemInfoable)
 }
