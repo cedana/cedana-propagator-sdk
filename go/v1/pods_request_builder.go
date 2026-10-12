@@ -26,6 +26,8 @@ type PodsRequestBuilderGetQueryParameters struct {
 	// Page size (default 50, max 500)
 	Limit     *int64  "uriparametername:\"limit\""
 	Namespace *string "uriparametername:\"namespace\""
+	// Only return pods scheduled on this node (by name)
+	Node *string "uriparametername:\"node\""
 	// Row offset (default 0)
 	Offset *int64 "uriparametername:\"offset\""
 	// pod name to query against (uses postgres ILIKE pattern search)
@@ -48,7 +50,7 @@ type PodsRequestBuilderGetRequestConfiguration struct {
 // NewPodsRequestBuilderInternal instantiates a new PodsRequestBuilder and sets the default values.
 func NewPodsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *PodsRequestBuilder {
 	m := &PodsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/pods{?ascending*,cluster_id*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/pods{?ascending*,cluster_id*,id*,limit*,namespace*,node*,offset*,pod_name*,sort*,status*}", pathParameters),
 	}
 	return m
 }

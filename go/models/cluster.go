@@ -12,8 +12,12 @@ import (
 type Cluster struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// The connector property
+	connector *string
 	// The id property
 	id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	// The k8s_version property
+	k8s_version *string
 	// The kind property
 	kind *string
 	// The last_sync property
@@ -24,6 +28,12 @@ type Cluster struct {
 	name *string
 	// The status property
 	status *string
+	// The sync_mode property
+	sync_mode *string
+	// The watch_reason property
+	watch_reason *string
+	// The watch_state property
+	watch_state *string
 }
 
 // NewCluster instantiates a new Cluster and sets the default values.
@@ -45,10 +55,26 @@ func (m *Cluster) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetConnector gets the connector property value. The connector property
+// returns a *string when successful
+func (m *Cluster) GetConnector() *string {
+	return m.connector
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *Cluster) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["connector"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetConnector(val)
+		}
+		return nil
+	}
 	res["id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetUUIDValue()
 		if err != nil {
@@ -56,6 +82,16 @@ func (m *Cluster) GetFieldDeserializers() map[string]func(i878a80d2330e89d268963
 		}
 		if val != nil {
 			m.SetId(val)
+		}
+		return nil
+	}
+	res["k8s_version"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetK8sVersion(val)
 		}
 		return nil
 	}
@@ -109,6 +145,36 @@ func (m *Cluster) GetFieldDeserializers() map[string]func(i878a80d2330e89d268963
 		}
 		return nil
 	}
+	res["sync_mode"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetSyncMode(val)
+		}
+		return nil
+	}
+	res["watch_reason"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWatchReason(val)
+		}
+		return nil
+	}
+	res["watch_state"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWatchState(val)
+		}
+		return nil
+	}
 	return res
 }
 
@@ -116,6 +182,12 @@ func (m *Cluster) GetFieldDeserializers() map[string]func(i878a80d2330e89d268963
 // returns a *UUID when successful
 func (m *Cluster) GetId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID {
 	return m.id
+}
+
+// GetK8sVersion gets the k8s_version property value. The k8s_version property
+// returns a *string when successful
+func (m *Cluster) GetK8sVersion() *string {
+	return m.k8s_version
 }
 
 // GetKind gets the kind property value. The kind property
@@ -148,10 +220,40 @@ func (m *Cluster) GetStatus() *string {
 	return m.status
 }
 
+// GetSyncMode gets the sync_mode property value. The sync_mode property
+// returns a *string when successful
+func (m *Cluster) GetSyncMode() *string {
+	return m.sync_mode
+}
+
+// GetWatchReason gets the watch_reason property value. The watch_reason property
+// returns a *string when successful
+func (m *Cluster) GetWatchReason() *string {
+	return m.watch_reason
+}
+
+// GetWatchState gets the watch_state property value. The watch_state property
+// returns a *string when successful
+func (m *Cluster) GetWatchState() *string {
+	return m.watch_state
+}
+
 // Serialize serializes information the current object
 func (m *Cluster) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
+		err := writer.WriteStringValue("connector", m.GetConnector())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteUUIDValue("id", m.GetId())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("k8s_version", m.GetK8sVersion())
 		if err != nil {
 			return err
 		}
@@ -187,6 +289,24 @@ func (m *Cluster) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010
 		}
 	}
 	{
+		err := writer.WriteStringValue("sync_mode", m.GetSyncMode())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("watch_reason", m.GetWatchReason())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("watch_state", m.GetWatchState())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteAdditionalData(m.GetAdditionalData())
 		if err != nil {
 			return err
@@ -200,9 +320,19 @@ func (m *Cluster) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetConnector sets the connector property value. The connector property
+func (m *Cluster) SetConnector(value *string) {
+	m.connector = value
+}
+
 // SetId sets the id property value. The id property
 func (m *Cluster) SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
 	m.id = value
+}
+
+// SetK8sVersion sets the k8s_version property value. The k8s_version property
+func (m *Cluster) SetK8sVersion(value *string) {
+	m.k8s_version = value
 }
 
 // SetKind sets the kind property value. The kind property
@@ -230,19 +360,44 @@ func (m *Cluster) SetStatus(value *string) {
 	m.status = value
 }
 
+// SetSyncMode sets the sync_mode property value. The sync_mode property
+func (m *Cluster) SetSyncMode(value *string) {
+	m.sync_mode = value
+}
+
+// SetWatchReason sets the watch_reason property value. The watch_reason property
+func (m *Cluster) SetWatchReason(value *string) {
+	m.watch_reason = value
+}
+
+// SetWatchState sets the watch_state property value. The watch_state property
+func (m *Cluster) SetWatchState(value *string) {
+	m.watch_state = value
+}
+
 type Clusterable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetConnector() *string
 	GetId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	GetK8sVersion() *string
 	GetKind() *string
 	GetLastSync() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	GetMetadata() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	GetName() *string
 	GetStatus() *string
+	GetSyncMode() *string
+	GetWatchReason() *string
+	GetWatchState() *string
+	SetConnector(value *string)
 	SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
+	SetK8sVersion(value *string)
 	SetKind(value *string)
 	SetLastSync(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
 	SetMetadata(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
 	SetName(value *string)
 	SetStatus(value *string)
+	SetSyncMode(value *string)
+	SetWatchReason(value *string)
+	SetWatchState(value *string)
 }

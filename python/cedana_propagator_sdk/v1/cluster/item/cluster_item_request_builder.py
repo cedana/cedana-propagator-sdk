@@ -31,7 +31,7 @@ class ClusterItemRequestBuilder(BaseRequestBuilder):
     
     async def delete(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[bytes]:
         """
-        This endpoint deletes a cluster and all its dependent entities in a single transactionwhich is rolled back if any part of the deletion fails
+        Deletes a cluster in one transaction. Its pods and nodes are kept as deleted history,attributed to the cluster, so checkpoint and savings history survives.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: bytes
         """
@@ -51,7 +51,7 @@ class ClusterItemRequestBuilder(BaseRequestBuilder):
     
     def to_delete_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        This endpoint deletes a cluster and all its dependent entities in a single transactionwhich is rolled back if any part of the deletion fails
+        Deletes a cluster in one transaction. Its pods and nodes are kept as deleted history,attributed to the cluster, so checkpoint and savings history survives.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """

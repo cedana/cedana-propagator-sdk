@@ -20,6 +20,8 @@ class NodeResponse(AdditionalDataHolder, Parsable):
 
     # "spot" or "on-demand" - detected from node labels
     capacity_type: Optional[str] = None
+    # The cluster_id property
+    cluster_id: Optional[UUID] = None
     # The cluster_name property
     cluster_name: Optional[str] = None
     # The compute_type property
@@ -40,6 +42,8 @@ class NodeResponse(AdditionalDataHolder, Parsable):
     network: Optional[NetworkInfo] = None
     # The region property
     region: Optional[str] = None
+    # The resource_version property
+    resource_version: Optional[str] = None
     # The status property
     status: Optional[str] = None
     # The storage property
@@ -79,6 +83,7 @@ class NodeResponse(AdditionalDataHolder, Parsable):
 
         fields: dict[str, Callable[[Any], None]] = {
             "capacity_type": lambda n : setattr(self, 'capacity_type', n.get_str_value()),
+            "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
             "cluster_name": lambda n : setattr(self, 'cluster_name', n.get_str_value()),
             "compute_type": lambda n : setattr(self, 'compute_type', n.get_str_value()),
             "cpu": lambda n : setattr(self, 'cpu', n.get_object_value(CpuInfo)),
@@ -89,6 +94,7 @@ class NodeResponse(AdditionalDataHolder, Parsable):
             "name": lambda n : setattr(self, 'name', n.get_str_value()),
             "network": lambda n : setattr(self, 'network', n.get_object_value(NetworkInfo)),
             "region": lambda n : setattr(self, 'region', n.get_str_value()),
+            "resource_version": lambda n : setattr(self, 'resource_version', n.get_str_value()),
             "status": lambda n : setattr(self, 'status', n.get_str_value()),
             "storage": lambda n : setattr(self, 'storage', n.get_object_value(StorageInfo)),
             "system": lambda n : setattr(self, 'system', n.get_object_value(SystemInfo)),
@@ -104,6 +110,7 @@ class NodeResponse(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_str_value("capacity_type", self.capacity_type)
+        writer.write_uuid_value("cluster_id", self.cluster_id)
         writer.write_str_value("cluster_name", self.cluster_name)
         writer.write_str_value("compute_type", self.compute_type)
         writer.write_object_value("cpu", self.cpu)
@@ -114,6 +121,7 @@ class NodeResponse(AdditionalDataHolder, Parsable):
         writer.write_str_value("name", self.name)
         writer.write_object_value("network", self.network)
         writer.write_str_value("region", self.region)
+        writer.write_str_value("resource_version", self.resource_version)
         writer.write_str_value("status", self.status)
         writer.write_object_value("storage", self.storage)
         writer.write_object_value("system", self.system)

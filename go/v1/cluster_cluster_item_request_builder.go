@@ -37,7 +37,7 @@ func NewClusterClusterItemRequestBuilder(rawUrl string, requestAdapter i2ae4187f
 	return NewClusterClusterItemRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Delete this endpoint deletes a cluster and all its dependent entities in a single transactionwhich is rolled back if any part of the deletion fails
+// Delete deletes a cluster in one transaction. Its pods and nodes are kept as deleted history,attributed to the cluster, so checkpoint and savings history survives.
 // returns a []byte when successful
 // returns a HttpError error when the service returns a 404 status code
 // returns a HttpError error when the service returns a 500 status code
@@ -62,7 +62,7 @@ func (m *ClusterClusterItemRequestBuilder) Delete(ctx context.Context, requestCo
 	return res.([]byte), nil
 }
 
-// ToDeleteRequestInformation this endpoint deletes a cluster and all its dependent entities in a single transactionwhich is rolled back if any part of the deletion fails
+// ToDeleteRequestInformation deletes a cluster in one transaction. Its pods and nodes are kept as deleted history,attributed to the cluster, so checkpoint and savings history survives.
 // returns a *RequestInformation when successful
 func (m *ClusterClusterItemRequestBuilder) ToDeleteRequestInformation(ctx context.Context, requestConfiguration *ClusterClusterItemRequestBuilderDeleteRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DELETE, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

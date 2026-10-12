@@ -1200,9 +1200,21 @@
       },
       "Cluster": {
         "properties": {
+          "connector": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "id": {
             "format": "uuid",
             "type": "string"
+          },
+          "k8s_version": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "kind": {
             "type": "string"
@@ -1220,6 +1232,24 @@
           },
           "status": {
             "type": "string"
+          },
+          "sync_mode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "watch_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "watch_state": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
@@ -4188,7 +4218,21 @@
           "age": {
             "type": "string"
           },
+          "cluster_id": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "completions": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
             "type": [
               "string",
               "null"
@@ -4240,6 +4284,12 @@
             "format": "int32",
             "type": [
               "integer",
+              "null"
+            ]
+          },
+          "resource_version": {
+            "type": [
+              "string",
               "null"
             ]
           },
@@ -4945,6 +4995,13 @@
             "description": "\"spot\" or \"on-demand\" - detected from node labels",
             "type": "string"
           },
+          "cluster_id": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "cluster_name": {
             "type": "string"
           },
@@ -5006,6 +5063,12 @@
           },
           "region": {
             "type": "string"
+          },
+          "resource_version": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "status": {
             "type": "string"
@@ -6763,6 +6826,13 @@
               "null"
             ]
           },
+          "created_at": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "id": {
             "format": "uuid",
             "type": "string"
@@ -6782,8 +6852,33 @@
           "node": {
             "type": "string"
           },
+          "phase": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "ready": {
             "type": "string"
+          },
+          "ready_containers": {
+            "format": "int32",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "resource_version": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "restarts": {
             "format": "int32",
@@ -6797,6 +6892,13 @@
           },
           "status": {
             "type": "string"
+          },
+          "total_containers": {
+            "format": "int32",
+            "type": [
+              "integer",
+              "null"
+            ]
           }
         },
         "required": [
@@ -12676,7 +12778,7 @@
     },
     "/v1/cluster/{id}": {
       "delete": {
-        "description": "This endpoint deletes a cluster and all its dependent entities in a single transaction\nwhich is rolled back if any part of the deletion fails",
+        "description": "Deletes a cluster in one transaction. Its pods and nodes are kept as deleted history,\nattributed to the cluster, so checkpoint and savings history survives.",
         "operationId": "delete",
         "parameters": [
           {
@@ -22301,6 +22403,18 @@
             "required": false,
             "schema": {
               "format": "uuid",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Only return pods scheduled on this node (by name)",
+            "in": "query",
+            "name": "node",
+            "required": false,
+            "schema": {
               "type": [
                 "string",
                 "null"

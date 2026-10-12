@@ -13,6 +13,8 @@ type NodeResponse struct {
 	additionalData map[string]any
 	// "spot" or "on-demand" - detected from node labels
 	capacity_type *string
+	// The cluster_id property
+	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The cluster_name property
 	cluster_name *string
 	// The compute_type property
@@ -33,6 +35,8 @@ type NodeResponse struct {
 	network NetworkInfoable
 	// The region property
 	region *string
+	// The resource_version property
+	resource_version *string
 	// The status property
 	status *string
 	// The storage property
@@ -66,6 +70,12 @@ func (m *NodeResponse) GetCapacityType() *string {
 	return m.capacity_type
 }
 
+// GetClusterId gets the cluster_id property value. The cluster_id property
+// returns a *UUID when successful
+func (m *NodeResponse) GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID {
+	return m.cluster_id
+}
+
 // GetClusterName gets the cluster_name property value. The cluster_name property
 // returns a *string when successful
 func (m *NodeResponse) GetClusterName() *string {
@@ -95,6 +105,16 @@ func (m *NodeResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d2
 		}
 		if val != nil {
 			m.SetCapacityType(val)
+		}
+		return nil
+	}
+	res["cluster_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetUUIDValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetClusterId(val)
 		}
 		return nil
 	}
@@ -198,6 +218,16 @@ func (m *NodeResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d2
 		}
 		return nil
 	}
+	res["resource_version"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetResourceVersion(val)
+		}
+		return nil
+	}
 	res["status"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -273,6 +303,12 @@ func (m *NodeResponse) GetRegion() *string {
 	return m.region
 }
 
+// GetResourceVersion gets the resource_version property value. The resource_version property
+// returns a *string when successful
+func (m *NodeResponse) GetResourceVersion() *string {
+	return m.resource_version
+}
+
 // GetStatus gets the status property value. The status property
 // returns a *string when successful
 func (m *NodeResponse) GetStatus() *string {
@@ -295,6 +331,12 @@ func (m *NodeResponse) GetSystem() SystemInfoable {
 func (m *NodeResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
 		err := writer.WriteStringValue("capacity_type", m.GetCapacityType())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteUUIDValue("cluster_id", m.GetClusterId())
 		if err != nil {
 			return err
 		}
@@ -360,6 +402,12 @@ func (m *NodeResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e
 		}
 	}
 	{
+		err := writer.WriteStringValue("resource_version", m.GetResourceVersion())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("status", m.GetStatus())
 		if err != nil {
 			return err
@@ -394,6 +442,11 @@ func (m *NodeResponse) SetAdditionalData(value map[string]any) {
 // SetCapacityType sets the capacity_type property value. "spot" or "on-demand" - detected from node labels
 func (m *NodeResponse) SetCapacityType(value *string) {
 	m.capacity_type = value
+}
+
+// SetClusterId sets the cluster_id property value. The cluster_id property
+func (m *NodeResponse) SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
+	m.cluster_id = value
 }
 
 // SetClusterName sets the cluster_name property value. The cluster_name property
@@ -446,6 +499,11 @@ func (m *NodeResponse) SetRegion(value *string) {
 	m.region = value
 }
 
+// SetResourceVersion sets the resource_version property value. The resource_version property
+func (m *NodeResponse) SetResourceVersion(value *string) {
+	m.resource_version = value
+}
+
 // SetStatus sets the status property value. The status property
 func (m *NodeResponse) SetStatus(value *string) {
 	m.status = value
@@ -465,6 +523,7 @@ type NodeResponseable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetCapacityType() *string
+	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetClusterName() *string
 	GetComputeType() *string
 	GetCpu() CpuInfoable
@@ -475,10 +534,12 @@ type NodeResponseable interface {
 	GetName() *string
 	GetNetwork() NetworkInfoable
 	GetRegion() *string
+	GetResourceVersion() *string
 	GetStatus() *string
 	GetStorage() StorageInfoable
 	GetSystem() SystemInfoable
 	SetCapacityType(value *string)
+	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetClusterName(value *string)
 	SetComputeType(value *string)
 	SetCpu(value CpuInfoable)
@@ -489,6 +550,7 @@ type NodeResponseable interface {
 	SetName(value *string)
 	SetNetwork(value NetworkInfoable)
 	SetRegion(value *string)
+	SetResourceVersion(value *string)
 	SetStatus(value *string)
 	SetStorage(value StorageInfoable)
 	SetSystem(value SystemInfoable)

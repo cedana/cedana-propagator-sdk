@@ -6,6 +6,7 @@ package models
 import (
 	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
+	i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e "time"
 )
 
 type PodResponse struct {
@@ -15,6 +16,8 @@ type PodResponse struct {
 	age *string
 	// Cluster the pod runs on; null if the controller has not linked it yet
 	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	// The created_at property
+	created_at *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	// The id property
 	id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The monitored_by_policies property
@@ -25,14 +28,24 @@ type PodResponse struct {
 	namespace *string
 	// The node property
 	node *string
+	// The phase property
+	phase *string
 	// The ready property
 	ready *string
+	// The ready_containers property
+	ready_containers *int32
+	// The reason property
+	reason *string
+	// The resource_version property
+	resource_version *string
 	// The restarts property
 	restarts *int32
 	// The start_time property
 	start_time *string
 	// The status property
 	status *string
+	// The total_containers property
+	total_containers *int32
 }
 
 // NewPodResponse instantiates a new PodResponse and sets the default values.
@@ -66,6 +79,12 @@ func (m *PodResponse) GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf
 	return m.cluster_id
 }
 
+// GetCreatedAt gets the created_at property value. The created_at property
+// returns a *Time when successful
+func (m *PodResponse) GetCreatedAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
+	return m.created_at
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *PodResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
@@ -87,6 +106,16 @@ func (m *PodResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		if val != nil {
 			m.SetClusterId(val)
+		}
+		return nil
+	}
+	res["created_at"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetTimeValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCreatedAt(val)
 		}
 		return nil
 	}
@@ -146,6 +175,16 @@ func (m *PodResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		return nil
 	}
+	res["phase"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPhase(val)
+		}
+		return nil
+	}
 	res["ready"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -153,6 +192,36 @@ func (m *PodResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		if val != nil {
 			m.SetReady(val)
+		}
+		return nil
+	}
+	res["ready_containers"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt32Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetReadyContainers(val)
+		}
+		return nil
+	}
+	res["reason"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetReason(val)
+		}
+		return nil
+	}
+	res["resource_version"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetResourceVersion(val)
 		}
 		return nil
 	}
@@ -183,6 +252,16 @@ func (m *PodResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		if val != nil {
 			m.SetStatus(val)
+		}
+		return nil
+	}
+	res["total_containers"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt32Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetTotalContainers(val)
 		}
 		return nil
 	}
@@ -219,10 +298,34 @@ func (m *PodResponse) GetNode() *string {
 	return m.node
 }
 
+// GetPhase gets the phase property value. The phase property
+// returns a *string when successful
+func (m *PodResponse) GetPhase() *string {
+	return m.phase
+}
+
 // GetReady gets the ready property value. The ready property
 // returns a *string when successful
 func (m *PodResponse) GetReady() *string {
 	return m.ready
+}
+
+// GetReadyContainers gets the ready_containers property value. The ready_containers property
+// returns a *int32 when successful
+func (m *PodResponse) GetReadyContainers() *int32 {
+	return m.ready_containers
+}
+
+// GetReason gets the reason property value. The reason property
+// returns a *string when successful
+func (m *PodResponse) GetReason() *string {
+	return m.reason
+}
+
+// GetResourceVersion gets the resource_version property value. The resource_version property
+// returns a *string when successful
+func (m *PodResponse) GetResourceVersion() *string {
+	return m.resource_version
 }
 
 // GetRestarts gets the restarts property value. The restarts property
@@ -243,6 +346,12 @@ func (m *PodResponse) GetStatus() *string {
 	return m.status
 }
 
+// GetTotalContainers gets the total_containers property value. The total_containers property
+// returns a *int32 when successful
+func (m *PodResponse) GetTotalContainers() *int32 {
+	return m.total_containers
+}
+
 // Serialize serializes information the current object
 func (m *PodResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
@@ -253,6 +362,12 @@ func (m *PodResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 	}
 	{
 		err := writer.WriteUUIDValue("cluster_id", m.GetClusterId())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteTimeValue("created_at", m.GetCreatedAt())
 		if err != nil {
 			return err
 		}
@@ -288,7 +403,31 @@ func (m *PodResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 		}
 	}
 	{
+		err := writer.WriteStringValue("phase", m.GetPhase())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("ready", m.GetReady())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt32Value("ready_containers", m.GetReadyContainers())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("reason", m.GetReason())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("resource_version", m.GetResourceVersion())
 		if err != nil {
 			return err
 		}
@@ -307,6 +446,12 @@ func (m *PodResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 	}
 	{
 		err := writer.WriteStringValue("status", m.GetStatus())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt32Value("total_containers", m.GetTotalContainers())
 		if err != nil {
 			return err
 		}
@@ -335,6 +480,11 @@ func (m *PodResponse) SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3
 	m.cluster_id = value
 }
 
+// SetCreatedAt sets the created_at property value. The created_at property
+func (m *PodResponse) SetCreatedAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
+	m.created_at = value
+}
+
 // SetId sets the id property value. The id property
 func (m *PodResponse) SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
 	m.id = value
@@ -360,9 +510,29 @@ func (m *PodResponse) SetNode(value *string) {
 	m.node = value
 }
 
+// SetPhase sets the phase property value. The phase property
+func (m *PodResponse) SetPhase(value *string) {
+	m.phase = value
+}
+
 // SetReady sets the ready property value. The ready property
 func (m *PodResponse) SetReady(value *string) {
 	m.ready = value
+}
+
+// SetReadyContainers sets the ready_containers property value. The ready_containers property
+func (m *PodResponse) SetReadyContainers(value *int32) {
+	m.ready_containers = value
+}
+
+// SetReason sets the reason property value. The reason property
+func (m *PodResponse) SetReason(value *string) {
+	m.reason = value
+}
+
+// SetResourceVersion sets the resource_version property value. The resource_version property
+func (m *PodResponse) SetResourceVersion(value *string) {
+	m.resource_version = value
 }
 
 // SetRestarts sets the restarts property value. The restarts property
@@ -380,29 +550,46 @@ func (m *PodResponse) SetStatus(value *string) {
 	m.status = value
 }
 
+// SetTotalContainers sets the total_containers property value. The total_containers property
+func (m *PodResponse) SetTotalContainers(value *int32) {
+	m.total_containers = value
+}
+
 type PodResponseable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetAge() *string
 	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	GetCreatedAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	GetId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetMonitoredByPolicies() []string
 	GetName() *string
 	GetNamespace() *string
 	GetNode() *string
+	GetPhase() *string
 	GetReady() *string
+	GetReadyContainers() *int32
+	GetReason() *string
+	GetResourceVersion() *string
 	GetRestarts() *int32
 	GetStartTime() *string
 	GetStatus() *string
+	GetTotalContainers() *int32
 	SetAge(value *string)
 	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
+	SetCreatedAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
 	SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetMonitoredByPolicies(value []string)
 	SetName(value *string)
 	SetNamespace(value *string)
 	SetNode(value *string)
+	SetPhase(value *string)
 	SetReady(value *string)
+	SetReadyContainers(value *int32)
+	SetReason(value *string)
+	SetResourceVersion(value *string)
 	SetRestarts(value *int32)
 	SetStartTime(value *string)
 	SetStatus(value *string)
+	SetTotalContainers(value *int32)
 }

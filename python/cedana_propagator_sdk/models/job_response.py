@@ -1,4 +1,5 @@
 from __future__ import annotations
+import datetime
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
@@ -12,8 +13,12 @@ class JobResponse(AdditionalDataHolder, Parsable):
 
     # The age property
     age: Optional[str] = None
+    # The cluster_id property
+    cluster_id: Optional[UUID] = None
     # The completions property
     completions: Optional[str] = None
+    # The created_at property
+    created_at: Optional[datetime.datetime] = None
     # The duration property
     duration: Optional[str] = None
     # The id property
@@ -32,6 +37,8 @@ class JobResponse(AdditionalDataHolder, Parsable):
     policy_count: Optional[int] = None
     # The priority property
     priority: Optional[int] = None
+    # The resource_version property
+    resource_version: Optional[str] = None
     # The startTime property
     start_time: Optional[str] = None
     # The status property
@@ -55,7 +62,9 @@ class JobResponse(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
             "age": lambda n : setattr(self, 'age', n.get_str_value()),
+            "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
             "completions": lambda n : setattr(self, 'completions', n.get_str_value()),
+            "created_at": lambda n : setattr(self, 'created_at', n.get_datetime_value()),
             "duration": lambda n : setattr(self, 'duration', n.get_str_value()),
             "id": lambda n : setattr(self, 'id', n.get_uuid_value()),
             "monitored_by_policies": lambda n : setattr(self, 'monitored_by_policies', n.get_collection_of_primitive_values(str)),
@@ -65,6 +74,7 @@ class JobResponse(AdditionalDataHolder, Parsable):
             "pod_ids": lambda n : setattr(self, 'pod_ids', n.get_collection_of_primitive_values(str)),
             "policy_count": lambda n : setattr(self, 'policy_count', n.get_int_value()),
             "priority": lambda n : setattr(self, 'priority', n.get_int_value()),
+            "resource_version": lambda n : setattr(self, 'resource_version', n.get_str_value()),
             "startTime": lambda n : setattr(self, 'start_time', n.get_str_value()),
             "status": lambda n : setattr(self, 'status', n.get_str_value()),
         }
@@ -79,7 +89,9 @@ class JobResponse(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_str_value("age", self.age)
+        writer.write_uuid_value("cluster_id", self.cluster_id)
         writer.write_str_value("completions", self.completions)
+        writer.write_datetime_value("created_at", self.created_at)
         writer.write_str_value("duration", self.duration)
         writer.write_uuid_value("id", self.id)
         writer.write_collection_of_primitive_values("monitored_by_policies", self.monitored_by_policies)
@@ -89,6 +101,7 @@ class JobResponse(AdditionalDataHolder, Parsable):
         writer.write_collection_of_primitive_values("pod_ids", self.pod_ids)
         writer.write_int_value("policy_count", self.policy_count)
         writer.write_int_value("priority", self.priority)
+        writer.write_str_value("resource_version", self.resource_version)
         writer.write_str_value("startTime", self.start_time)
         writer.write_str_value("status", self.status)
         writer.write_additional_data_value(self.additional_data)

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import datetime
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, ParseNode, SerializationWriter
@@ -14,6 +15,8 @@ class PodResponse(AdditionalDataHolder, Parsable):
     age: Optional[str] = None
     # Cluster the pod runs on; null if the controller has not linked it yet
     cluster_id: Optional[UUID] = None
+    # The created_at property
+    created_at: Optional[datetime.datetime] = None
     # The id property
     id: Optional[UUID] = None
     # The monitored_by_policies property
@@ -24,14 +27,24 @@ class PodResponse(AdditionalDataHolder, Parsable):
     namespace: Optional[str] = None
     # The node property
     node: Optional[str] = None
+    # The phase property
+    phase: Optional[str] = None
     # The ready property
     ready: Optional[str] = None
+    # The ready_containers property
+    ready_containers: Optional[int] = None
+    # The reason property
+    reason: Optional[str] = None
+    # The resource_version property
+    resource_version: Optional[str] = None
     # The restarts property
     restarts: Optional[int] = None
     # The start_time property
     start_time: Optional[str] = None
     # The status property
     status: Optional[str] = None
+    # The total_containers property
+    total_containers: Optional[int] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> PodResponse:
@@ -52,15 +65,21 @@ class PodResponse(AdditionalDataHolder, Parsable):
         fields: dict[str, Callable[[Any], None]] = {
             "age": lambda n : setattr(self, 'age', n.get_str_value()),
             "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
+            "created_at": lambda n : setattr(self, 'created_at', n.get_datetime_value()),
             "id": lambda n : setattr(self, 'id', n.get_uuid_value()),
             "monitored_by_policies": lambda n : setattr(self, 'monitored_by_policies', n.get_collection_of_primitive_values(str)),
             "name": lambda n : setattr(self, 'name', n.get_str_value()),
             "namespace": lambda n : setattr(self, 'namespace', n.get_str_value()),
             "node": lambda n : setattr(self, 'node', n.get_str_value()),
+            "phase": lambda n : setattr(self, 'phase', n.get_str_value()),
             "ready": lambda n : setattr(self, 'ready', n.get_str_value()),
+            "ready_containers": lambda n : setattr(self, 'ready_containers', n.get_int_value()),
+            "reason": lambda n : setattr(self, 'reason', n.get_str_value()),
+            "resource_version": lambda n : setattr(self, 'resource_version', n.get_str_value()),
             "restarts": lambda n : setattr(self, 'restarts', n.get_int_value()),
             "start_time": lambda n : setattr(self, 'start_time', n.get_str_value()),
             "status": lambda n : setattr(self, 'status', n.get_str_value()),
+            "total_containers": lambda n : setattr(self, 'total_containers', n.get_int_value()),
         }
         return fields
     
@@ -74,15 +93,21 @@ class PodResponse(AdditionalDataHolder, Parsable):
             raise TypeError("writer cannot be null.")
         writer.write_str_value("age", self.age)
         writer.write_uuid_value("cluster_id", self.cluster_id)
+        writer.write_datetime_value("created_at", self.created_at)
         writer.write_uuid_value("id", self.id)
         writer.write_collection_of_primitive_values("monitored_by_policies", self.monitored_by_policies)
         writer.write_str_value("name", self.name)
         writer.write_str_value("namespace", self.namespace)
         writer.write_str_value("node", self.node)
+        writer.write_str_value("phase", self.phase)
         writer.write_str_value("ready", self.ready)
+        writer.write_int_value("ready_containers", self.ready_containers)
+        writer.write_str_value("reason", self.reason)
+        writer.write_str_value("resource_version", self.resource_version)
         writer.write_int_value("restarts", self.restarts)
         writer.write_str_value("start_time", self.start_time)
         writer.write_str_value("status", self.status)
+        writer.write_int_value("total_containers", self.total_containers)
         writer.write_additional_data_value(self.additional_data)
     
 

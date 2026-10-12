@@ -32,7 +32,7 @@ class PodsRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/pods{?ascending*,cluster_id*,id*,limit*,namespace*,offset*,pod_name*,sort*,status*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/pods{?ascending*,cluster_id*,id*,limit*,namespace*,node*,offset*,pod_name*,sort*,status*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[PodsRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedPodResponse]:
         """
@@ -122,6 +122,9 @@ class PodsRequestBuilder(BaseRequestBuilder):
         limit: Optional[int] = None
 
         namespace: Optional[str] = None
+
+        # Only return pods scheduled on this node (by name)
+        node: Optional[str] = None
 
         # Row offset (default 0)
         offset: Optional[int] = None

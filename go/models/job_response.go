@@ -6,6 +6,7 @@ package models
 import (
 	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
+	i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e "time"
 )
 
 type JobResponse struct {
@@ -13,8 +14,12 @@ type JobResponse struct {
 	additionalData map[string]any
 	// The age property
 	age *string
+	// The cluster_id property
+	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The completions property
 	completions *string
+	// The created_at property
+	created_at *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	// The duration property
 	duration *string
 	// The id property
@@ -33,6 +38,8 @@ type JobResponse struct {
 	policy_count *int32
 	// The priority property
 	priority *int32
+	// The resource_version property
+	resource_version *string
 	// The startTime property
 	startTime *string
 	// The status property
@@ -64,10 +71,22 @@ func (m *JobResponse) GetAge() *string {
 	return m.age
 }
 
+// GetClusterId gets the cluster_id property value. The cluster_id property
+// returns a *UUID when successful
+func (m *JobResponse) GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID {
+	return m.cluster_id
+}
+
 // GetCompletions gets the completions property value. The completions property
 // returns a *string when successful
 func (m *JobResponse) GetCompletions() *string {
 	return m.completions
+}
+
+// GetCreatedAt gets the created_at property value. The created_at property
+// returns a *Time when successful
+func (m *JobResponse) GetCreatedAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
+	return m.created_at
 }
 
 // GetDuration gets the duration property value. The duration property
@@ -90,6 +109,16 @@ func (m *JobResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		return nil
 	}
+	res["cluster_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetUUIDValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetClusterId(val)
+		}
+		return nil
+	}
 	res["completions"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -97,6 +126,16 @@ func (m *JobResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		if val != nil {
 			m.SetCompletions(val)
+		}
+		return nil
+	}
+	res["created_at"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetTimeValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCreatedAt(val)
 		}
 		return nil
 	}
@@ -202,6 +241,16 @@ func (m *JobResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		return nil
 	}
+	res["resource_version"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetResourceVersion(val)
+		}
+		return nil
+	}
 	res["startTime"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -273,6 +322,12 @@ func (m *JobResponse) GetPriority() *int32 {
 	return m.priority
 }
 
+// GetResourceVersion gets the resource_version property value. The resource_version property
+// returns a *string when successful
+func (m *JobResponse) GetResourceVersion() *string {
+	return m.resource_version
+}
+
 // GetStartTime gets the startTime property value. The startTime property
 // returns a *string when successful
 func (m *JobResponse) GetStartTime() *string {
@@ -294,7 +349,19 @@ func (m *JobResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 		}
 	}
 	{
+		err := writer.WriteUUIDValue("cluster_id", m.GetClusterId())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("completions", m.GetCompletions())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteTimeValue("created_at", m.GetCreatedAt())
 		if err != nil {
 			return err
 		}
@@ -354,6 +421,12 @@ func (m *JobResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 		}
 	}
 	{
+		err := writer.WriteStringValue("resource_version", m.GetResourceVersion())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("startTime", m.GetStartTime())
 		if err != nil {
 			return err
@@ -384,9 +457,19 @@ func (m *JobResponse) SetAge(value *string) {
 	m.age = value
 }
 
+// SetClusterId sets the cluster_id property value. The cluster_id property
+func (m *JobResponse) SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
+	m.cluster_id = value
+}
+
 // SetCompletions sets the completions property value. The completions property
 func (m *JobResponse) SetCompletions(value *string) {
 	m.completions = value
+}
+
+// SetCreatedAt sets the created_at property value. The created_at property
+func (m *JobResponse) SetCreatedAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
+	m.created_at = value
 }
 
 // SetDuration sets the duration property value. The duration property
@@ -434,6 +517,11 @@ func (m *JobResponse) SetPriority(value *int32) {
 	m.priority = value
 }
 
+// SetResourceVersion sets the resource_version property value. The resource_version property
+func (m *JobResponse) SetResourceVersion(value *string) {
+	m.resource_version = value
+}
+
 // SetStartTime sets the startTime property value. The startTime property
 func (m *JobResponse) SetStartTime(value *string) {
 	m.startTime = value
@@ -448,7 +536,9 @@ type JobResponseable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetAge() *string
+	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetCompletions() *string
+	GetCreatedAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
 	GetDuration() *string
 	GetId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetMonitoredByPolicies() []string
@@ -458,10 +548,13 @@ type JobResponseable interface {
 	GetPodIds() []string
 	GetPolicyCount() *int32
 	GetPriority() *int32
+	GetResourceVersion() *string
 	GetStartTime() *string
 	GetStatus() *string
 	SetAge(value *string)
+	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetCompletions(value *string)
+	SetCreatedAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
 	SetDuration(value *string)
 	SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetMonitoredByPolicies(value []string)
@@ -471,6 +564,7 @@ type JobResponseable interface {
 	SetPodIds(value []string)
 	SetPolicyCount(value *int32)
 	SetPriority(value *int32)
+	SetResourceVersion(value *string)
 	SetStartTime(value *string)
 	SetStatus(value *string)
 }
