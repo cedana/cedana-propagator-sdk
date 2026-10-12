@@ -21,6 +21,8 @@ type OperationsSummary struct {
 	failures []FailureSummaryable
 	// The fallbacks property
 	fallbacks *int64
+	// Nodes that ran a checkpoint or restore in the window, busiest first.
+	nodes []NodeSummaryable
 	// The operations property
 	operations []OperationTotalsable
 	// The stages property
@@ -152,6 +154,22 @@ func (m *OperationsSummary) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		return nil
 	}
+	res["nodes"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetCollectionOfObjectValues(CreateNodeSummaryFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			res := make([]NodeSummaryable, len(val))
+			for i, v := range val {
+				if v != nil {
+					res[i] = v.(NodeSummaryable)
+				}
+			}
+			m.SetNodes(res)
+		}
+		return nil
+	}
 	res["operations"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetCollectionOfObjectValues(CreateOperationTotalsFromDiscriminatorValue)
 		if err != nil {
@@ -249,6 +267,12 @@ func (m *OperationsSummary) GetFieldDeserializers() map[string]func(i878a80d2330
 	return res
 }
 
+// GetNodes gets the nodes property value. Nodes that ran a checkpoint or restore in the window, busiest first.
+// returns a []NodeSummaryable when successful
+func (m *OperationsSummary) GetNodes() []NodeSummaryable {
+	return m.nodes
+}
+
 // GetOperations gets the operations property value. The operations property
 // returns a []OperationTotalsable when successful
 func (m *OperationsSummary) GetOperations() []OperationTotalsable {
@@ -331,6 +355,18 @@ func (m *OperationsSummary) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 	}
 	{
 		err := writer.WriteInt64Value("fallbacks", m.GetFallbacks())
+		if err != nil {
+			return err
+		}
+	}
+	if m.GetNodes() != nil {
+		cast := make([]i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, len(m.GetNodes()))
+		for i, v := range m.GetNodes() {
+			if v != nil {
+				cast[i] = v.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable)
+			}
+		}
+		err := writer.WriteCollectionOfObjectValues("nodes", cast)
 		if err != nil {
 			return err
 		}
@@ -440,6 +476,11 @@ func (m *OperationsSummary) SetFallbacks(value *int64) {
 	m.fallbacks = value
 }
 
+// SetNodes sets the nodes property value. Nodes that ran a checkpoint or restore in the window, busiest first.
+func (m *OperationsSummary) SetNodes(value []NodeSummaryable) {
+	m.nodes = value
+}
+
 // SetOperations sets the operations property value. The operations property
 func (m *OperationsSummary) SetOperations(value []OperationTotalsable) {
 	m.operations = value
@@ -483,6 +524,7 @@ type OperationsSummaryable interface {
 	GetFailed() *int64
 	GetFailures() []FailureSummaryable
 	GetFallbacks() *int64
+	GetNodes() []NodeSummaryable
 	GetOperations() []OperationTotalsable
 	GetStages() []StageSummaryable
 	GetStepSeconds() *int64
@@ -495,6 +537,7 @@ type OperationsSummaryable interface {
 	SetFailed(value *int64)
 	SetFailures(value []FailureSummaryable)
 	SetFallbacks(value *int64)
+	SetNodes(value []NodeSummaryable)
 	SetOperations(value []OperationTotalsable)
 	SetStages(value []StageSummaryable)
 	SetStepSeconds(value *int64)

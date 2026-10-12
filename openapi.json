@@ -3028,10 +3028,18 @@
               "$ref": "#/components/schemas/NotificationEvent"
             },
             "type": "array"
+          },
+          "source_checkpoints": {
+            "description": "Successful checkpoints that finished before the window but were restored inside it, so a restore can be\ncompared with its source pod's cold start. Checkpoints taken from a pod that was itself restored are left out.",
+            "items": {
+              "$ref": "#/components/schemas/NotificationEvent"
+            },
+            "type": "array"
           }
         },
         "required": [
-          "events"
+          "events",
+          "source_checkpoints"
         ],
         "type": "object"
       },
@@ -5046,6 +5054,87 @@
         ],
         "type": "object"
       },
+      "NodeSummary": {
+        "properties": {
+          "bytes_total": {
+            "description": "Bytes written by successful checkpoints on this node.",
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "checkpoints": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "cluster_id": {
+            "type": "string"
+          },
+          "cold_start_p50_ns": {
+            "description": "Source pod's PodScheduled→Ready, i.e. what the workload took to start without a checkpoint.",
+            "format": "double",
+            "type": "number"
+          },
+          "failed": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "fallbacks": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "last_ms": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "node_name": {
+            "type": "string"
+          },
+          "restore_p50_ns": {
+            "format": "double",
+            "type": "number"
+          },
+          "restores": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "saved_ns": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "savings_pairs": {
+            "description": "Successful restores on this node with PodScheduled→Ready for both the restored pod and its\ncheckpoint's source pod; the three fields below are over these pairs (0 when there are none).",
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "succeeded": {
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cluster_id",
+          "node_name",
+          "checkpoints",
+          "restores",
+          "succeeded",
+          "failed",
+          "fallbacks",
+          "bytes_total",
+          "last_ms",
+          "savings_pairs",
+          "restore_p50_ns",
+          "cold_start_p50_ns",
+          "saved_ns"
+        ],
+        "type": "object"
+      },
       "NotificationEvent": {
         "properties": {
           "action": {
@@ -5663,6 +5752,13 @@
             "minimum": 0,
             "type": "integer"
           },
+          "nodes": {
+            "description": "Nodes that ran a checkpoint or restore in the window, busiest first.",
+            "items": {
+              "$ref": "#/components/schemas/NodeSummary"
+            },
+            "type": "array"
+          },
           "operations": {
             "items": {
               "$ref": "#/components/schemas/OperationTotals"
@@ -5713,7 +5809,8 @@
           "stages",
           "failures",
           "tiers",
-          "timeline"
+          "timeline",
+          "nodes"
         ],
         "type": "object"
       },
