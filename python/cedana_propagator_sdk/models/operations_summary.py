@@ -7,6 +7,7 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from .failure_summary import FailureSummary
     from .histogram_bucket import HistogramBucket
+    from .node_summary import NodeSummary
     from .operation_totals import OperationTotals
     from .stage_summary import StageSummary
     from .tier_summary import TierSummary
@@ -30,6 +31,8 @@ class OperationsSummary(AdditionalDataHolder, Parsable):
     failures: Optional[list[FailureSummary]] = None
     # The fallbacks property
     fallbacks: Optional[int] = None
+    # Nodes that ran a checkpoint or restore in the window, busiest first.
+    nodes: Optional[list[NodeSummary]] = None
     # The operations property
     operations: Optional[list[OperationTotals]] = None
     # The stages property
@@ -63,6 +66,7 @@ class OperationsSummary(AdditionalDataHolder, Parsable):
         """
         from .failure_summary import FailureSummary
         from .histogram_bucket import HistogramBucket
+        from .node_summary import NodeSummary
         from .operation_totals import OperationTotals
         from .stage_summary import StageSummary
         from .tier_summary import TierSummary
@@ -70,6 +74,7 @@ class OperationsSummary(AdditionalDataHolder, Parsable):
 
         from .failure_summary import FailureSummary
         from .histogram_bucket import HistogramBucket
+        from .node_summary import NodeSummary
         from .operation_totals import OperationTotals
         from .stage_summary import StageSummary
         from .tier_summary import TierSummary
@@ -81,6 +86,7 @@ class OperationsSummary(AdditionalDataHolder, Parsable):
             "failed": lambda n : setattr(self, 'failed', n.get_int_value()),
             "failures": lambda n : setattr(self, 'failures', n.get_collection_of_object_values(FailureSummary)),
             "fallbacks": lambda n : setattr(self, 'fallbacks', n.get_int_value()),
+            "nodes": lambda n : setattr(self, 'nodes', n.get_collection_of_object_values(NodeSummary)),
             "operations": lambda n : setattr(self, 'operations', n.get_collection_of_object_values(OperationTotals)),
             "stages": lambda n : setattr(self, 'stages', n.get_collection_of_object_values(StageSummary)),
             "step_seconds": lambda n : setattr(self, 'step_seconds', n.get_int_value()),
@@ -104,6 +110,7 @@ class OperationsSummary(AdditionalDataHolder, Parsable):
         writer.write_int_value("failed", self.failed)
         writer.write_collection_of_object_values("failures", self.failures)
         writer.write_int_value("fallbacks", self.fallbacks)
+        writer.write_collection_of_object_values("nodes", self.nodes)
         writer.write_collection_of_object_values("operations", self.operations)
         writer.write_collection_of_object_values("stages", self.stages)
         writer.write_int_value("step_seconds", self.step_seconds)
