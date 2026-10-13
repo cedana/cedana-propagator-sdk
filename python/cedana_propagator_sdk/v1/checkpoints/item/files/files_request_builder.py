@@ -11,50 +11,54 @@ from kiota_abstractions.request_information import RequestInformation
 from kiota_abstractions.request_option import RequestOption
 from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
-from uuid import UUID
 from warnings import warn
 
 if TYPE_CHECKING:
-    from ....models.http_error import HttpError
-    from ....models.slurm_node import SlurmNode
+    from .....models.checkpoint_file_entry import CheckpointFileEntry
+    from .....models.http_error import HttpError
+    from .download.download_request_builder import DownloadRequestBuilder
 
-class Nodes_paginatedRequestBuilder(BaseRequestBuilder):
+class FilesRequestBuilder(BaseRequestBuilder):
     """
-    Builds and executes requests for operations under /v1/slurm/nodes_paginated
+    Builds and executes requests for operations under /v1/checkpoints/{id}/files
     """
     def __init__(self,request_adapter: RequestAdapter, path_parameters: Union[str, dict[str, Any]]) -> None:
         """
-        Instantiates a new Nodes_paginatedRequestBuilder and sets the default values.
+        Instantiates a new FilesRequestBuilder and sets the default values.
         param path_parameters: The raw url or the url-template parameters for the request.
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/slurm/nodes_paginated{?cluster_id*,limit*,offset*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/checkpoints/{id}/files", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[Nodes_paginatedRequestBuilderGetQueryParameters]] = None) -> Optional[list[SlurmNode]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[list[CheckpointFileEntry]]:
         """
-        List nodes (paginated)
+        Asks a helper on the checkpoint's cluster to read the checkpoint and returns the filesinside it (the members of the checkpoint archive).
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[SlurmNode]]
+        Returns: Optional[list[CheckpointFileEntry]]
         """
         request_info = self.to_get_request_information(
             request_configuration
         )
-        from ....models.http_error import HttpError
+        from .....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
-            "500": HttpError,
+            "400": HttpError,
+            "404": HttpError,
+            "409": HttpError,
+            "502": HttpError,
+            "504": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ....models.slurm_node import SlurmNode
+        from .....models.checkpoint_file_entry import CheckpointFileEntry
 
-        return await self.request_adapter.send_collection_async(request_info, SlurmNode, error_mapping)
+        return await self.request_adapter.send_collection_async(request_info, CheckpointFileEntry, error_mapping)
     
-    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[Nodes_paginatedRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
+    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        List nodes (paginated)
+        Asks a helper on the checkpoint's cluster to read the checkpoint and returns the filesinside it (the members of the checkpoint archive).
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -63,33 +67,27 @@ class Nodes_paginatedRequestBuilder(BaseRequestBuilder):
         request_info.headers.try_add("Accept", "application/json")
         return request_info
     
-    def with_url(self,raw_url: str) -> Nodes_paginatedRequestBuilder:
+    def with_url(self,raw_url: str) -> FilesRequestBuilder:
         """
         Returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
         param raw_url: The raw URL to use for the request builder.
-        Returns: Nodes_paginatedRequestBuilder
+        Returns: FilesRequestBuilder
         """
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
-        return Nodes_paginatedRequestBuilder(self.request_adapter, raw_url)
+        return FilesRequestBuilder(self.request_adapter, raw_url)
+    
+    @property
+    def download(self) -> DownloadRequestBuilder:
+        """
+        The download property
+        """
+        from .download.download_request_builder import DownloadRequestBuilder
+
+        return DownloadRequestBuilder(self.request_adapter, self.path_parameters)
     
     @dataclass
-    class Nodes_paginatedRequestBuilderGetQueryParameters():
-        """
-        List nodes (paginated)
-        """
-        # Only return nodes belonging to this cluster
-        cluster_id: Optional[UUID] = None
-
-        # Maximum number of records to return (default: 50, max: 100)
-        limit: Optional[int] = None
-
-        # Number of records to skip (default: 0)
-        offset: Optional[int] = None
-
-    
-    @dataclass
-    class Nodes_paginatedRequestBuilderGetRequestConfiguration(RequestConfiguration[Nodes_paginatedRequestBuilderGetQueryParameters]):
+    class FilesRequestBuilderGetRequestConfiguration(RequestConfiguration[QueryParameters]):
         """
         Configuration for the request such as headers, query parameters, and middleware options.
         """

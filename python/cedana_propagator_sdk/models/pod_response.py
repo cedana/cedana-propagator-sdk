@@ -12,6 +12,8 @@ class PodResponse(AdditionalDataHolder, Parsable):
 
     # The age property
     age: Optional[str] = None
+    # Cluster the pod runs on; null if the controller has not linked it yet
+    cluster_id: Optional[UUID] = None
     # The id property
     id: Optional[UUID] = None
     # The monitored_by_policies property
@@ -49,6 +51,7 @@ class PodResponse(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
             "age": lambda n : setattr(self, 'age', n.get_str_value()),
+            "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
             "id": lambda n : setattr(self, 'id', n.get_uuid_value()),
             "monitored_by_policies": lambda n : setattr(self, 'monitored_by_policies', n.get_collection_of_primitive_values(str)),
             "name": lambda n : setattr(self, 'name', n.get_str_value()),
@@ -70,6 +73,7 @@ class PodResponse(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_str_value("age", self.age)
+        writer.write_uuid_value("cluster_id", self.cluster_id)
         writer.write_uuid_value("id", self.id)
         writer.write_collection_of_primitive_values("monitored_by_policies", self.monitored_by_policies)
         writer.write_str_value("name", self.name)

@@ -16,7 +16,7 @@ from warnings import warn
 
 if TYPE_CHECKING:
     from ....models.http_error import HttpError
-    from ....models.slurm_node import SlurmNode
+    from ....models.paginated_slurm_node_response import PaginatedSlurmNodeResponse
     from .sync.sync_request_builder import SyncRequestBuilder
 
 class NodesRequestBuilder(BaseRequestBuilder):
@@ -30,13 +30,13 @@ class NodesRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/slurm/nodes{?cluster_id*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/slurm/nodes{?cluster_id*,id*,limit*,offset*}", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[NodesRequestBuilderGetQueryParameters]] = None) -> Optional[list[SlurmNode]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[NodesRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedSlurmNodeResponse]:
         """
-        List nodes
+        Paginated. `total_count` is the number of nodes matching the filters before paging.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[SlurmNode]]
+        Returns: Optional[PaginatedSlurmNodeResponse]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -44,18 +44,19 @@ class NodesRequestBuilder(BaseRequestBuilder):
         from ....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
+            "400": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ....models.slurm_node import SlurmNode
+        from ....models.paginated_slurm_node_response import PaginatedSlurmNodeResponse
 
-        return await self.request_adapter.send_collection_async(request_info, SlurmNode, error_mapping)
+        return await self.request_adapter.send_async(request_info, PaginatedSlurmNodeResponse, error_mapping)
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[NodesRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        List nodes
+        Paginated. `total_count` is the number of nodes matching the filters before paging.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -86,10 +87,19 @@ class NodesRequestBuilder(BaseRequestBuilder):
     @dataclass
     class NodesRequestBuilderGetQueryParameters():
         """
-        List nodes
+        Paginated. `total_count` is the number of nodes matching the filters before paging.
         """
         # Only return nodes belonging to this cluster
         cluster_id: Optional[UUID] = None
+
+        # Exact node id to fetch
+        id: Optional[UUID] = None
+
+        # Page size (default 50, max 500)
+        limit: Optional[int] = None
+
+        # Row offset (default 0)
+        offset: Optional[int] = None
 
     
     @dataclass

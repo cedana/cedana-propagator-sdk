@@ -37,11 +37,14 @@ func NewCheckpointsDeprecateDeprecateItemRequestBuilder(rawUrl string, requestAd
 	return NewCheckpointsDeprecateDeprecateItemRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Patch routes a deletion request to at least one queue before marking the checkpoint deprecated.Checkpoints without a restore path are deprecated without publishing a deletion request.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
+// Patch has a helper on the checkpoint's cluster delete its files (chosen as for the filesendpoints: any helper for a remote checkpoint, the node holding it for a local one),then marks the checkpoint deprecated. A checkpoint without a path has no files todelete and is just deprecated. One with files but no cluster to ask (not takenthrough a checkpoint action) is kept, with a 409, rather than deprecated with itsfiles left behind. If the helper fails to delete, the checkpoint is left as it wasand the helper's error is returned. Concurrent requests for the same checkpoint mayboth ask for the delete; whichever marks it deprecated first wins, the other gets 404.
 // returns a *string when successful
 // returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 404 status code
+// returns a HttpError error when the service returns a 409 status code
 // returns a HttpError error when the service returns a 500 status code
+// returns a HttpError error when the service returns a 502 status code
+// returns a HttpError error when the service returns a 504 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
 func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) Patch(ctx context.Context, requestConfiguration *CheckpointsDeprecateDeprecateItemRequestBuilderPatchRequestConfiguration) (*string, error) {
 	requestInfo, err := m.ToPatchRequestInformation(ctx, requestConfiguration)
@@ -51,7 +54,10 @@ func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) Patch(ctx context.Cont
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
 		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"404": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+		"409": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+		"502": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+		"504": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
 	res, err := m.BaseRequestBuilder.RequestAdapter.SendPrimitive(ctx, requestInfo, "string", errorMapping)
@@ -64,7 +70,7 @@ func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) Patch(ctx context.Cont
 	return res.(*string), nil
 }
 
-// ToPatchRequestInformation routes a deletion request to at least one queue before marking the checkpoint deprecated.Checkpoints without a restore path are deprecated without publishing a deletion request.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
+// ToPatchRequestInformation has a helper on the checkpoint's cluster delete its files (chosen as for the filesendpoints: any helper for a remote checkpoint, the node holding it for a local one),then marks the checkpoint deprecated. A checkpoint without a path has no files todelete and is just deprecated. One with files but no cluster to ask (not takenthrough a checkpoint action) is kept, with a 409, rather than deprecated with itsfiles left behind. If the helper fails to delete, the checkpoint is left as it wasand the helper's error is returned. Concurrent requests for the same checkpoint mayboth ask for the delete; whichever marks it deprecated first wins, the other gets 404.
 // returns a *RequestInformation when successful
 func (m *CheckpointsDeprecateDeprecateItemRequestBuilder) ToPatchRequestInformation(ctx context.Context, requestConfiguration *CheckpointsDeprecateDeprecateItemRequestBuilderPatchRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.PATCH, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

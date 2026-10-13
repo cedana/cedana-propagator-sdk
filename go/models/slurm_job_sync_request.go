@@ -16,6 +16,8 @@ type SlurmJobSyncRequest struct {
 	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// Raw SLURM records are retained because their schema varies by release.
 	jobs i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	// The batch is only some of the cluster's jobs: upsert them, but don'tmark the jobs missing from it as completed.
+	partial *bool
 }
 
 // NewSlurmJobSyncRequest instantiates a new SlurmJobSyncRequest and sets the default values.
@@ -67,6 +69,16 @@ func (m *SlurmJobSyncRequest) GetFieldDeserializers() map[string]func(i878a80d23
 		}
 		return nil
 	}
+	res["partial"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetBoolValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPartial(val)
+		}
+		return nil
+	}
 	return res
 }
 
@@ -74,6 +86,12 @@ func (m *SlurmJobSyncRequest) GetFieldDeserializers() map[string]func(i878a80d23
 // returns a UntypedNodeable when successful
 func (m *SlurmJobSyncRequest) GetJobs() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
 	return m.jobs
+}
+
+// GetPartial gets the partial property value. The batch is only some of the cluster's jobs: upsert them, but don'tmark the jobs missing from it as completed.
+// returns a *bool when successful
+func (m *SlurmJobSyncRequest) GetPartial() *bool {
+	return m.partial
 }
 
 // Serialize serializes information the current object
@@ -86,6 +104,12 @@ func (m *SlurmJobSyncRequest) Serialize(writer i878a80d2330e89d26896388a3f487eef
 	}
 	{
 		err := writer.WriteObjectValue("jobs", m.GetJobs())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteBoolValue("partial", m.GetPartial())
 		if err != nil {
 			return err
 		}
@@ -114,11 +138,18 @@ func (m *SlurmJobSyncRequest) SetJobs(value i878a80d2330e89d26896388a3f487eef27b
 	m.jobs = value
 }
 
+// SetPartial sets the partial property value. The batch is only some of the cluster's jobs: upsert them, but don'tmark the jobs missing from it as completed.
+func (m *SlurmJobSyncRequest) SetPartial(value *bool) {
+	m.partial = value
+}
+
 type SlurmJobSyncRequestable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetJobs() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	GetPartial() *bool
 	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetJobs(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
+	SetPartial(value *bool)
 }

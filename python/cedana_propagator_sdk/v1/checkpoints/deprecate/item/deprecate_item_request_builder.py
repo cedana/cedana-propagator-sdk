@@ -31,7 +31,7 @@ class DeprecateItemRequestBuilder(BaseRequestBuilder):
     
     async def patch(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[str]:
         """
-        Routes a deletion request to at least one queue before marking the checkpoint deprecated.Checkpoints without a restore path are deprecated without publishing a deletion request.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
+        Has a helper on the checkpoint's cluster delete its files (chosen as for the filesendpoints: any helper for a remote checkpoint, the node holding it for a local one),then marks the checkpoint deprecated. A checkpoint without a path has no files todelete and is just deprecated. One with files but no cluster to ask (not takenthrough a checkpoint action) is kept, with a 409, rather than deprecated with itsfiles left behind. If the helper fails to delete, the checkpoint is left as it wasand the helper's error is returned. Concurrent requests for the same checkpoint mayboth ask for the delete; whichever marks it deprecated first wins, the other gets 404.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[str]
         """
@@ -43,7 +43,10 @@ class DeprecateItemRequestBuilder(BaseRequestBuilder):
         error_mapping: dict[str, type[ParsableFactory]] = {
             "400": HttpError,
             "404": HttpError,
+            "409": HttpError,
             "500": HttpError,
+            "502": HttpError,
+            "504": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
@@ -52,7 +55,7 @@ class DeprecateItemRequestBuilder(BaseRequestBuilder):
     
     def to_patch_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Routes a deletion request to at least one queue before marking the checkpoint deprecated.Checkpoints without a restore path are deprecated without publishing a deletion request.Locks the checkpoint in a transaction to serialize concurrent deprecation requests.
+        Has a helper on the checkpoint's cluster delete its files (chosen as for the filesendpoints: any helper for a remote checkpoint, the node holding it for a local one),then marks the checkpoint deprecated. A checkpoint without a path has no files todelete and is just deprecated. One with files but no cluster to ask (not takenthrough a checkpoint action) is kept, with a 409, rather than deprecated with itsfiles left behind. If the helper fails to delete, the checkpoint is left as it wasand the helper's error is returned. Concurrent requests for the same checkpoint mayboth ask for the delete; whichever marks it deprecated first wins, the other gets 404.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """

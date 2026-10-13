@@ -4,6 +4,9 @@
 package v1
 
 import (
+	"context"
+	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
+	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
@@ -12,10 +15,39 @@ type SlurmJobsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
+// SlurmJobsRequestBuilderGetQueryParameters paginated. `total_count` is the number of jobs matching the filters before paging.
+type SlurmJobsRequestBuilderGetQueryParameters struct {
+	// Sort ascending (default: false)
+	Ascending *bool "uriparametername:\"ascending\""
+	// Only return jobs belonging to this cluster
+	Cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID "uriparametername:\"cluster_id\""
+	// Exact SLURM job id to fetch; when set, all other filters are ignored
+	Id *int64 "uriparametername:\"id\""
+	// Job name or job id to query against (uses postgres ILIKE pattern search)
+	Job_name *string "uriparametername:\"job_name\""
+	// Page size (default 50, max 500)
+	Limit *int64 "uriparametername:\"limit\""
+	// Row offset (default 0)
+	Offset *int64 "uriparametername:\"offset\""
+	// One of: id, name, status, submit_time, start_time (default: start_time)
+	Sort   *string "uriparametername:\"sort\""
+	Status *string "uriparametername:\"status\""
+}
+
+// SlurmJobsRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
+type SlurmJobsRequestBuilderGetRequestConfiguration struct {
+	// Request headers
+	Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
+	// Request options
+	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
+	// Request query parameters
+	QueryParameters *SlurmJobsRequestBuilderGetQueryParameters
+}
+
 // NewSlurmJobsRequestBuilderInternal instantiates a new SlurmJobsRequestBuilder and sets the default values.
 func NewSlurmJobsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *SlurmJobsRequestBuilder {
 	m := &SlurmJobsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/slurm/jobs", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/slurm/jobs{?ascending*,cluster_id*,id*,job_name*,limit*,offset*,sort*,status*}", pathParameters),
 	}
 	return m
 }
@@ -27,8 +59,54 @@ func NewSlurmJobsRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee2633
 	return NewSlurmJobsRequestBuilderInternal(urlParams, requestAdapter)
 }
 
+// Get paginated. `total_count` is the number of jobs matching the filters before paging.
+// returns a PaginatedSlurmJobResponseable when successful
+// returns a HttpError error when the service returns a 400 status code
+// returns a HttpError error when the service returns a 500 status code
+// returns a HttpError error when the service returns a 4XX or 5XX status code
+func (m *SlurmJobsRequestBuilder) Get(ctx context.Context, requestConfiguration *SlurmJobsRequestBuilderGetRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedSlurmJobResponseable, error) {
+	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
+	if err != nil {
+		return nil, err
+	}
+	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
+		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+		"500": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+	}
+	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreatePaginatedSlurmJobResponseFromDiscriminatorValue, errorMapping)
+	if err != nil {
+		return nil, err
+	}
+	if res == nil {
+		return nil, nil
+	}
+	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.PaginatedSlurmJobResponseable), nil
+}
+
 // Sync the sync property
 // returns a *SlurmJobsSyncRequestBuilder when successful
 func (m *SlurmJobsRequestBuilder) Sync() *SlurmJobsSyncRequestBuilder {
 	return NewSlurmJobsSyncRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// ToGetRequestInformation paginated. `total_count` is the number of jobs matching the filters before paging.
+// returns a *RequestInformation when successful
+func (m *SlurmJobsRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *SlurmJobsRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
+	if requestConfiguration != nil {
+		if requestConfiguration.QueryParameters != nil {
+			requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
+		}
+		requestInfo.Headers.AddAll(requestConfiguration.Headers)
+		requestInfo.AddRequestOptions(requestConfiguration.Options)
+	}
+	requestInfo.Headers.TryAdd("Accept", "application/json")
+	return requestInfo, nil
+}
+
+// WithUrl returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
+// returns a *SlurmJobsRequestBuilder when successful
+func (m *SlurmJobsRequestBuilder) WithUrl(rawUrl string) *SlurmJobsRequestBuilder {
+	return NewSlurmJobsRequestBuilder(rawUrl, m.BaseRequestBuilder.RequestAdapter)
 }

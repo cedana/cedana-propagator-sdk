@@ -6,6 +6,7 @@ from kiota_abstractions.request_adapter import RequestAdapter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
+    from .files.files_request_builder import FilesRequestBuilder
     from .storage.storage_request_builder import StorageRequestBuilder
 
 class CheckpointsItemRequestBuilder(BaseRequestBuilder):
@@ -20,6 +21,15 @@ class CheckpointsItemRequestBuilder(BaseRequestBuilder):
         Returns: None
         """
         super().__init__(request_adapter, "{+baseurl}/v1/checkpoints/{id}", path_parameters)
+    
+    @property
+    def files(self) -> FilesRequestBuilder:
+        """
+        The files property
+        """
+        from .files.files_request_builder import FilesRequestBuilder
+
+        return FilesRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def storage(self) -> StorageRequestBuilder:

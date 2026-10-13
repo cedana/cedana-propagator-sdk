@@ -38,7 +38,7 @@ class CheckpointsRequestBuilder(BaseRequestBuilder):
     def by_id(self,id: str) -> CheckpointsItemRequestBuilder:
         """
         Gets an item from the cedana_propagator_sdk.v1.checkpoints.item collection
-        param id: Checkpoint ID
+        param id: Unique identifier of the item
         Returns: CheckpointsItemRequestBuilder
         """
         if id is None:

@@ -32,7 +32,7 @@ class SyncRequestBuilder(BaseRequestBuilder):
     
     async def post(self,body: SlurmJobSyncRequest, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[str]:
         """
-        Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database
+        Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database.Unless the batch is partial, jobs on the cluster missing from it are marked completed.
         param body: Sync request containing a batch of jobs
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[str]
@@ -54,7 +54,7 @@ class SyncRequestBuilder(BaseRequestBuilder):
     
     def to_post_request_information(self,body: SlurmJobSyncRequest, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database
+        Receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database.Unless the batch is partial, jobs on the cluster missing from it are marked completed.
         param body: Sync request containing a batch of jobs
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation

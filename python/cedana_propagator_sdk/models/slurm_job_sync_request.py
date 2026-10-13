@@ -15,6 +15,8 @@ class SlurmJobSyncRequest(AdditionalDataHolder, Parsable):
 
     # The cluster_id property
     cluster_id: Optional[UUID] = None
+    # The batch is only some of the cluster's jobs: upsert them, but don'tmark the jobs missing from it as completed.
+    partial: Optional[bool] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> SlurmJobSyncRequest:
@@ -34,6 +36,7 @@ class SlurmJobSyncRequest(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
             "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
+            "partial": lambda n : setattr(self, 'partial', n.get_bool_value()),
         }
         return fields
     
@@ -46,6 +49,7 @@ class SlurmJobSyncRequest(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_uuid_value("cluster_id", self.cluster_id)
+        writer.write_bool_value("partial", self.partial)
         writer.write_additional_data_value(self.additional_data)
     
 

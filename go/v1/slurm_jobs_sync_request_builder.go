@@ -37,7 +37,7 @@ func NewSlurmJobsSyncRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee
 	return NewSlurmJobsSyncRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Post receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database
+// Post receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database.Unless the batch is partial, jobs on the cluster missing from it are marked completed.
 // returns a *string when successful
 // returns a HttpError error when the service returns a 500 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
@@ -60,7 +60,7 @@ func (m *SlurmJobsSyncRequestBuilder) Post(ctx context.Context, body i89856fb30c
 	return res.(*string), nil
 }
 
-// ToPostRequestInformation receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database
+// ToPostRequestInformation receives a batch of SLURM jobs from the cedana-slurm plugin and upserts them into the database.Unless the batch is partial, jobs on the cluster missing from it are marked completed.
 // returns a *RequestInformation when successful
 func (m *SlurmJobsSyncRequestBuilder) ToPostRequestInformation(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.SlurmJobSyncRequestable, requestConfiguration *SlurmJobsSyncRequestBuilderPostRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

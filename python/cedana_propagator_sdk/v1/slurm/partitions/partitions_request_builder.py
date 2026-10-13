@@ -15,7 +15,7 @@ from warnings import warn
 
 if TYPE_CHECKING:
     from ....models.http_error import HttpError
-    from ....models.slurm_partition import SlurmPartition
+    from ....models.paginated_slurm_partition_response import PaginatedSlurmPartitionResponse
     from .sync.sync_request_builder import SyncRequestBuilder
 
 class PartitionsRequestBuilder(BaseRequestBuilder):
@@ -29,13 +29,13 @@ class PartitionsRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/slurm/partitions", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/slurm/partitions{?limit*,offset*}", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[list[SlurmPartition]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[PartitionsRequestBuilderGetQueryParameters]] = None) -> Optional[PaginatedSlurmPartitionResponse]:
         """
-        List partitions
+        Paginated. `total_count` is the number of partitions before paging.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[SlurmPartition]]
+        Returns: Optional[PaginatedSlurmPartitionResponse]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -43,18 +43,19 @@ class PartitionsRequestBuilder(BaseRequestBuilder):
         from ....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
+            "400": HttpError,
             "500": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ....models.slurm_partition import SlurmPartition
+        from ....models.paginated_slurm_partition_response import PaginatedSlurmPartitionResponse
 
-        return await self.request_adapter.send_collection_async(request_info, SlurmPartition, error_mapping)
+        return await self.request_adapter.send_async(request_info, PaginatedSlurmPartitionResponse, error_mapping)
     
-    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
+    def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[PartitionsRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        List partitions
+        Paginated. `total_count` is the number of partitions before paging.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -83,7 +84,19 @@ class PartitionsRequestBuilder(BaseRequestBuilder):
         return SyncRequestBuilder(self.request_adapter, self.path_parameters)
     
     @dataclass
-    class PartitionsRequestBuilderGetRequestConfiguration(RequestConfiguration[QueryParameters]):
+    class PartitionsRequestBuilderGetQueryParameters():
+        """
+        Paginated. `total_count` is the number of partitions before paging.
+        """
+        # Page size (default 50, max 500)
+        limit: Optional[int] = None
+
+        # Row offset (default 0)
+        offset: Optional[int] = None
+
+    
+    @dataclass
+    class PartitionsRequestBuilderGetRequestConfiguration(RequestConfiguration[PartitionsRequestBuilderGetQueryParameters]):
         """
         Configuration for the request such as headers, query parameters, and middleware options.
         """
