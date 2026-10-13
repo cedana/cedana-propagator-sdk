@@ -27,6 +27,12 @@ func NewMetricsOperationsRequestBuilder(rawUrl string, requestAdapter i2ae4187f7
 	return NewMetricsOperationsRequestBuilderInternal(urlParams, requestAdapter)
 }
 
+// Savings the savings property
+// returns a *MetricsOperationsSavingsRequestBuilder when successful
+func (m *MetricsOperationsRequestBuilder) Savings() *MetricsOperationsSavingsRequestBuilder {
+	return NewMetricsOperationsSavingsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Summary the summary property
 // returns a *MetricsOperationsSummaryRequestBuilder when successful
 func (m *MetricsOperationsRequestBuilder) Summary() *MetricsOperationsSummaryRequestBuilder {
