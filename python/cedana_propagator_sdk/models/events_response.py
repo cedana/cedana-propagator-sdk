@@ -14,6 +14,8 @@ class EventsResponse(AdditionalDataHolder, Parsable):
 
     # The events property
     events: Optional[list[NotificationEvent]] = None
+    # Successful checkpoints that finished before the window but were restored inside it, so a restore can becompared with its source pod's cold start. Checkpoints taken from a pod that was itself restored are left out.
+    source_checkpoints: Optional[list[NotificationEvent]] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> EventsResponse:
@@ -37,6 +39,7 @@ class EventsResponse(AdditionalDataHolder, Parsable):
 
         fields: dict[str, Callable[[Any], None]] = {
             "events": lambda n : setattr(self, 'events', n.get_collection_of_object_values(NotificationEvent)),
+            "source_checkpoints": lambda n : setattr(self, 'source_checkpoints', n.get_collection_of_object_values(NotificationEvent)),
         }
         return fields
     
@@ -49,6 +52,7 @@ class EventsResponse(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_collection_of_object_values("events", self.events)
+        writer.write_collection_of_object_values("source_checkpoints", self.source_checkpoints)
         writer.write_additional_data_value(self.additional_data)
     
 

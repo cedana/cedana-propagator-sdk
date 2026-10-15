@@ -6,6 +6,7 @@ from kiota_abstractions.request_adapter import RequestAdapter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
+    from .savings.savings_request_builder import SavingsRequestBuilder
     from .summary.summary_request_builder import SummaryRequestBuilder
 
 class OperationsRequestBuilder(BaseRequestBuilder):
@@ -20,6 +21,15 @@ class OperationsRequestBuilder(BaseRequestBuilder):
         Returns: None
         """
         super().__init__(request_adapter, "{+baseurl}/v1/metrics/operations", path_parameters)
+    
+    @property
+    def savings(self) -> SavingsRequestBuilder:
+        """
+        The savings property
+        """
+        from .savings.savings_request_builder import SavingsRequestBuilder
+
+        return SavingsRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def summary(self) -> SummaryRequestBuilder:
