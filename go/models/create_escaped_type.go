@@ -3,28 +3,28 @@
 
 package models
 
-type List_type int
+type Create_type int
 
 const (
-	CHECKPOINT_LIST_TYPE List_type = iota
+	CHECKPOINT_CREATE_TYPE Create_type = iota
 )
 
-func (i List_type) String() string {
+func (i Create_type) String() string {
 	return []string{"checkpoint"}[i]
 }
 
-func ParseList_type(v string) (any, error) {
-	result := CHECKPOINT_LIST_TYPE
+func ParseCreate_type(v string) (any, error) {
+	result := CHECKPOINT_CREATE_TYPE
 	switch v {
 	case "checkpoint":
-		result = CHECKPOINT_LIST_TYPE
+		result = CHECKPOINT_CREATE_TYPE
 	default:
 		return nil, nil
 	}
 	return &result, nil
 }
 
-func SerializeList_type(values []List_type) []string {
+func SerializeCreate_type(values []Create_type) []string {
 	result := make([]string, len(values))
 	for i, v := range values {
 		result[i] = v.String()
@@ -32,6 +32,6 @@ func SerializeList_type(values []List_type) []string {
 	return result
 }
 
-func (i List_type) isMultiValue() bool {
+func (i Create_type) isMultiValue() bool {
 	return false
 }
