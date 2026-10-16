@@ -10,7 +10,7 @@ import (
 // PolicyPipeline complete policy pipeline definition
 type PolicyPipeline struct {
 	// Action defines WHAT to do when triggered
-	action Listable
+	action Createable
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
 	// Filter defines WHAT resources are targeted
@@ -33,8 +33,8 @@ func CreatePolicyPipelineFromDiscriminatorValue(parseNode i878a80d2330e89d268963
 }
 
 // GetAction gets the action property value. Action defines WHAT to do when triggered
-// returns a Listable when successful
-func (m *PolicyPipeline) GetAction() Listable {
+// returns a Createable when successful
+func (m *PolicyPipeline) GetAction() Createable {
 	return m.action
 }
 
@@ -49,12 +49,12 @@ func (m *PolicyPipeline) GetAdditionalData() map[string]any {
 func (m *PolicyPipeline) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
 	res["action"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(CreateListFromDiscriminatorValue)
+		val, err := n.GetObjectValue(CreateCreateFromDiscriminatorValue)
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetAction(val.(Listable))
+			m.SetAction(val.(Createable))
 		}
 		return nil
 	}
@@ -123,7 +123,7 @@ func (m *PolicyPipeline) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
 }
 
 // SetAction sets the action property value. Action defines WHAT to do when triggered
-func (m *PolicyPipeline) SetAction(value Listable) {
+func (m *PolicyPipeline) SetAction(value Createable) {
 	m.action = value
 }
 
@@ -145,10 +145,10 @@ func (m *PolicyPipeline) SetTrigger(value PipelineTriggerable) {
 type PolicyPipelineable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
-	GetAction() Listable
+	GetAction() Createable
 	GetFilter() PipelineFilterable
 	GetTrigger() PipelineTriggerable
-	SetAction(value Listable)
+	SetAction(value Createable)
 	SetFilter(value PipelineFilterable)
 	SetTrigger(value PipelineTriggerable)
 }
