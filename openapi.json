@@ -3592,6 +3592,21 @@
         ],
         "type": "object"
       },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "version"
+        ],
+        "type": "object"
+      },
       "HeartbeatTriggerConfig": {
         "properties": {
           "interval_seconds": {
@@ -14745,6 +14760,48 @@
         "summary": "Upload file",
         "tags": [
           "Files"
+        ]
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "description": "Unauthenticated and touches no backing service, so it only says the process is serving.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Propagator is up"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "summary": "Liveness check",
+        "tags": [
+          "Health"
         ]
       }
     },
@@ -26845,6 +26902,10 @@
     {
       "description": "Cedana API for service discovery",
       "name": "Service"
+    },
+    {
+      "description": "Cedana API liveness check",
+      "name": "Health"
     },
     {
       "description": "Cedana API for checkpoints",

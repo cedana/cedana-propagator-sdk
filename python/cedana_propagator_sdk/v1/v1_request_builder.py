@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from .dynamo.dynamo_request_builder import DynamoRequestBuilder
     from .events.events_request_builder import EventsRequestBuilder
     from .files.files_request_builder import FilesRequestBuilder
+    from .health.health_request_builder import HealthRequestBuilder
     from .hosts.hosts_request_builder import HostsRequestBuilder
     from .inference.inference_request_builder import InferenceRequestBuilder
     from .install.install_request_builder import InstallRequestBuilder
@@ -146,6 +147,15 @@ class V1RequestBuilder(BaseRequestBuilder):
         from .files.files_request_builder import FilesRequestBuilder
 
         return FilesRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def health(self) -> HealthRequestBuilder:
+        """
+        The health property
+        """
+        from .health.health_request_builder import HealthRequestBuilder
+
+        return HealthRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def hosts(self) -> HostsRequestBuilder:

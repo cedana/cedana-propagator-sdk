@@ -93,6 +93,12 @@ func (m *V1RequestBuilder) Files() *FilesRequestBuilder {
 	return NewFilesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Health the health property
+// returns a *HealthRequestBuilder when successful
+func (m *V1RequestBuilder) Health() *HealthRequestBuilder {
+	return NewHealthRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Hosts the hosts property
 // returns a *HostsRequestBuilder when successful
 func (m *V1RequestBuilder) Hosts() *HostsRequestBuilder {
