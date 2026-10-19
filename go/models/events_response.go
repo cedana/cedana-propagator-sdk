@@ -12,6 +12,8 @@ type EventsResponse struct {
 	additionalData map[string]any
 	// The events property
 	events []NotificationEventable
+	// Successful checkpoints that finished before the window but were restored inside it, so a restore can becompared with its source pod's cold start. Checkpoints taken from a pod that was itself restored are left out.
+	source_checkpoints []NotificationEventable
 }
 
 // NewEventsResponse instantiates a new EventsResponse and sets the default values.
@@ -59,7 +61,29 @@ func (m *EventsResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		return nil
 	}
+	res["source_checkpoints"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetCollectionOfObjectValues(CreateNotificationEventFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			res := make([]NotificationEventable, len(val))
+			for i, v := range val {
+				if v != nil {
+					res[i] = v.(NotificationEventable)
+				}
+			}
+			m.SetSourceCheckpoints(res)
+		}
+		return nil
+	}
 	return res
+}
+
+// GetSourceCheckpoints gets the source_checkpoints property value. Successful checkpoints that finished before the window but were restored inside it, so a restore can becompared with its source pod's cold start. Checkpoints taken from a pod that was itself restored are left out.
+// returns a []NotificationEventable when successful
+func (m *EventsResponse) GetSourceCheckpoints() []NotificationEventable {
+	return m.source_checkpoints
 }
 
 // Serialize serializes information the current object
@@ -72,6 +96,18 @@ func (m *EventsResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
 			}
 		}
 		err := writer.WriteCollectionOfObjectValues("events", cast)
+		if err != nil {
+			return err
+		}
+	}
+	if m.GetSourceCheckpoints() != nil {
+		cast := make([]i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, len(m.GetSourceCheckpoints()))
+		for i, v := range m.GetSourceCheckpoints() {
+			if v != nil {
+				cast[i] = v.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable)
+			}
+		}
+		err := writer.WriteCollectionOfObjectValues("source_checkpoints", cast)
 		if err != nil {
 			return err
 		}
@@ -95,9 +131,16 @@ func (m *EventsResponse) SetEvents(value []NotificationEventable) {
 	m.events = value
 }
 
+// SetSourceCheckpoints sets the source_checkpoints property value. Successful checkpoints that finished before the window but were restored inside it, so a restore can becompared with its source pod's cold start. Checkpoints taken from a pod that was itself restored are left out.
+func (m *EventsResponse) SetSourceCheckpoints(value []NotificationEventable) {
+	m.source_checkpoints = value
+}
+
 type EventsResponseable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetEvents() []NotificationEventable
+	GetSourceCheckpoints() []NotificationEventable
 	SetEvents(value []NotificationEventable)
+	SetSourceCheckpoints(value []NotificationEventable)
 }
