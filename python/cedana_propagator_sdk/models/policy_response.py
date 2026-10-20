@@ -20,6 +20,8 @@ class PolicyResponse(AdditionalDataHolder, Parsable):
     input: Optional[int] = None
     # The job_count property
     job_count: Optional[int] = None
+    # The name property
+    name: Optional[str] = None
     # The namespace property
     namespace: Optional[str] = None
     # The pod_count property
@@ -59,6 +61,7 @@ class PolicyResponse(AdditionalDataHolder, Parsable):
             "id": lambda n : setattr(self, 'id', n.get_str_value()),
             "input": lambda n : setattr(self, 'input', n.get_int_value()),
             "job_count": lambda n : setattr(self, 'job_count', n.get_int_value()),
+            "name": lambda n : setattr(self, 'name', n.get_str_value()),
             "namespace": lambda n : setattr(self, 'namespace', n.get_str_value()),
             "pod_count": lambda n : setattr(self, 'pod_count', n.get_int_value()),
             "policy_type": lambda n : setattr(self, 'policy_type', n.get_str_value()),
@@ -83,6 +86,7 @@ class PolicyResponse(AdditionalDataHolder, Parsable):
         writer.write_str_value("id", self.id)
         writer.write_int_value("input", self.input)
         writer.write_int_value("job_count", self.job_count)
+        writer.write_str_value("name", self.name)
         writer.write_str_value("namespace", self.namespace)
         writer.write_int_value("pod_count", self.pod_count)
         writer.write_str_value("policy_type", self.policy_type)

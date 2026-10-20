@@ -21,6 +21,8 @@ type PolicyResponse struct {
 	input *int64
 	// The job_count property
 	job_count *int64
+	// The name property
+	name *string
 	// The namespace property
 	namespace *string
 	// The pod_count property
@@ -121,6 +123,16 @@ func (m *PolicyResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		if val != nil {
 			m.SetJobCount(val)
+		}
+		return nil
+	}
+	res["name"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetName(val)
 		}
 		return nil
 	}
@@ -231,6 +243,12 @@ func (m *PolicyResponse) GetJobCount() *int64 {
 	return m.job_count
 }
 
+// GetName gets the name property value. The name property
+// returns a *string when successful
+func (m *PolicyResponse) GetName() *string {
+	return m.name
+}
+
 // GetNamespace gets the namespace property value. The namespace property
 // returns a *string when successful
 func (m *PolicyResponse) GetNamespace() *string {
@@ -307,6 +325,12 @@ func (m *PolicyResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
 	}
 	{
 		err := writer.WriteInt64Value("job_count", m.GetJobCount())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("name", m.GetName())
 		if err != nil {
 			return err
 		}
@@ -398,6 +422,11 @@ func (m *PolicyResponse) SetJobCount(value *int64) {
 	m.job_count = value
 }
 
+// SetName sets the name property value. The name property
+func (m *PolicyResponse) SetName(value *string) {
+	m.name = value
+}
+
 // SetNamespace sets the namespace property value. The namespace property
 func (m *PolicyResponse) SetNamespace(value *string) {
 	m.namespace = value
@@ -446,6 +475,7 @@ type PolicyResponseable interface {
 	GetId() *string
 	GetInput() *int64
 	GetJobCount() *int64
+	GetName() *string
 	GetNamespace() *string
 	GetPodCount() *int64
 	GetPolicyType() *string
@@ -459,6 +489,7 @@ type PolicyResponseable interface {
 	SetId(value *string)
 	SetInput(value *int64)
 	SetJobCount(value *int64)
+	SetName(value *string)
 	SetNamespace(value *string)
 	SetPodCount(value *int64)
 	SetPolicyType(value *string)
