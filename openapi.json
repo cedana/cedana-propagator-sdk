@@ -7426,6 +7426,12 @@
               "null"
             ]
           },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "namespace": {
             "type": [
               "string",
