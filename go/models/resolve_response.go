@@ -16,6 +16,8 @@ type ResolveResponse struct {
 	decision_source *string
 	// The fallback_used property
 	fallback_used *bool
+	// The lease_duration_ms property
+	lease_duration_ms *int64
 	// The profile_id property
 	profile_id *string
 	// The route_generation property
@@ -97,6 +99,16 @@ func (m *ResolveResponse) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		return nil
 	}
+	res["lease_duration_ms"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetLeaseDurationMs(val)
+		}
+		return nil
+	}
 	res["profile_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -140,6 +152,12 @@ func (m *ResolveResponse) GetFieldDeserializers() map[string]func(i878a80d2330e8
 	return res
 }
 
+// GetLeaseDurationMs gets the lease_duration_ms property value. The lease_duration_ms property
+// returns a *int64 when successful
+func (m *ResolveResponse) GetLeaseDurationMs() *int64 {
+	return m.lease_duration_ms
+}
+
 // GetProfileId gets the profile_id property value. The profile_id property
 // returns a *string when successful
 func (m *ResolveResponse) GetProfileId() *string {
@@ -180,6 +198,12 @@ func (m *ResolveResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 	}
 	{
 		err := writer.WriteBoolValue("fallback_used", m.GetFallbackUsed())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt64Value("lease_duration_ms", m.GetLeaseDurationMs())
 		if err != nil {
 			return err
 		}
@@ -237,6 +261,11 @@ func (m *ResolveResponse) SetFallbackUsed(value *bool) {
 	m.fallback_used = value
 }
 
+// SetLeaseDurationMs sets the lease_duration_ms property value. The lease_duration_ms property
+func (m *ResolveResponse) SetLeaseDurationMs(value *int64) {
+	m.lease_duration_ms = value
+}
+
 // SetProfileId sets the profile_id property value. The profile_id property
 func (m *ResolveResponse) SetProfileId(value *string) {
 	m.profile_id = value
@@ -263,6 +292,7 @@ type ResolveResponseable interface {
 	GetActivationPath() *string
 	GetDecisionSource() *string
 	GetFallbackUsed() *bool
+	GetLeaseDurationMs() *int64
 	GetProfileId() *string
 	GetRouteGeneration() *int64
 	GetTargetName() *string
@@ -270,6 +300,7 @@ type ResolveResponseable interface {
 	SetActivationPath(value *string)
 	SetDecisionSource(value *string)
 	SetFallbackUsed(value *bool)
+	SetLeaseDurationMs(value *int64)
 	SetProfileId(value *string)
 	SetRouteGeneration(value *int64)
 	SetTargetName(value *string)

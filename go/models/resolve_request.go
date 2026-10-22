@@ -15,12 +15,12 @@ type ResolveRequest struct {
 	additionalData map[string]any
 	// The authorization_id property
 	authorization_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	// The lifetime_protocol property
+	lifetime_protocol *int32
 	// The logical_model property
 	logical_model *string
 	// The preferred_profile_id property
 	preferred_profile_id *string
-	// The queued_requests property
-	queued_requests *int64
 	// The request_id property
 	request_id *string
 }
@@ -80,6 +80,16 @@ func (m *ResolveRequest) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		return nil
 	}
+	res["lifetime_protocol"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt32Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetLifetimeProtocol(val)
+		}
+		return nil
+	}
 	res["logical_model"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -100,16 +110,6 @@ func (m *ResolveRequest) GetFieldDeserializers() map[string]func(i878a80d2330e89
 		}
 		return nil
 	}
-	res["queued_requests"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetInt64Value()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetQueuedRequests(val)
-		}
-		return nil
-	}
 	res["request_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -123,6 +123,12 @@ func (m *ResolveRequest) GetFieldDeserializers() map[string]func(i878a80d2330e89
 	return res
 }
 
+// GetLifetimeProtocol gets the lifetime_protocol property value. The lifetime_protocol property
+// returns a *int32 when successful
+func (m *ResolveRequest) GetLifetimeProtocol() *int32 {
+	return m.lifetime_protocol
+}
+
 // GetLogicalModel gets the logical_model property value. The logical_model property
 // returns a *string when successful
 func (m *ResolveRequest) GetLogicalModel() *string {
@@ -133,12 +139,6 @@ func (m *ResolveRequest) GetLogicalModel() *string {
 // returns a *string when successful
 func (m *ResolveRequest) GetPreferredProfileId() *string {
 	return m.preferred_profile_id
-}
-
-// GetQueuedRequests gets the queued_requests property value. The queued_requests property
-// returns a *int64 when successful
-func (m *ResolveRequest) GetQueuedRequests() *int64 {
-	return m.queued_requests
 }
 
 // GetRequestId gets the request_id property value. The request_id property
@@ -162,6 +162,12 @@ func (m *ResolveRequest) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
 		}
 	}
 	{
+		err := writer.WriteInt32Value("lifetime_protocol", m.GetLifetimeProtocol())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("logical_model", m.GetLogicalModel())
 		if err != nil {
 			return err
@@ -169,12 +175,6 @@ func (m *ResolveRequest) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a
 	}
 	{
 		err := writer.WriteStringValue("preferred_profile_id", m.GetPreferredProfileId())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteInt64Value("queued_requests", m.GetQueuedRequests())
 		if err != nil {
 			return err
 		}
@@ -209,6 +209,11 @@ func (m *ResolveRequest) SetAuthorizationId(value *i561e97a8befe7661a44c8f546009
 	m.authorization_id = value
 }
 
+// SetLifetimeProtocol sets the lifetime_protocol property value. The lifetime_protocol property
+func (m *ResolveRequest) SetLifetimeProtocol(value *int32) {
+	m.lifetime_protocol = value
+}
+
 // SetLogicalModel sets the logical_model property value. The logical_model property
 func (m *ResolveRequest) SetLogicalModel(value *string) {
 	m.logical_model = value
@@ -217,11 +222,6 @@ func (m *ResolveRequest) SetLogicalModel(value *string) {
 // SetPreferredProfileId sets the preferred_profile_id property value. The preferred_profile_id property
 func (m *ResolveRequest) SetPreferredProfileId(value *string) {
 	m.preferred_profile_id = value
-}
-
-// SetQueuedRequests sets the queued_requests property value. The queued_requests property
-func (m *ResolveRequest) SetQueuedRequests(value *int64) {
-	m.queued_requests = value
 }
 
 // SetRequestId sets the request_id property value. The request_id property
@@ -234,14 +234,14 @@ type ResolveRequestable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetActiveStreamsByProfile() ResolveRequest_active_streams_by_profileable
 	GetAuthorizationId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	GetLifetimeProtocol() *int32
 	GetLogicalModel() *string
 	GetPreferredProfileId() *string
-	GetQueuedRequests() *int64
 	GetRequestId() *string
 	SetActiveStreamsByProfile(value ResolveRequest_active_streams_by_profileable)
 	SetAuthorizationId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
+	SetLifetimeProtocol(value *int32)
 	SetLogicalModel(value *string)
 	SetPreferredProfileId(value *string)
-	SetQueuedRequests(value *int64)
 	SetRequestId(value *string)
 }

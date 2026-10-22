@@ -15,19 +15,23 @@ if TYPE_CHECKING:
     from .costs.costs_request_builder import CostsRequestBuilder
     from .experiments.experiments_request_builder import ExperimentsRequestBuilder
     from .fleets.fleets_request_builder import FleetsRequestBuilder
+    from .history.history_request_builder import HistoryRequestBuilder
     from .keys.keys_request_builder import KeysRequestBuilder
     from .lifecycle_events.lifecycle_events_request_builder import LifecycleEventsRequestBuilder
     from .metrics.metrics_request_builder import MetricsRequestBuilder
     from .models_requests.models_request_builder import ModelsRequestBuilder
     from .observations.observations_request_builder import ObservationsRequestBuilder
     from .outbox.outbox_request_builder import OutboxRequestBuilder
+    from .placement.placement_request_builder import PlacementRequestBuilder
     from .profiles.profiles_request_builder import ProfilesRequestBuilder
     from .retention_policies.retention_policies_request_builder import RetentionPoliciesRequestBuilder
     from .router.router_request_builder import RouterRequestBuilder
     from .routes.routes_request_builder import RoutesRequestBuilder
     from .startup_comparison.startup_comparison_request_builder import StartupComparisonRequestBuilder
     from .storage.storage_request_builder import StorageRequestBuilder
+    from .switch_costs.switch_costs_request_builder import SwitchCostsRequestBuilder
     from .usage.usage_request_builder import UsageRequestBuilder
+    from .utilization.utilization_request_builder import UtilizationRequestBuilder
 
 class InferenceRequestBuilder(BaseRequestBuilder):
     """
@@ -124,6 +128,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         return FleetsRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
+    def history(self) -> HistoryRequestBuilder:
+        """
+        The history property
+        """
+        from .history.history_request_builder import HistoryRequestBuilder
+
+        return HistoryRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
     def keys(self) -> KeysRequestBuilder:
         """
         The keys property
@@ -176,6 +189,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .outbox.outbox_request_builder import OutboxRequestBuilder
 
         return OutboxRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def placement(self) -> PlacementRequestBuilder:
+        """
+        The placement property
+        """
+        from .placement.placement_request_builder import PlacementRequestBuilder
+
+        return PlacementRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def profiles(self) -> ProfilesRequestBuilder:
@@ -232,6 +254,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         return StorageRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
+    def switch_costs(self) -> SwitchCostsRequestBuilder:
+        """
+        The switchCosts property
+        """
+        from .switch_costs.switch_costs_request_builder import SwitchCostsRequestBuilder
+
+        return SwitchCostsRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
     def usage(self) -> UsageRequestBuilder:
         """
         The usage property
@@ -239,5 +270,14 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .usage.usage_request_builder import UsageRequestBuilder
 
         return UsageRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def utilization(self) -> UtilizationRequestBuilder:
+        """
+        The utilization property
+        """
+        from .utilization.utilization_request_builder import UtilizationRequestBuilder
+
+        return UtilizationRequestBuilder(self.request_adapter, self.path_parameters)
     
 

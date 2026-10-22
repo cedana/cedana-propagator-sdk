@@ -17,12 +17,12 @@ class ResolveRequest(AdditionalDataHolder, Parsable):
     active_streams_by_profile: Optional[ResolveRequest_active_streams_by_profile] = None
     # The authorization_id property
     authorization_id: Optional[UUID] = None
+    # The lifetime_protocol property
+    lifetime_protocol: Optional[int] = None
     # The logical_model property
     logical_model: Optional[str] = None
     # The preferred_profile_id property
     preferred_profile_id: Optional[str] = None
-    # The queued_requests property
-    queued_requests: Optional[int] = None
     # The request_id property
     request_id: Optional[str] = None
     
@@ -49,9 +49,9 @@ class ResolveRequest(AdditionalDataHolder, Parsable):
         fields: dict[str, Callable[[Any], None]] = {
             "active_streams_by_profile": lambda n : setattr(self, 'active_streams_by_profile', n.get_object_value(ResolveRequest_active_streams_by_profile)),
             "authorization_id": lambda n : setattr(self, 'authorization_id', n.get_uuid_value()),
+            "lifetime_protocol": lambda n : setattr(self, 'lifetime_protocol', n.get_int_value()),
             "logical_model": lambda n : setattr(self, 'logical_model', n.get_str_value()),
             "preferred_profile_id": lambda n : setattr(self, 'preferred_profile_id', n.get_str_value()),
-            "queued_requests": lambda n : setattr(self, 'queued_requests', n.get_int_value()),
             "request_id": lambda n : setattr(self, 'request_id', n.get_str_value()),
         }
         return fields
@@ -66,9 +66,9 @@ class ResolveRequest(AdditionalDataHolder, Parsable):
             raise TypeError("writer cannot be null.")
         writer.write_object_value("active_streams_by_profile", self.active_streams_by_profile)
         writer.write_uuid_value("authorization_id", self.authorization_id)
+        writer.write_int_value("lifetime_protocol", self.lifetime_protocol)
         writer.write_str_value("logical_model", self.logical_model)
         writer.write_str_value("preferred_profile_id", self.preferred_profile_id)
-        writer.write_int_value("queued_requests", self.queued_requests)
         writer.write_str_value("request_id", self.request_id)
         writer.write_additional_data_value(self.additional_data)
     

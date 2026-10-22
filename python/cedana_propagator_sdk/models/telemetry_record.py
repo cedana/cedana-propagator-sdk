@@ -15,6 +15,8 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
     classifier_latency_ms: Optional[int] = None
     # The classifier_profile_id property
     classifier_profile_id: Optional[str] = None
+    # The completed_at_ms property
+    completed_at_ms: Optional[int] = None
     # The completion_tokens property
     completion_tokens: Optional[int] = None
     # The decision_source property
@@ -39,6 +41,8 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
     request_id: Optional[str] = None
     # The route_generation property
     route_generation: Optional[int] = None
+    # The started_at_ms property
+    started_at_ms: Optional[int] = None
     # The status_code property
     status_code: Optional[int] = None
     # The stream_duration_ms property
@@ -68,6 +72,7 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
             "activation_path": lambda n : setattr(self, 'activation_path', n.get_str_value()),
             "classifier_latency_ms": lambda n : setattr(self, 'classifier_latency_ms', n.get_int_value()),
             "classifier_profile_id": lambda n : setattr(self, 'classifier_profile_id', n.get_str_value()),
+            "completed_at_ms": lambda n : setattr(self, 'completed_at_ms', n.get_int_value()),
             "completion_tokens": lambda n : setattr(self, 'completion_tokens', n.get_int_value()),
             "decision_source": lambda n : setattr(self, 'decision_source', n.get_str_value()),
             "end_to_end_latency_ms": lambda n : setattr(self, 'end_to_end_latency_ms', n.get_int_value()),
@@ -80,6 +85,7 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
             "queue_ms": lambda n : setattr(self, 'queue_ms', n.get_int_value()),
             "request_id": lambda n : setattr(self, 'request_id', n.get_str_value()),
             "route_generation": lambda n : setattr(self, 'route_generation', n.get_int_value()),
+            "started_at_ms": lambda n : setattr(self, 'started_at_ms', n.get_int_value()),
             "status_code": lambda n : setattr(self, 'status_code', n.get_int_value()),
             "stream_duration_ms": lambda n : setattr(self, 'stream_duration_ms', n.get_int_value()),
             "ttft_ms": lambda n : setattr(self, 'ttft_ms', n.get_int_value()),
@@ -98,6 +104,7 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
         writer.write_str_value("activation_path", self.activation_path)
         writer.write_int_value("classifier_latency_ms", self.classifier_latency_ms)
         writer.write_str_value("classifier_profile_id", self.classifier_profile_id)
+        writer.write_int_value("completed_at_ms", self.completed_at_ms)
         writer.write_int_value("completion_tokens", self.completion_tokens)
         writer.write_str_value("decision_source", self.decision_source)
         writer.write_int_value("end_to_end_latency_ms", self.end_to_end_latency_ms)
@@ -110,6 +117,7 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
         writer.write_int_value("queue_ms", self.queue_ms)
         writer.write_str_value("request_id", self.request_id)
         writer.write_int_value("route_generation", self.route_generation)
+        writer.write_int_value("started_at_ms", self.started_at_ms)
         writer.write_int_value("status_code", self.status_code)
         writer.write_int_value("stream_duration_ms", self.stream_duration_ms)
         writer.write_int_value("ttft_ms", self.ttft_ms)

@@ -81,6 +81,12 @@ func (m *InferenceRequestBuilder) Fleets() *InferenceFleetsRequestBuilder {
 	return NewInferenceFleetsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// History the history property
+// returns a *InferenceHistoryRequestBuilder when successful
+func (m *InferenceRequestBuilder) History() *InferenceHistoryRequestBuilder {
+	return NewInferenceHistoryRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Keys the keys property
 // returns a *InferenceKeysRequestBuilder when successful
 func (m *InferenceRequestBuilder) Keys() *InferenceKeysRequestBuilder {
@@ -115,6 +121,12 @@ func (m *InferenceRequestBuilder) Observations() *InferenceObservationsRequestBu
 // returns a *InferenceOutboxRequestBuilder when successful
 func (m *InferenceRequestBuilder) Outbox() *InferenceOutboxRequestBuilder {
 	return NewInferenceOutboxRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// Placement the placement property
+// returns a *InferencePlacementRequestBuilder when successful
+func (m *InferenceRequestBuilder) Placement() *InferencePlacementRequestBuilder {
+	return NewInferencePlacementRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // Profiles the profiles property
@@ -153,8 +165,20 @@ func (m *InferenceRequestBuilder) Storage() *InferenceStorageRequestBuilder {
 	return NewInferenceStorageRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// SwitchCosts the switchCosts property
+// returns a *InferenceSwitchCostsRequestBuilder when successful
+func (m *InferenceRequestBuilder) SwitchCosts() *InferenceSwitchCostsRequestBuilder {
+	return NewInferenceSwitchCostsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Usage the usage property
 // returns a *InferenceUsageRequestBuilder when successful
 func (m *InferenceRequestBuilder) Usage() *InferenceUsageRequestBuilder {
 	return NewInferenceUsageRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// Utilization the utilization property
+// returns a *InferenceUtilizationRequestBuilder when successful
+func (m *InferenceRequestBuilder) Utilization() *InferenceUtilizationRequestBuilder {
+	return NewInferenceUtilizationRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
