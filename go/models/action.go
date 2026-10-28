@@ -36,6 +36,10 @@ type Action struct {
 	parent_checkpoint_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The platform property
 	platform *string
+	// The pod_annotations property
+	pod_annotations i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	// Labels and annotations of the checkpointed pod as the controller uploaded them atcheckpoint time; null when no pod spec was uploaded
+	pod_labels i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	// The reason property
 	reason *string
 	// The status property
@@ -241,6 +245,26 @@ func (m *Action) GetFieldDeserializers() map[string]func(i878a80d2330e89d2689638
 		}
 		return nil
 	}
+	res["pod_annotations"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPodAnnotations(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
+		}
+		return nil
+	}
+	res["pod_labels"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPodLabels(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
+		}
+		return nil
+	}
 	res["reason"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -326,6 +350,18 @@ func (m *Action) GetParentCheckpointId() *i561e97a8befe7661a44c8f54600992b4207a3
 // returns a *string when successful
 func (m *Action) GetPlatform() *string {
 	return m.platform
+}
+
+// GetPodAnnotations gets the pod_annotations property value. The pod_annotations property
+// returns a UntypedNodeable when successful
+func (m *Action) GetPodAnnotations() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
+	return m.pod_annotations
+}
+
+// GetPodLabels gets the pod_labels property value. Labels and annotations of the checkpointed pod as the controller uploaded them atcheckpoint time; null when no pod spec was uploaded
+// returns a UntypedNodeable when successful
+func (m *Action) GetPodLabels() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
+	return m.pod_labels
 }
 
 // GetReason gets the reason property value. The reason property
@@ -434,6 +470,18 @@ func (m *Action) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c
 	}
 	{
 		err := writer.WriteStringValue("platform", m.GetPlatform())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("pod_annotations", m.GetPodAnnotations())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteObjectValue("pod_labels", m.GetPodLabels())
 		if err != nil {
 			return err
 		}
@@ -548,6 +596,16 @@ func (m *Action) SetPlatform(value *string) {
 	m.platform = value
 }
 
+// SetPodAnnotations sets the pod_annotations property value. The pod_annotations property
+func (m *Action) SetPodAnnotations(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
+	m.pod_annotations = value
+}
+
+// SetPodLabels sets the pod_labels property value. Labels and annotations of the checkpointed pod as the controller uploaded them atcheckpoint time; null when no pod spec was uploaded
+func (m *Action) SetPodLabels(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
+	m.pod_labels = value
+}
+
 // SetReason sets the reason property value. The reason property
 func (m *Action) SetReason(value *string) {
 	m.reason = value
@@ -593,6 +651,8 @@ type Actionable interface {
 	GetNodeName() *string
 	GetParentCheckpointId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetPlatform() *string
+	GetPodAnnotations() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	GetPodLabels() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	GetReason() *string
 	GetStatus() *string
 	GetTotalDuration() *int64
@@ -611,6 +671,8 @@ type Actionable interface {
 	SetNodeName(value *string)
 	SetParentCheckpointId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetPlatform(value *string)
+	SetPodAnnotations(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
+	SetPodLabels(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
 	SetReason(value *string)
 	SetStatus(value *string)
 	SetTotalDuration(value *int64)
