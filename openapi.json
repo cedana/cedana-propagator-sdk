@@ -79,6 +79,10 @@
           "platform": {
             "type": "string"
           },
+          "pod_annotations": {},
+          "pod_labels": {
+            "description": "Labels and annotations of the checkpointed pod as the controller uploaded them at\ncheckpoint time; null when no pod spec was uploaded"
+          },
           "reason": {
             "type": [
               "string",
