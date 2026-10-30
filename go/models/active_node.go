@@ -25,8 +25,8 @@ type ActiveNode struct {
 	name *string
 	// nvidia.com/gpu requested by those pods
 	pod_gpus *int64
-	// Running pods on this node with `runtimeClassName: cedana`
-	pods *int64
+	// Running pods on this node with `runtimeClassName: cedana`, by name
+	pods []ActivePodable
 }
 
 // NewActiveNode instantiates a new ActiveNode and sets the default values.
@@ -135,12 +135,18 @@ func (m *ActiveNode) GetFieldDeserializers() map[string]func(i878a80d2330e89d268
 		return nil
 	}
 	res["pods"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetInt64Value()
+		val, err := n.GetCollectionOfObjectValues(CreateActivePodFromDiscriminatorValue)
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetPods(val)
+			res := make([]ActivePodable, len(val))
+			for i, v := range val {
+				if v != nil {
+					res[i] = v.(ActivePodable)
+				}
+			}
+			m.SetPods(res)
 		}
 		return nil
 	}
@@ -177,9 +183,9 @@ func (m *ActiveNode) GetPodGpus() *int64 {
 	return m.pod_gpus
 }
 
-// GetPods gets the pods property value. Running pods on this node with `runtimeClassName: cedana`
-// returns a *int64 when successful
-func (m *ActiveNode) GetPods() *int64 {
+// GetPods gets the pods property value. Running pods on this node with `runtimeClassName: cedana`, by name
+// returns a []ActivePodable when successful
+func (m *ActiveNode) GetPods() []ActivePodable {
 	return m.pods
 }
 
@@ -221,8 +227,14 @@ func (m *ActiveNode) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c
 			return err
 		}
 	}
-	{
-		err := writer.WriteInt64Value("pods", m.GetPods())
+	if m.GetPods() != nil {
+		cast := make([]i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, len(m.GetPods()))
+		for i, v := range m.GetPods() {
+			if v != nil {
+				cast[i] = v.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable)
+			}
+		}
+		err := writer.WriteCollectionOfObjectValues("pods", cast)
 		if err != nil {
 			return err
 		}
@@ -282,8 +294,8 @@ func (m *ActiveNode) SetPodGpus(value *int64) {
 	m.pod_gpus = value
 }
 
-// SetPods sets the pods property value. Running pods on this node with `runtimeClassName: cedana`
-func (m *ActiveNode) SetPods(value *int64) {
+// SetPods sets the pods property value. Running pods on this node with `runtimeClassName: cedana`, by name
+func (m *ActiveNode) SetPods(value []ActivePodable) {
 	m.pods = value
 }
 
@@ -297,7 +309,7 @@ type ActiveNodeable interface {
 	GetId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetName() *string
 	GetPodGpus() *int64
-	GetPods() *int64
+	GetPods() []ActivePodable
 	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetClusterName(value *string)
 	SetGpuProduct(value *string)
@@ -305,5 +317,5 @@ type ActiveNodeable interface {
 	SetId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetName(value *string)
 	SetPodGpus(value *int64)
-	SetPods(value *int64)
+	SetPods(value []ActivePodable)
 }

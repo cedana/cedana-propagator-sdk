@@ -319,9 +319,11 @@
             "type": "integer"
           },
           "pods": {
-            "description": "Running pods on this node with `runtimeClassName: cedana`",
-            "format": "int64",
-            "type": "integer"
+            "description": "Running pods on this node with `runtimeClassName: cedana`, by name",
+            "items": {
+              "$ref": "#/components/schemas/ActivePod"
+            },
+            "type": "array"
           }
         },
         "required": [
@@ -365,6 +367,39 @@
           "total_nodes",
           "total_gpu_nodes",
           "total_gpus"
+        ],
+        "type": "object"
+      },
+      "ActivePod": {
+        "properties": {
+          "gpus": {
+            "description": "nvidia.com/gpu requested by the pod's containers",
+            "format": "int64",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "start_time": {
+            "description": "status.startTime",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "namespace",
+          "gpus"
         ],
         "type": "object"
       },

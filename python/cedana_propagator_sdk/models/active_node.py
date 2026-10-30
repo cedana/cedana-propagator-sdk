@@ -5,6 +5,9 @@ from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, Par
 from typing import Any, Optional, TYPE_CHECKING, Union
 from uuid import UUID
 
+if TYPE_CHECKING:
+    from .active_pod import ActivePod
+
 @dataclass
 class ActiveNode(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
@@ -24,8 +27,8 @@ class ActiveNode(AdditionalDataHolder, Parsable):
     name: Optional[str] = None
     # nvidia.com/gpu requested by those pods
     pod_gpus: Optional[int] = None
-    # Running pods on this node with `runtimeClassName: cedana`
-    pods: Optional[int] = None
+    # Running pods on this node with `runtimeClassName: cedana`, by name
+    pods: Optional[list[ActivePod]] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> ActiveNode:
@@ -43,6 +46,10 @@ class ActiveNode(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
+        from .active_pod import ActivePod
+
+        from .active_pod import ActivePod
+
         fields: dict[str, Callable[[Any], None]] = {
             "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
             "cluster_name": lambda n : setattr(self, 'cluster_name', n.get_str_value()),
@@ -51,7 +58,7 @@ class ActiveNode(AdditionalDataHolder, Parsable):
             "id": lambda n : setattr(self, 'id', n.get_uuid_value()),
             "name": lambda n : setattr(self, 'name', n.get_str_value()),
             "pod_gpus": lambda n : setattr(self, 'pod_gpus', n.get_int_value()),
-            "pods": lambda n : setattr(self, 'pods', n.get_int_value()),
+            "pods": lambda n : setattr(self, 'pods', n.get_collection_of_object_values(ActivePod)),
         }
         return fields
     
@@ -70,7 +77,7 @@ class ActiveNode(AdditionalDataHolder, Parsable):
         writer.write_uuid_value("id", self.id)
         writer.write_str_value("name", self.name)
         writer.write_int_value("pod_gpus", self.pod_gpus)
-        writer.write_int_value("pods", self.pods)
+        writer.write_collection_of_object_values("pods", self.pods)
         writer.write_additional_data_value(self.additional_data)
     
 
