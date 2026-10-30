@@ -32,6 +32,12 @@ type NodesRequestBuilderGetRequestConfiguration struct {
 	QueryParameters *NodesRequestBuilderGetQueryParameters
 }
 
+// Active the active property
+// returns a *NodesActiveRequestBuilder when successful
+func (m *NodesRequestBuilder) Active() *NodesActiveRequestBuilder {
+	return NewNodesActiveRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // NewNodesRequestBuilderInternal instantiates a new NodesRequestBuilder and sets the default values.
 func NewNodesRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *NodesRequestBuilder {
 	m := &NodesRequestBuilder{

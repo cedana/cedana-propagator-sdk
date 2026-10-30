@@ -17,6 +17,7 @@ from warnings import warn
 if TYPE_CHECKING:
     from ...models.http_error import HttpError
     from ...models.node_response import NodeResponse
+    from .active.active_request_builder import ActiveRequestBuilder
     from .count.count_request_builder import CountRequestBuilder
 
 class NodesRequestBuilder(BaseRequestBuilder):
@@ -73,6 +74,15 @@ class NodesRequestBuilder(BaseRequestBuilder):
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
         return NodesRequestBuilder(self.request_adapter, raw_url)
+    
+    @property
+    def active(self) -> ActiveRequestBuilder:
+        """
+        The active property
+        """
+        from .active.active_request_builder import ActiveRequestBuilder
+
+        return ActiveRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def count(self) -> CountRequestBuilder:
