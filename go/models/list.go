@@ -7,43 +7,43 @@ import (
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
-type Create struct {
+type List struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
 	// The config property
 	config CheckpointActionConfigable
 	// The type property
-	typeEscaped *Create_type
+	typeEscaped *List_type
 }
 
-// NewCreate instantiates a new Create and sets the default values.
-func NewCreate() *Create {
-	m := &Create{}
+// NewList instantiates a new List and sets the default values.
+func NewList() *List {
+	m := &List{}
 	m.SetAdditionalData(make(map[string]any))
 	return m
 }
 
-// CreateCreateFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
+// CreateListFromDiscriminatorValue creates a new instance of the appropriate class based on discriminator value
 // returns a Parsable when successful
-func CreateCreateFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) (i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
-	return NewCreate(), nil
+func CreateListFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) (i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, error) {
+	return NewList(), nil
 }
 
 // GetAdditionalData gets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 // returns a map[string]any when successful
-func (m *Create) GetAdditionalData() map[string]any {
+func (m *List) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
 // GetConfig gets the config property value. The config property
 // returns a CheckpointActionConfigable when successful
-func (m *Create) GetConfig() CheckpointActionConfigable {
+func (m *List) GetConfig() CheckpointActionConfigable {
 	return m.config
 }
 
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
-func (m *Create) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+func (m *List) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
 	res["config"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetObjectValue(CreateCheckpointActionConfigFromDiscriminatorValue)
@@ -56,12 +56,12 @@ func (m *Create) GetFieldDeserializers() map[string]func(i878a80d2330e89d2689638
 		return nil
 	}
 	res["type"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetEnumValue(ParseCreate_type)
+		val, err := n.GetEnumValue(ParseList_type)
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetTypeEscaped(val.(*Create_type))
+			m.SetTypeEscaped(val.(*List_type))
 		}
 		return nil
 	}
@@ -69,13 +69,13 @@ func (m *Create) GetFieldDeserializers() map[string]func(i878a80d2330e89d2689638
 }
 
 // GetTypeEscaped gets the type property value. The type property
-// returns a *Create_type when successful
-func (m *Create) GetTypeEscaped() *Create_type {
+// returns a *List_type when successful
+func (m *List) GetTypeEscaped() *List_type {
 	return m.typeEscaped
 }
 
 // Serialize serializes information the current object
-func (m *Create) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
+func (m *List) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
 		err := writer.WriteObjectValue("config", m.GetConfig())
 		if err != nil {
@@ -99,25 +99,25 @@ func (m *Create) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c
 }
 
 // SetAdditionalData sets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
-func (m *Create) SetAdditionalData(value map[string]any) {
+func (m *List) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
 // SetConfig sets the config property value. The config property
-func (m *Create) SetConfig(value CheckpointActionConfigable) {
+func (m *List) SetConfig(value CheckpointActionConfigable) {
 	m.config = value
 }
 
 // SetTypeEscaped sets the type property value. The type property
-func (m *Create) SetTypeEscaped(value *Create_type) {
+func (m *List) SetTypeEscaped(value *List_type) {
 	m.typeEscaped = value
 }
 
-type Createable interface {
+type Listable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetConfig() CheckpointActionConfigable
-	GetTypeEscaped() *Create_type
+	GetTypeEscaped() *List_type
 	SetConfig(value CheckpointActionConfigable)
-	SetTypeEscaped(value *Create_type)
+	SetTypeEscaped(value *List_type)
 }
