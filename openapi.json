@@ -14895,7 +14895,7 @@
     },
     "/v1/health": {
       "get": {
-        "description": "Unauthenticated and touches no backing service, so it only says the process is serving.",
+        "description": "Unauthenticated and touches no backing service, so it only says the process is serving.\nNorthflank's health checks probe it (northflank/*.template.json): keep it so.",
         "operationId": "health",
         "responses": {
           "200": {
