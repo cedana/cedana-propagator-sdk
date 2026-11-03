@@ -14687,6 +14687,133 @@
         ]
       }
     },
+    "/v1/events/export": {
+      "get": {
+        "operationId": "export_events",
+        "parameters": [
+          {
+            "description": "Time window in seconds (default: 3600)",
+            "in": "query",
+            "name": "time",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Time window in hours; takes precedence over `time`",
+            "in": "query",
+            "name": "hrs",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Filter by operation: checkpoint, restore, storage (CSX tier movements) or all.\nWithout one, storage rows are left out so they cannot crowd checkpoint and restore results.",
+            "in": "query",
+            "name": "operation",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Filter by cluster",
+            "in": "query",
+            "name": "cluster_id",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "description": "Filter by workload: kubernetes or slurm",
+            "in": "query",
+            "name": "workload",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "ClickHouse JSON: `data` holds operations newest first, `rows` their count"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Another export is running"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "ClickHouse unavailable"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Every checkpoint and restore in the window with its stages, as one ClickHouse `FORMAT JSON` document",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
     "/v1/files/dir/{path}": {
       "get": {
         "operationId": "read_dir",

@@ -53,6 +53,12 @@ func NewEventsRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee263371c
 	return NewEventsRequestBuilderInternal(urlParams, requestAdapter)
 }
 
+// Export the export property
+// returns a *EventsExportRequestBuilder when successful
+func (m *EventsRequestBuilder) Export() *EventsExportRequestBuilder {
+	return NewEventsExportRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Get recent checkpoint and restore results, newest first (the UI notification feed)
 // returns a EventsResponseable when successful
 // returns a HttpError error when the service returns a 503 status code

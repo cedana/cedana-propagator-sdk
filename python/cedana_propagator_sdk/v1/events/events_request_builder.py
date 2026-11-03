@@ -16,6 +16,7 @@ from warnings import warn
 if TYPE_CHECKING:
     from ...models.events_response import EventsResponse
     from ...models.http_error import HttpError
+    from .export.export_request_builder import ExportRequestBuilder
 
 class EventsRequestBuilder(BaseRequestBuilder):
     """
@@ -71,6 +72,15 @@ class EventsRequestBuilder(BaseRequestBuilder):
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
         return EventsRequestBuilder(self.request_adapter, raw_url)
+    
+    @property
+    def export(self) -> ExportRequestBuilder:
+        """
+        The export property
+        """
+        from .export.export_request_builder import ExportRequestBuilder
+
+        return ExportRequestBuilder(self.request_adapter, self.path_parameters)
     
     @dataclass
     class EventsRequestBuilderGetQueryParameters():
