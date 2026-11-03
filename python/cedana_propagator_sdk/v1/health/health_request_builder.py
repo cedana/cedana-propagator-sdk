@@ -32,7 +32,7 @@ class HealthRequestBuilder(BaseRequestBuilder):
     
     async def get(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[HealthResponse]:
         """
-        Unauthenticated and touches no backing service, so it only says the process is serving.
+        Unauthenticated and touches no backing service, so it only says the process is serving.Northflank's health checks probe it (northflank/*.template.json): keep it so.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[HealthResponse]
         """
@@ -52,7 +52,7 @@ class HealthRequestBuilder(BaseRequestBuilder):
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Unauthenticated and touches no backing service, so it only says the process is serving.
+        Unauthenticated and touches no backing service, so it only says the process is serving.Northflank's health checks probe it (northflank/*.template.json): keep it so.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
