@@ -16,6 +16,8 @@ class ModelUsage(AdditionalDataHolder, Parsable):
     completion_tokens: Optional[int] = None
     # The errors property
     errors: Optional[int] = None
+    # The API key the requests used; set only with `by=key`, null for unkeyed requests.
+    key_id: Optional[str] = None
     # The logical_model property
     logical_model: Optional[str] = None
     # Completion tokens over streaming time, per request stream.
@@ -48,6 +50,7 @@ class ModelUsage(AdditionalDataHolder, Parsable):
         fields: dict[str, Callable[[Any], None]] = {
             "completion_tokens": lambda n : setattr(self, 'completion_tokens', n.get_int_value()),
             "errors": lambda n : setattr(self, 'errors', n.get_int_value()),
+            "key_id": lambda n : setattr(self, 'key_id', n.get_str_value()),
             "logical_model": lambda n : setattr(self, 'logical_model', n.get_str_value()),
             "output_tokens_per_second": lambda n : setattr(self, 'output_tokens_per_second', n.get_float_value()),
             "prompt_tokens": lambda n : setattr(self, 'prompt_tokens', n.get_int_value()),
@@ -67,6 +70,7 @@ class ModelUsage(AdditionalDataHolder, Parsable):
             raise TypeError("writer cannot be null.")
         writer.write_int_value("completion_tokens", self.completion_tokens)
         writer.write_int_value("errors", self.errors)
+        writer.write_str_value("key_id", self.key_id)
         writer.write_str_value("logical_model", self.logical_model)
         writer.write_float_value("output_tokens_per_second", self.output_tokens_per_second)
         writer.write_int_value("prompt_tokens", self.prompt_tokens)

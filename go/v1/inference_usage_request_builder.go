@@ -16,7 +16,9 @@ type InferenceUsageRequestBuilder struct {
 
 // InferenceUsageRequestBuilderGetQueryParameters tokens and latency served per model
 type InferenceUsageRequestBuilderGetQueryParameters struct {
-	Hours *int32 "uriparametername:\"hours\""
+	// "key" splits each model's row by the API key (customer) that sent it.
+	By    *string "uriparametername:\"by\""
+	Hours *int32  "uriparametername:\"hours\""
 }
 
 // InferenceUsageRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
@@ -32,7 +34,7 @@ type InferenceUsageRequestBuilderGetRequestConfiguration struct {
 // NewInferenceUsageRequestBuilderInternal instantiates a new InferenceUsageRequestBuilder and sets the default values.
 func NewInferenceUsageRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *InferenceUsageRequestBuilder {
 	m := &InferenceUsageRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/inference/usage{?hours*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/inference/usage{?by*,hours*}", pathParameters),
 	}
 	return m
 }
@@ -66,6 +68,12 @@ func (m *InferenceUsageRequestBuilder) Get(ctx context.Context, requestConfigura
 		}
 	}
 	return val, nil
+}
+
+// Series the series property
+// returns a *InferenceUsageSeriesRequestBuilder when successful
+func (m *InferenceUsageRequestBuilder) Series() *InferenceUsageSeriesRequestBuilder {
+	return NewInferenceUsageSeriesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // ToGetRequestInformation tokens and latency served per model

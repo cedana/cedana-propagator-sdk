@@ -3369,6 +3369,13 @@
             "format": "int64",
             "type": "integer"
           },
+          "key_id": {
+            "description": "The API key the requests used; set only with `by=key`, null for unkeyed requests.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "logical_model": {
             "type": "string"
           },
@@ -8084,6 +8091,50 @@
         ],
         "type": "object"
       },
+      "UsagePoint": {
+        "description": "One model's traffic in one time bucket.",
+        "properties": {
+          "bucket_start": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "completion_tokens": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "errors": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "logical_model": {
+            "type": "string"
+          },
+          "prompt_tokens": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "requests": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "ttft_p50_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "bucket_start",
+          "logical_model",
+          "requests",
+          "errors",
+          "prompt_tokens",
+          "completion_tokens"
+        ],
+        "type": "object"
+      },
       "VolumeMapping": {
         "properties": {
           "container_path": {
@@ -12790,6 +12841,18 @@
               "format": "int32",
               "type": "integer"
             }
+          },
+          {
+            "description": "\"key\" splits each model's row by the API key (customer) that sent it.",
+            "in": "query",
+            "name": "by",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
@@ -12833,6 +12896,75 @@
           }
         ],
         "summary": "Tokens and latency served per model",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/usage/series": {
+      "get": {
+        "operationId": "usage_series",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "hours",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "bucket_minutes",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UsagePoint"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Per-model traffic in fixed buckets, oldest first"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Traffic per model over time",
         "tags": [
           "inference"
         ]

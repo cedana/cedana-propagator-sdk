@@ -15,6 +15,8 @@ type ModelUsage struct {
 	completion_tokens *int64
 	// The errors property
 	errors *int64
+	// The API key the requests used; set only with `by=key`, null for unkeyed requests.
+	key_id *string
 	// The logical_model property
 	logical_model *string
 	// Completion tokens over streaming time, per request stream.
@@ -84,6 +86,16 @@ func (m *ModelUsage) GetFieldDeserializers() map[string]func(i878a80d2330e89d268
 		}
 		return nil
 	}
+	res["key_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetKeyId(val)
+		}
+		return nil
+	}
 	res["logical_model"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -147,6 +159,12 @@ func (m *ModelUsage) GetFieldDeserializers() map[string]func(i878a80d2330e89d268
 	return res
 }
 
+// GetKeyId gets the key_id property value. The API key the requests used; set only with `by=key`, null for unkeyed requests.
+// returns a *string when successful
+func (m *ModelUsage) GetKeyId() *string {
+	return m.key_id
+}
+
 // GetLogicalModel gets the logical_model property value. The logical_model property
 // returns a *string when successful
 func (m *ModelUsage) GetLogicalModel() *string {
@@ -193,6 +211,12 @@ func (m *ModelUsage) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c
 	}
 	{
 		err := writer.WriteInt64Value("errors", m.GetErrors())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("key_id", m.GetKeyId())
 		if err != nil {
 			return err
 		}
@@ -257,6 +281,11 @@ func (m *ModelUsage) SetErrors(value *int64) {
 	m.errors = value
 }
 
+// SetKeyId sets the key_id property value. The API key the requests used; set only with `by=key`, null for unkeyed requests.
+func (m *ModelUsage) SetKeyId(value *string) {
+	m.key_id = value
+}
+
 // SetLogicalModel sets the logical_model property value. The logical_model property
 func (m *ModelUsage) SetLogicalModel(value *string) {
 	m.logical_model = value
@@ -292,6 +321,7 @@ type ModelUsageable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetCompletionTokens() *int64
 	GetErrors() *int64
+	GetKeyId() *string
 	GetLogicalModel() *string
 	GetOutputTokensPerSecond() *float64
 	GetPromptTokens() *int64
@@ -300,6 +330,7 @@ type ModelUsageable interface {
 	GetTtftP95Ms() *float64
 	SetCompletionTokens(value *int64)
 	SetErrors(value *int64)
+	SetKeyId(value *string)
 	SetLogicalModel(value *string)
 	SetOutputTokensPerSecond(value *float64)
 	SetPromptTokens(value *int64)

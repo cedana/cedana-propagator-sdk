@@ -16,6 +16,7 @@ from warnings import warn
 if TYPE_CHECKING:
     from ....models.http_error import HttpError
     from ....models.model_usage import ModelUsage
+    from .series.series_request_builder import SeriesRequestBuilder
 
 class UsageRequestBuilder(BaseRequestBuilder):
     """
@@ -28,7 +29,7 @@ class UsageRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/inference/usage{?hours*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/inference/usage{?by*,hours*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[UsageRequestBuilderGetQueryParameters]] = None) -> Optional[list[ModelUsage]]:
         """
@@ -71,11 +72,23 @@ class UsageRequestBuilder(BaseRequestBuilder):
             raise TypeError("raw_url cannot be null.")
         return UsageRequestBuilder(self.request_adapter, raw_url)
     
+    @property
+    def series(self) -> SeriesRequestBuilder:
+        """
+        The series property
+        """
+        from .series.series_request_builder import SeriesRequestBuilder
+
+        return SeriesRequestBuilder(self.request_adapter, self.path_parameters)
+    
     @dataclass
     class UsageRequestBuilderGetQueryParameters():
         """
         Tokens and latency served per model
         """
+        # "key" splits each model's row by the API key (customer) that sent it.
+        by: Optional[str] = None
+
         hours: Optional[int] = None
 
     
