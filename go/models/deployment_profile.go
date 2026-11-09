@@ -4,6 +4,7 @@
 package models
 
 import (
+	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
@@ -12,16 +13,16 @@ type DeploymentProfile struct {
 	additionalData map[string]any
 	// The backend_url property
 	backend_url *string
-	// The compatibility_key property
-	compatibility_key *string
-	// The dynamo_template property
-	dynamo_template i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	// The `CEDANA_CHECKPOINT` name its workers restore from.
+	checkpoint_name *string
+	// The cluster_id property
+	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	// The desired_replicas property
+	desired_replicas *int32
 	// The estimated_cold_start_ms property
 	estimated_cold_start_ms *int64
 	// The exact_model property
 	exact_model *string
-	// The hosting_mode property
-	hosting_mode *string
 	// The logical_model property
 	logical_model *string
 	// The max_queue_depth property
@@ -30,14 +31,16 @@ type DeploymentProfile struct {
 	max_replicas *int32
 	// The min_replicas property
 	min_replicas *int32
+	// The namespace property
+	namespace *string
 	// The profile_id property
 	profile_id *string
 	// The profile_revision property
 	profile_revision *string
 	// The scale_down_idle_seconds property
 	scale_down_idle_seconds *int64
-	// The spec property
-	spec i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	// What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
+	spec ModelSpecable
 	// The target_concurrency property
 	target_concurrency *int32
 }
@@ -67,16 +70,22 @@ func (m *DeploymentProfile) GetBackendUrl() *string {
 	return m.backend_url
 }
 
-// GetCompatibilityKey gets the compatibility_key property value. The compatibility_key property
+// GetCheckpointName gets the checkpoint_name property value. The `CEDANA_CHECKPOINT` name its workers restore from.
 // returns a *string when successful
-func (m *DeploymentProfile) GetCompatibilityKey() *string {
-	return m.compatibility_key
+func (m *DeploymentProfile) GetCheckpointName() *string {
+	return m.checkpoint_name
 }
 
-// GetDynamoTemplate gets the dynamo_template property value. The dynamo_template property
-// returns a UntypedNodeable when successful
-func (m *DeploymentProfile) GetDynamoTemplate() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
-	return m.dynamo_template
+// GetClusterId gets the cluster_id property value. The cluster_id property
+// returns a *UUID when successful
+func (m *DeploymentProfile) GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID {
+	return m.cluster_id
+}
+
+// GetDesiredReplicas gets the desired_replicas property value. The desired_replicas property
+// returns a *int32 when successful
+func (m *DeploymentProfile) GetDesiredReplicas() *int32 {
+	return m.desired_replicas
 }
 
 // GetEstimatedColdStartMs gets the estimated_cold_start_ms property value. The estimated_cold_start_ms property
@@ -105,23 +114,33 @@ func (m *DeploymentProfile) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		return nil
 	}
-	res["compatibility_key"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+	res["checkpoint_name"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetCompatibilityKey(val)
+			m.SetCheckpointName(val)
 		}
 		return nil
 	}
-	res["dynamo_template"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
+	res["cluster_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetUUIDValue()
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetDynamoTemplate(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
+			m.SetClusterId(val)
+		}
+		return nil
+	}
+	res["desired_replicas"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt32Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetDesiredReplicas(val)
 		}
 		return nil
 	}
@@ -142,16 +161,6 @@ func (m *DeploymentProfile) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		if val != nil {
 			m.SetExactModel(val)
-		}
-		return nil
-	}
-	res["hosting_mode"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetStringValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetHostingMode(val)
 		}
 		return nil
 	}
@@ -195,6 +204,16 @@ func (m *DeploymentProfile) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		return nil
 	}
+	res["namespace"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetNamespace(val)
+		}
+		return nil
+	}
 	res["profile_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -226,12 +245,12 @@ func (m *DeploymentProfile) GetFieldDeserializers() map[string]func(i878a80d2330
 		return nil
 	}
 	res["spec"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
+		val, err := n.GetObjectValue(CreateModelSpecFromDiscriminatorValue)
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetSpec(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
+			m.SetSpec(val.(ModelSpecable))
 		}
 		return nil
 	}
@@ -246,12 +265,6 @@ func (m *DeploymentProfile) GetFieldDeserializers() map[string]func(i878a80d2330
 		return nil
 	}
 	return res
-}
-
-// GetHostingMode gets the hosting_mode property value. The hosting_mode property
-// returns a *string when successful
-func (m *DeploymentProfile) GetHostingMode() *string {
-	return m.hosting_mode
 }
 
 // GetLogicalModel gets the logical_model property value. The logical_model property
@@ -278,6 +291,12 @@ func (m *DeploymentProfile) GetMinReplicas() *int32 {
 	return m.min_replicas
 }
 
+// GetNamespace gets the namespace property value. The namespace property
+// returns a *string when successful
+func (m *DeploymentProfile) GetNamespace() *string {
+	return m.namespace
+}
+
 // GetProfileId gets the profile_id property value. The profile_id property
 // returns a *string when successful
 func (m *DeploymentProfile) GetProfileId() *string {
@@ -296,9 +315,9 @@ func (m *DeploymentProfile) GetScaleDownIdleSeconds() *int64 {
 	return m.scale_down_idle_seconds
 }
 
-// GetSpec gets the spec property value. The spec property
-// returns a UntypedNodeable when successful
-func (m *DeploymentProfile) GetSpec() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
+// GetSpec gets the spec property value. What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
+// returns a ModelSpecable when successful
+func (m *DeploymentProfile) GetSpec() ModelSpecable {
 	return m.spec
 }
 
@@ -317,13 +336,19 @@ func (m *DeploymentProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 		}
 	}
 	{
-		err := writer.WriteStringValue("compatibility_key", m.GetCompatibilityKey())
+		err := writer.WriteStringValue("checkpoint_name", m.GetCheckpointName())
 		if err != nil {
 			return err
 		}
 	}
 	{
-		err := writer.WriteObjectValue("dynamo_template", m.GetDynamoTemplate())
+		err := writer.WriteUUIDValue("cluster_id", m.GetClusterId())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt32Value("desired_replicas", m.GetDesiredReplicas())
 		if err != nil {
 			return err
 		}
@@ -336,12 +361,6 @@ func (m *DeploymentProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 	}
 	{
 		err := writer.WriteStringValue("exact_model", m.GetExactModel())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteStringValue("hosting_mode", m.GetHostingMode())
 		if err != nil {
 			return err
 		}
@@ -366,6 +385,12 @@ func (m *DeploymentProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 	}
 	{
 		err := writer.WriteInt32Value("min_replicas", m.GetMinReplicas())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("namespace", m.GetNamespace())
 		if err != nil {
 			return err
 		}
@@ -419,14 +444,19 @@ func (m *DeploymentProfile) SetBackendUrl(value *string) {
 	m.backend_url = value
 }
 
-// SetCompatibilityKey sets the compatibility_key property value. The compatibility_key property
-func (m *DeploymentProfile) SetCompatibilityKey(value *string) {
-	m.compatibility_key = value
+// SetCheckpointName sets the checkpoint_name property value. The `CEDANA_CHECKPOINT` name its workers restore from.
+func (m *DeploymentProfile) SetCheckpointName(value *string) {
+	m.checkpoint_name = value
 }
 
-// SetDynamoTemplate sets the dynamo_template property value. The dynamo_template property
-func (m *DeploymentProfile) SetDynamoTemplate(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
-	m.dynamo_template = value
+// SetClusterId sets the cluster_id property value. The cluster_id property
+func (m *DeploymentProfile) SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
+	m.cluster_id = value
+}
+
+// SetDesiredReplicas sets the desired_replicas property value. The desired_replicas property
+func (m *DeploymentProfile) SetDesiredReplicas(value *int32) {
+	m.desired_replicas = value
 }
 
 // SetEstimatedColdStartMs sets the estimated_cold_start_ms property value. The estimated_cold_start_ms property
@@ -437,11 +467,6 @@ func (m *DeploymentProfile) SetEstimatedColdStartMs(value *int64) {
 // SetExactModel sets the exact_model property value. The exact_model property
 func (m *DeploymentProfile) SetExactModel(value *string) {
 	m.exact_model = value
-}
-
-// SetHostingMode sets the hosting_mode property value. The hosting_mode property
-func (m *DeploymentProfile) SetHostingMode(value *string) {
-	m.hosting_mode = value
 }
 
 // SetLogicalModel sets the logical_model property value. The logical_model property
@@ -464,6 +489,11 @@ func (m *DeploymentProfile) SetMinReplicas(value *int32) {
 	m.min_replicas = value
 }
 
+// SetNamespace sets the namespace property value. The namespace property
+func (m *DeploymentProfile) SetNamespace(value *string) {
+	m.namespace = value
+}
+
 // SetProfileId sets the profile_id property value. The profile_id property
 func (m *DeploymentProfile) SetProfileId(value *string) {
 	m.profile_id = value
@@ -479,8 +509,8 @@ func (m *DeploymentProfile) SetScaleDownIdleSeconds(value *int64) {
 	m.scale_down_idle_seconds = value
 }
 
-// SetSpec sets the spec property value. The spec property
-func (m *DeploymentProfile) SetSpec(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
+// SetSpec sets the spec property value. What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
+func (m *DeploymentProfile) SetSpec(value ModelSpecable) {
 	m.spec = value
 }
 
@@ -493,33 +523,35 @@ type DeploymentProfileable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetBackendUrl() *string
-	GetCompatibilityKey() *string
-	GetDynamoTemplate() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	GetCheckpointName() *string
+	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	GetDesiredReplicas() *int32
 	GetEstimatedColdStartMs() *int64
 	GetExactModel() *string
-	GetHostingMode() *string
 	GetLogicalModel() *string
 	GetMaxQueueDepth() *int32
 	GetMaxReplicas() *int32
 	GetMinReplicas() *int32
+	GetNamespace() *string
 	GetProfileId() *string
 	GetProfileRevision() *string
 	GetScaleDownIdleSeconds() *int64
-	GetSpec() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	GetSpec() ModelSpecable
 	GetTargetConcurrency() *int32
 	SetBackendUrl(value *string)
-	SetCompatibilityKey(value *string)
-	SetDynamoTemplate(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
+	SetCheckpointName(value *string)
+	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
+	SetDesiredReplicas(value *int32)
 	SetEstimatedColdStartMs(value *int64)
 	SetExactModel(value *string)
-	SetHostingMode(value *string)
 	SetLogicalModel(value *string)
 	SetMaxQueueDepth(value *int32)
 	SetMaxReplicas(value *int32)
 	SetMinReplicas(value *int32)
+	SetNamespace(value *string)
 	SetProfileId(value *string)
 	SetProfileRevision(value *string)
 	SetScaleDownIdleSeconds(value *int64)
-	SetSpec(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
+	SetSpec(value ModelSpecable)
 	SetTargetConcurrency(value *int32)
 }

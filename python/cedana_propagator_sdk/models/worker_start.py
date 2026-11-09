@@ -7,9 +7,6 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 
 @dataclass
 class WorkerStart(AdditionalDataHolder, Parsable):
-    """
-    One worker start, and whether it restored.
-    """
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
@@ -19,7 +16,7 @@ class WorkerStart(AdditionalDataHolder, Parsable):
     pod_name: Optional[str] = None
     # The ready_at property
     ready_at: Optional[datetime.datetime] = None
-    # True when this worker was given a checkpoint to restore from.
+    # True when a restore is bound to this worker pod.
     restored: Optional[bool] = None
     # PodScheduled to Ready, in milliseconds.
     start_time_ms: Optional[int] = None

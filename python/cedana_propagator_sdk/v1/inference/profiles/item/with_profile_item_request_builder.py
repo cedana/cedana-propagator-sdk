@@ -1,18 +1,23 @@
 from __future__ import annotations
 from collections.abc import Callable
+from dataclasses import dataclass, field
 from kiota_abstractions.base_request_builder import BaseRequestBuilder
+from kiota_abstractions.base_request_configuration import RequestConfiguration
+from kiota_abstractions.default_query_parameters import QueryParameters
 from kiota_abstractions.get_path_parameters import get_path_parameters
+from kiota_abstractions.method import Method
 from kiota_abstractions.request_adapter import RequestAdapter
+from kiota_abstractions.request_information import RequestInformation
+from kiota_abstractions.request_option import RequestOption
+from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
+from warnings import warn
 
 if TYPE_CHECKING:
+    from .....models.http_error import HttpError
     from .checkpoint.checkpoint_request_builder import CheckpointRequestBuilder
-    from .hosting.hosting_request_builder import HostingRequestBuilder
-    from .kv_cache.kv_cache_request_builder import KvCacheRequestBuilder
-    from .progress.progress_request_builder import ProgressRequestBuilder
-    from .restart.restart_request_builder import RestartRequestBuilder
-    from .state.state_request_builder import StateRequestBuilder
-    from .worker_endpoint.worker_endpoint_request_builder import WorkerEndpointRequestBuilder
+    from .manifest.manifest_request_builder import ManifestRequestBuilder
+    from .scale.scale_request_builder import ScaleRequestBuilder
 
 class WithProfile_ItemRequestBuilder(BaseRequestBuilder):
     """
@@ -27,6 +32,46 @@ class WithProfile_ItemRequestBuilder(BaseRequestBuilder):
         """
         super().__init__(request_adapter, "{+baseurl}/v1/inference/profiles/{profile_id}", path_parameters)
     
+    async def delete(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> None:
+        """
+        Removes the model's objects from its cluster, weights volume included, then the profile.
+        param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
+        Returns: None
+        """
+        request_info = self.to_delete_request_information(
+            request_configuration
+        )
+        from .....models.http_error import HttpError
+
+        error_mapping: dict[str, type[ParsableFactory]] = {
+            "404": HttpError,
+            "XXX": HttpError,
+        }
+        if not self.request_adapter:
+            raise Exception("Http core is null") 
+        return await self.request_adapter.send_no_response_content_async(request_info, error_mapping)
+    
+    def to_delete_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
+        """
+        Removes the model's objects from its cluster, weights volume included, then the profile.
+        param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
+        Returns: RequestInformation
+        """
+        request_info = RequestInformation(Method.DELETE, self.url_template, self.path_parameters)
+        request_info.configure(request_configuration)
+        request_info.headers.try_add("Accept", "application/json")
+        return request_info
+    
+    def with_url(self,raw_url: str) -> WithProfile_ItemRequestBuilder:
+        """
+        Returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
+        param raw_url: The raw URL to use for the request builder.
+        Returns: WithProfile_ItemRequestBuilder
+        """
+        if raw_url is None:
+            raise TypeError("raw_url cannot be null.")
+        return WithProfile_ItemRequestBuilder(self.request_adapter, raw_url)
+    
     @property
     def checkpoint(self) -> CheckpointRequestBuilder:
         """
@@ -37,57 +82,28 @@ class WithProfile_ItemRequestBuilder(BaseRequestBuilder):
         return CheckpointRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
-    def hosting(self) -> HostingRequestBuilder:
+    def manifest(self) -> ManifestRequestBuilder:
         """
-        The hosting property
+        The manifest property
         """
-        from .hosting.hosting_request_builder import HostingRequestBuilder
+        from .manifest.manifest_request_builder import ManifestRequestBuilder
 
-        return HostingRequestBuilder(self.request_adapter, self.path_parameters)
+        return ManifestRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
-    def kv_cache(self) -> KvCacheRequestBuilder:
+    def scale(self) -> ScaleRequestBuilder:
         """
-        The kvCache property
+        The scale property
         """
-        from .kv_cache.kv_cache_request_builder import KvCacheRequestBuilder
+        from .scale.scale_request_builder import ScaleRequestBuilder
 
-        return KvCacheRequestBuilder(self.request_adapter, self.path_parameters)
+        return ScaleRequestBuilder(self.request_adapter, self.path_parameters)
     
-    @property
-    def progress(self) -> ProgressRequestBuilder:
+    @dataclass
+    class WithProfile_ItemRequestBuilderDeleteRequestConfiguration(RequestConfiguration[QueryParameters]):
         """
-        The progress property
+        Configuration for the request such as headers, query parameters, and middleware options.
         """
-        from .progress.progress_request_builder import ProgressRequestBuilder
-
-        return ProgressRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
-    def restart(self) -> RestartRequestBuilder:
-        """
-        The restart property
-        """
-        from .restart.restart_request_builder import RestartRequestBuilder
-
-        return RestartRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
-    def state(self) -> StateRequestBuilder:
-        """
-        The state property
-        """
-        from .state.state_request_builder import StateRequestBuilder
-
-        return StateRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
-    def worker_endpoint(self) -> WorkerEndpointRequestBuilder:
-        """
-        The workerEndpoint property
-        """
-        from .worker_endpoint.worker_endpoint_request_builder import WorkerEndpointRequestBuilder
-
-        return WorkerEndpointRequestBuilder(self.request_adapter, self.path_parameters)
+        warn("This class is deprecated. Please use the generic RequestConfiguration class generated by the generator.", DeprecationWarning)
     
 

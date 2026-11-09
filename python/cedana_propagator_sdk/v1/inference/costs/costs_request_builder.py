@@ -6,9 +6,7 @@ from kiota_abstractions.request_adapter import RequestAdapter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from .breakdown.breakdown_request_builder import BreakdownRequestBuilder
     from .config.config_request_builder import ConfigRequestBuilder
-    from .report.report_request_builder import ReportRequestBuilder
 
 class CostsRequestBuilder(BaseRequestBuilder):
     """
@@ -24,15 +22,6 @@ class CostsRequestBuilder(BaseRequestBuilder):
         super().__init__(request_adapter, "{+baseurl}/v1/inference/costs", path_parameters)
     
     @property
-    def breakdown(self) -> BreakdownRequestBuilder:
-        """
-        The breakdown property
-        """
-        from .breakdown.breakdown_request_builder import BreakdownRequestBuilder
-
-        return BreakdownRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
     def config(self) -> ConfigRequestBuilder:
         """
         The config property
@@ -40,14 +29,5 @@ class CostsRequestBuilder(BaseRequestBuilder):
         from .config.config_request_builder import ConfigRequestBuilder
 
         return ConfigRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
-    def report(self) -> ReportRequestBuilder:
-        """
-        The report property
-        """
-        from .report.report_request_builder import ReportRequestBuilder
-
-        return ReportRequestBuilder(self.request_adapter, self.path_parameters)
     
 

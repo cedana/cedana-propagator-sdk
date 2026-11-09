@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from ....models.create_profile import CreateProfile
     from ....models.deployment_profile import DeploymentProfile
     from ....models.http_error import HttpError
+    from ....models.profile_view import ProfileView
     from .item.with_profile_item_request_builder import WithProfile_ItemRequestBuilder
 
 class ProfilesRequestBuilder(BaseRequestBuilder):
@@ -46,11 +47,11 @@ class ProfilesRequestBuilder(BaseRequestBuilder):
         url_tpl_params["profile_id"] = profile_id
         return WithProfile_ItemRequestBuilder(self.request_adapter, url_tpl_params)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[list[DeploymentProfile]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[list[ProfileView]]:
         """
-        List deployment profiles
+        List deployment profiles with their state
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[DeploymentProfile]]
+        Returns: Optional[list[ProfileView]]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -62,13 +63,13 @@ class ProfilesRequestBuilder(BaseRequestBuilder):
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from ....models.deployment_profile import DeploymentProfile
+        from ....models.profile_view import ProfileView
 
-        return await self.request_adapter.send_collection_async(request_info, DeploymentProfile, error_mapping)
+        return await self.request_adapter.send_collection_async(request_info, ProfileView, error_mapping)
     
     async def post(self,body: CreateProfile, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[DeploymentProfile]:
         """
-        Create an immutable deployment profile
+        Create or update a deployment profile
         param body: The request body
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: Optional[DeploymentProfile]
@@ -82,7 +83,6 @@ class ProfilesRequestBuilder(BaseRequestBuilder):
 
         error_mapping: dict[str, type[ParsableFactory]] = {
             "400": HttpError,
-            "409": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
@@ -93,7 +93,7 @@ class ProfilesRequestBuilder(BaseRequestBuilder):
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        List deployment profiles
+        List deployment profiles with their state
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -104,7 +104,7 @@ class ProfilesRequestBuilder(BaseRequestBuilder):
     
     def to_post_request_information(self,body: CreateProfile, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Create an immutable deployment profile
+        Create or update a deployment profile
         param body: The request body
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation

@@ -4,25 +4,18 @@
 package models
 
 import (
+	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91 "github.com/microsoft/kiota-abstractions-go/serialization"
 )
 
 type CreateProfile struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
-	// The backend_url property
-	backend_url *string
-	// The compatibility property
-	compatibility i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
-	// The dynamo_template property
-	dynamo_template i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	// The cluster_id property
+	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The estimated_cold_start_ms property
 	estimated_cold_start_ms *int64
-	// The exact_model property
-	exact_model *string
-	// The hosting_mode property
-	hosting_mode *string
-	// The logical_model property
+	// The name callers use; defaults to the profile id.
 	logical_model *string
 	// The max_queue_depth property
 	max_queue_depth *int32
@@ -30,12 +23,14 @@ type CreateProfile struct {
 	max_replicas *int32
 	// The min_replicas property
 	min_replicas *int32
+	// What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
+	model ModelSpecable
+	// The namespace property
+	namespace *string
 	// The profile_id property
 	profile_id *string
 	// The scale_down_idle_seconds property
 	scale_down_idle_seconds *int64
-	// The spec property
-	spec i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	// The target_concurrency property
 	target_concurrency *int32
 }
@@ -59,22 +54,10 @@ func (m *CreateProfile) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
-// GetBackendUrl gets the backend_url property value. The backend_url property
-// returns a *string when successful
-func (m *CreateProfile) GetBackendUrl() *string {
-	return m.backend_url
-}
-
-// GetCompatibility gets the compatibility property value. The compatibility property
-// returns a UntypedNodeable when successful
-func (m *CreateProfile) GetCompatibility() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
-	return m.compatibility
-}
-
-// GetDynamoTemplate gets the dynamo_template property value. The dynamo_template property
-// returns a UntypedNodeable when successful
-func (m *CreateProfile) GetDynamoTemplate() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
-	return m.dynamo_template
+// GetClusterId gets the cluster_id property value. The cluster_id property
+// returns a *UUID when successful
+func (m *CreateProfile) GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID {
+	return m.cluster_id
 }
 
 // GetEstimatedColdStartMs gets the estimated_cold_start_ms property value. The estimated_cold_start_ms property
@@ -83,43 +66,17 @@ func (m *CreateProfile) GetEstimatedColdStartMs() *int64 {
 	return m.estimated_cold_start_ms
 }
 
-// GetExactModel gets the exact_model property value. The exact_model property
-// returns a *string when successful
-func (m *CreateProfile) GetExactModel() *string {
-	return m.exact_model
-}
-
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *CreateProfile) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
-	res["backend_url"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetStringValue()
+	res["cluster_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetUUIDValue()
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetBackendUrl(val)
-		}
-		return nil
-	}
-	res["compatibility"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetCompatibility(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
-		}
-		return nil
-	}
-	res["dynamo_template"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetDynamoTemplate(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
+			m.SetClusterId(val)
 		}
 		return nil
 	}
@@ -130,26 +87,6 @@ func (m *CreateProfile) GetFieldDeserializers() map[string]func(i878a80d2330e89d
 		}
 		if val != nil {
 			m.SetEstimatedColdStartMs(val)
-		}
-		return nil
-	}
-	res["exact_model"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetStringValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetExactModel(val)
-		}
-		return nil
-	}
-	res["hosting_mode"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetStringValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetHostingMode(val)
 		}
 		return nil
 	}
@@ -193,6 +130,26 @@ func (m *CreateProfile) GetFieldDeserializers() map[string]func(i878a80d2330e89d
 		}
 		return nil
 	}
+	res["model"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateModelSpecFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetModel(val.(ModelSpecable))
+		}
+		return nil
+	}
+	res["namespace"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetNamespace(val)
+		}
+		return nil
+	}
 	res["profile_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -213,16 +170,6 @@ func (m *CreateProfile) GetFieldDeserializers() map[string]func(i878a80d2330e89d
 		}
 		return nil
 	}
-	res["spec"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetSpec(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
-		}
-		return nil
-	}
 	res["target_concurrency"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetInt32Value()
 		if err != nil {
@@ -236,13 +183,7 @@ func (m *CreateProfile) GetFieldDeserializers() map[string]func(i878a80d2330e89d
 	return res
 }
 
-// GetHostingMode gets the hosting_mode property value. The hosting_mode property
-// returns a *string when successful
-func (m *CreateProfile) GetHostingMode() *string {
-	return m.hosting_mode
-}
-
-// GetLogicalModel gets the logical_model property value. The logical_model property
+// GetLogicalModel gets the logical_model property value. The name callers use; defaults to the profile id.
 // returns a *string when successful
 func (m *CreateProfile) GetLogicalModel() *string {
 	return m.logical_model
@@ -266,6 +207,18 @@ func (m *CreateProfile) GetMinReplicas() *int32 {
 	return m.min_replicas
 }
 
+// GetModel gets the model property value. What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
+// returns a ModelSpecable when successful
+func (m *CreateProfile) GetModel() ModelSpecable {
+	return m.model
+}
+
+// GetNamespace gets the namespace property value. The namespace property
+// returns a *string when successful
+func (m *CreateProfile) GetNamespace() *string {
+	return m.namespace
+}
+
 // GetProfileId gets the profile_id property value. The profile_id property
 // returns a *string when successful
 func (m *CreateProfile) GetProfileId() *string {
@@ -278,12 +231,6 @@ func (m *CreateProfile) GetScaleDownIdleSeconds() *int64 {
 	return m.scale_down_idle_seconds
 }
 
-// GetSpec gets the spec property value. The spec property
-// returns a UntypedNodeable when successful
-func (m *CreateProfile) GetSpec() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
-	return m.spec
-}
-
 // GetTargetConcurrency gets the target_concurrency property value. The target_concurrency property
 // returns a *int32 when successful
 func (m *CreateProfile) GetTargetConcurrency() *int32 {
@@ -293,37 +240,13 @@ func (m *CreateProfile) GetTargetConcurrency() *int32 {
 // Serialize serializes information the current object
 func (m *CreateProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
-		err := writer.WriteStringValue("backend_url", m.GetBackendUrl())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteObjectValue("compatibility", m.GetCompatibility())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteObjectValue("dynamo_template", m.GetDynamoTemplate())
+		err := writer.WriteUUIDValue("cluster_id", m.GetClusterId())
 		if err != nil {
 			return err
 		}
 	}
 	{
 		err := writer.WriteInt64Value("estimated_cold_start_ms", m.GetEstimatedColdStartMs())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteStringValue("exact_model", m.GetExactModel())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteStringValue("hosting_mode", m.GetHostingMode())
 		if err != nil {
 			return err
 		}
@@ -353,6 +276,18 @@ func (m *CreateProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0
 		}
 	}
 	{
+		err := writer.WriteObjectValue("model", m.GetModel())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("namespace", m.GetNamespace())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteStringValue("profile_id", m.GetProfileId())
 		if err != nil {
 			return err
@@ -360,12 +295,6 @@ func (m *CreateProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0
 	}
 	{
 		err := writer.WriteInt64Value("scale_down_idle_seconds", m.GetScaleDownIdleSeconds())
-		if err != nil {
-			return err
-		}
-	}
-	{
-		err := writer.WriteObjectValue("spec", m.GetSpec())
 		if err != nil {
 			return err
 		}
@@ -390,19 +319,9 @@ func (m *CreateProfile) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
-// SetBackendUrl sets the backend_url property value. The backend_url property
-func (m *CreateProfile) SetBackendUrl(value *string) {
-	m.backend_url = value
-}
-
-// SetCompatibility sets the compatibility property value. The compatibility property
-func (m *CreateProfile) SetCompatibility(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
-	m.compatibility = value
-}
-
-// SetDynamoTemplate sets the dynamo_template property value. The dynamo_template property
-func (m *CreateProfile) SetDynamoTemplate(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
-	m.dynamo_template = value
+// SetClusterId sets the cluster_id property value. The cluster_id property
+func (m *CreateProfile) SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
+	m.cluster_id = value
 }
 
 // SetEstimatedColdStartMs sets the estimated_cold_start_ms property value. The estimated_cold_start_ms property
@@ -410,17 +329,7 @@ func (m *CreateProfile) SetEstimatedColdStartMs(value *int64) {
 	m.estimated_cold_start_ms = value
 }
 
-// SetExactModel sets the exact_model property value. The exact_model property
-func (m *CreateProfile) SetExactModel(value *string) {
-	m.exact_model = value
-}
-
-// SetHostingMode sets the hosting_mode property value. The hosting_mode property
-func (m *CreateProfile) SetHostingMode(value *string) {
-	m.hosting_mode = value
-}
-
-// SetLogicalModel sets the logical_model property value. The logical_model property
+// SetLogicalModel sets the logical_model property value. The name callers use; defaults to the profile id.
 func (m *CreateProfile) SetLogicalModel(value *string) {
 	m.logical_model = value
 }
@@ -440,6 +349,16 @@ func (m *CreateProfile) SetMinReplicas(value *int32) {
 	m.min_replicas = value
 }
 
+// SetModel sets the model property value. What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
+func (m *CreateProfile) SetModel(value ModelSpecable) {
+	m.model = value
+}
+
+// SetNamespace sets the namespace property value. The namespace property
+func (m *CreateProfile) SetNamespace(value *string) {
+	m.namespace = value
+}
+
 // SetProfileId sets the profile_id property value. The profile_id property
 func (m *CreateProfile) SetProfileId(value *string) {
 	m.profile_id = value
@@ -450,11 +369,6 @@ func (m *CreateProfile) SetScaleDownIdleSeconds(value *int64) {
 	m.scale_down_idle_seconds = value
 }
 
-// SetSpec sets the spec property value. The spec property
-func (m *CreateProfile) SetSpec(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
-	m.spec = value
-}
-
 // SetTargetConcurrency sets the target_concurrency property value. The target_concurrency property
 func (m *CreateProfile) SetTargetConcurrency(value *int32) {
 	m.target_concurrency = value
@@ -463,32 +377,26 @@ func (m *CreateProfile) SetTargetConcurrency(value *int32) {
 type CreateProfileable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
-	GetBackendUrl() *string
-	GetCompatibility() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
-	GetDynamoTemplate() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
+	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetEstimatedColdStartMs() *int64
-	GetExactModel() *string
-	GetHostingMode() *string
 	GetLogicalModel() *string
 	GetMaxQueueDepth() *int32
 	GetMaxReplicas() *int32
 	GetMinReplicas() *int32
+	GetModel() ModelSpecable
+	GetNamespace() *string
 	GetProfileId() *string
 	GetScaleDownIdleSeconds() *int64
-	GetSpec() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	GetTargetConcurrency() *int32
-	SetBackendUrl(value *string)
-	SetCompatibility(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
-	SetDynamoTemplate(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
+	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetEstimatedColdStartMs(value *int64)
-	SetExactModel(value *string)
-	SetHostingMode(value *string)
 	SetLogicalModel(value *string)
 	SetMaxQueueDepth(value *int32)
 	SetMaxReplicas(value *int32)
 	SetMinReplicas(value *int32)
+	SetModel(value ModelSpecable)
+	SetNamespace(value *string)
 	SetProfileId(value *string)
 	SetScaleDownIdleSeconds(value *int64)
-	SetSpec(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
 	SetTargetConcurrency(value *int32)
 }

@@ -75,12 +75,6 @@ func (m *V1RequestBuilder) Download() *DownloadRequestBuilder {
 	return NewDownloadRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Dynamo the dynamo property
-// returns a *DynamoRequestBuilder when successful
-func (m *V1RequestBuilder) Dynamo() *DynamoRequestBuilder {
-	return NewDynamoRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // Events the events property
 // returns a *EventsRequestBuilder when successful
 func (m *V1RequestBuilder) Events() *EventsRequestBuilder {

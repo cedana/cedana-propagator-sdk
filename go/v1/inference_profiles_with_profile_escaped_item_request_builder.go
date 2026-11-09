@@ -4,12 +4,22 @@
 package v1
 
 import (
+	"context"
+	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
 // InferenceProfilesWithProfile_ItemRequestBuilder builds and executes requests for operations under \v1\inference\profiles\{profile_id}
 type InferenceProfilesWithProfile_ItemRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
+}
+
+// InferenceProfilesWithProfile_ItemRequestBuilderDeleteRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
+type InferenceProfilesWithProfile_ItemRequestBuilderDeleteRequestConfiguration struct {
+	// Request headers
+	Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
+	// Request options
+	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
 }
 
 // Checkpoint the checkpoint property
@@ -33,38 +43,51 @@ func NewInferenceProfilesWithProfile_ItemRequestBuilder(rawUrl string, requestAd
 	return NewInferenceProfilesWithProfile_ItemRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Hosting the hosting property
-// returns a *InferenceProfilesItemHostingRequestBuilder when successful
-func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Hosting() *InferenceProfilesItemHostingRequestBuilder {
-	return NewInferenceProfilesItemHostingRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// Delete removes the model's objects from its cluster, weights volume included, then the profile.
+// returns a HttpError error when the service returns a 404 status code
+// returns a HttpError error when the service returns a 4XX or 5XX status code
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Delete(ctx context.Context, requestConfiguration *InferenceProfilesWithProfile_ItemRequestBuilderDeleteRequestConfiguration) error {
+	requestInfo, err := m.ToDeleteRequestInformation(ctx, requestConfiguration)
+	if err != nil {
+		return err
+	}
+	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
+		"404": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+	}
+	err = m.BaseRequestBuilder.RequestAdapter.SendNoContent(ctx, requestInfo, errorMapping)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-// KvCache the kvCache property
-// returns a *InferenceProfilesItemKvCacheRequestBuilder when successful
-func (m *InferenceProfilesWithProfile_ItemRequestBuilder) KvCache() *InferenceProfilesItemKvCacheRequestBuilder {
-	return NewInferenceProfilesItemKvCacheRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// Manifest the manifest property
+// returns a *InferenceProfilesItemManifestRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Manifest() *InferenceProfilesItemManifestRequestBuilder {
+	return NewInferenceProfilesItemManifestRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Progress the progress property
-// returns a *InferenceProfilesItemProgressRequestBuilder when successful
-func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Progress() *InferenceProfilesItemProgressRequestBuilder {
-	return NewInferenceProfilesItemProgressRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// Scale the scale property
+// returns a *InferenceProfilesItemScaleRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Scale() *InferenceProfilesItemScaleRequestBuilder {
+	return NewInferenceProfilesItemScaleRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Restart the restart property
-// returns a *InferenceProfilesItemRestartRequestBuilder when successful
-func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Restart() *InferenceProfilesItemRestartRequestBuilder {
-	return NewInferenceProfilesItemRestartRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// ToDeleteRequestInformation removes the model's objects from its cluster, weights volume included, then the profile.
+// returns a *RequestInformation when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) ToDeleteRequestInformation(ctx context.Context, requestConfiguration *InferenceProfilesWithProfile_ItemRequestBuilderDeleteRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.DELETE, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
+	if requestConfiguration != nil {
+		requestInfo.Headers.AddAll(requestConfiguration.Headers)
+		requestInfo.AddRequestOptions(requestConfiguration.Options)
+	}
+	requestInfo.Headers.TryAdd("Accept", "application/json")
+	return requestInfo, nil
 }
 
-// State the state property
-// returns a *InferenceProfilesItemStateRequestBuilder when successful
-func (m *InferenceProfilesWithProfile_ItemRequestBuilder) State() *InferenceProfilesItemStateRequestBuilder {
-	return NewInferenceProfilesItemStateRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// WorkerEndpoint the workerEndpoint property
-// returns a *InferenceProfilesItemWorkerEndpointRequestBuilder when successful
-func (m *InferenceProfilesWithProfile_ItemRequestBuilder) WorkerEndpoint() *InferenceProfilesItemWorkerEndpointRequestBuilder {
-	return NewInferenceProfilesItemWorkerEndpointRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// WithUrl returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
+// returns a *InferenceProfilesWithProfile_ItemRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) WithUrl(rawUrl string) *InferenceProfilesWithProfile_ItemRequestBuilder {
+	return NewInferenceProfilesWithProfile_ItemRequestBuilder(rawUrl, m.BaseRequestBuilder.RequestAdapter)
 }
