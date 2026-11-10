@@ -14916,7 +14916,7 @@
     },
     "/v1/metrics/ingest": {
       "post": {
-        "description": "Newline-delimited JSON from the cluster's Vector agent, stored unchanged where ClickHouse's\nS3Queue reads it, so clusters ship metrics with their org token instead of S3 credentials.",
+        "description": "Newline-delimited JSON from the cluster's Vector agent, written straight to the tables the\ninference dashboard reads, so clusters ship metrics with their org token alone.",
         "operationId": "ingest",
         "requestBody": {
           "content": {
@@ -14941,16 +14941,6 @@
               }
             },
             "description": "Client error"
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "No ingestion bucket configured"
           },
           "5XX": {
             "content": {

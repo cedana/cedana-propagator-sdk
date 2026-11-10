@@ -37,9 +37,8 @@ func NewMetricsIngestRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee
 	return NewMetricsIngestRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Post newline-delimited JSON from the cluster's Vector agent, stored unchanged where ClickHouse'sS3Queue reads it, so clusters ship metrics with their org token instead of S3 credentials.
+// Post newline-delimited JSON from the cluster's Vector agent, written straight to the tables theinference dashboard reads, so clusters ship metrics with their org token alone.
 // returns a []byte when successful
-// returns a HttpError error when the service returns a 503 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
 func (m *MetricsIngestRequestBuilder) Post(ctx context.Context, body []byte, requestConfiguration *MetricsIngestRequestBuilderPostRequestConfiguration) ([]byte, error) {
 	requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration)
@@ -47,7 +46,6 @@ func (m *MetricsIngestRequestBuilder) Post(ctx context.Context, body []byte, req
 		return nil, err
 	}
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
-		"503": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
 	res, err := m.BaseRequestBuilder.RequestAdapter.SendPrimitive(ctx, requestInfo, "[]byte", errorMapping)
@@ -60,7 +58,7 @@ func (m *MetricsIngestRequestBuilder) Post(ctx context.Context, body []byte, req
 	return res.([]byte), nil
 }
 
-// ToPostRequestInformation newline-delimited JSON from the cluster's Vector agent, stored unchanged where ClickHouse'sS3Queue reads it, so clusters ship metrics with their org token instead of S3 credentials.
+// ToPostRequestInformation newline-delimited JSON from the cluster's Vector agent, written straight to the tables theinference dashboard reads, so clusters ship metrics with their org token alone.
 // returns a *RequestInformation when successful
 func (m *MetricsIngestRequestBuilder) ToPostRequestInformation(ctx context.Context, body []byte, requestConfiguration *MetricsIngestRequestBuilderPostRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

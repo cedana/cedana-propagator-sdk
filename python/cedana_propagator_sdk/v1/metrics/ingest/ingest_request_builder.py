@@ -31,7 +31,7 @@ class IngestRequestBuilder(BaseRequestBuilder):
     
     async def post(self,body: bytes, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[bytes]:
         """
-        Newline-delimited JSON from the cluster's Vector agent, stored unchanged where ClickHouse'sS3Queue reads it, so clusters ship metrics with their org token instead of S3 credentials.
+        Newline-delimited JSON from the cluster's Vector agent, written straight to the tables theinference dashboard reads, so clusters ship metrics with their org token alone.
         param body: Binary request body
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: bytes
@@ -44,7 +44,6 @@ class IngestRequestBuilder(BaseRequestBuilder):
         from ....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
-            "503": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
@@ -53,7 +52,7 @@ class IngestRequestBuilder(BaseRequestBuilder):
     
     def to_post_request_information(self,body: bytes, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Newline-delimited JSON from the cluster's Vector agent, stored unchanged where ClickHouse'sS3Queue reads it, so clusters ship metrics with their org token instead of S3 credentials.
+        Newline-delimited JSON from the cluster's Vector agent, written straight to the tables theinference dashboard reads, so clusters ship metrics with their org token alone.
         param body: Binary request body
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
