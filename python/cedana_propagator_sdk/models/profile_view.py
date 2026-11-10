@@ -14,6 +14,8 @@ class ProfileView(DeploymentProfile, Parsable):
     """
     A profile with its live state, read from the regular pod sync.
     """
+    # A ready checkpoint exists under the profile's current checkpoint name.
+    checkpointed: Optional[bool] = None
     # The ready_replicas property
     ready_replicas: Optional[int] = None
     # How the newest worker started: "restore" or "cold"; null with no worker.
@@ -42,6 +44,7 @@ class ProfileView(DeploymentProfile, Parsable):
         from .deployment_profile import DeploymentProfile
 
         fields: dict[str, Callable[[Any], None]] = {
+            "checkpointed": lambda n : setattr(self, 'checkpointed', n.get_bool_value()),
             "ready_replicas": lambda n : setattr(self, 'ready_replicas', n.get_int_value()),
             "start_kind": lambda n : setattr(self, 'start_kind', n.get_str_value()),
             "state": lambda n : setattr(self, 'state', n.get_str_value()),
@@ -59,6 +62,7 @@ class ProfileView(DeploymentProfile, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         super().serialize(writer)
+        writer.write_bool_value("checkpointed", self.checkpointed)
         writer.write_int_value("ready_replicas", self.ready_replicas)
         writer.write_str_value("start_kind", self.start_kind)
         writer.write_str_value("state", self.state)

@@ -6082,6 +6082,10 @@
           },
           {
             "properties": {
+              "checkpointed": {
+                "description": "A ready checkpoint exists under the profile's current checkpoint name.",
+                "type": "boolean"
+              },
               "ready_replicas": {
                 "format": "int64",
                 "type": "integer"
@@ -6100,6 +6104,7 @@
             },
             "required": [
               "ready_replicas",
+              "checkpointed",
               "state"
             ],
             "type": "object"
@@ -12824,7 +12829,7 @@
                 }
               }
             },
-            "description": "Authorization already consumed"
+            "description": "Authorization consumed by a target that is gone"
           },
           "410": {
             "content": {

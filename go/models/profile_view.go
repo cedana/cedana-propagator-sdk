@@ -10,6 +10,8 @@ import (
 // ProfileView a profile with its live state, read from the regular pod sync.
 type ProfileView struct {
 	DeploymentProfile
+	// A ready checkpoint exists under the profile's current checkpoint name.
+	checkpointed *bool
 	// The ready_replicas property
 	ready_replicas *int64
 	// How the newest worker started: "restore" or "cold"; null with no worker.
@@ -32,10 +34,26 @@ func CreateProfileViewFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a
 	return NewProfileView(), nil
 }
 
+// GetCheckpointed gets the checkpointed property value. A ready checkpoint exists under the profile's current checkpoint name.
+// returns a *bool when successful
+func (m *ProfileView) GetCheckpointed() *bool {
+	return m.checkpointed
+}
+
 // GetFieldDeserializers the deserialization information for the current model
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *ProfileView) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := m.DeploymentProfile.GetFieldDeserializers()
+	res["checkpointed"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetBoolValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCheckpointed(val)
+		}
+		return nil
+	}
 	res["ready_replicas"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetInt64Value()
 		if err != nil {
@@ -94,6 +112,12 @@ func (m *ProfileView) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 		return err
 	}
 	{
+		err = writer.WriteBoolValue("checkpointed", m.GetCheckpointed())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err = writer.WriteInt64Value("ready_replicas", m.GetReadyReplicas())
 		if err != nil {
 			return err
@@ -114,6 +138,11 @@ func (m *ProfileView) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 	return nil
 }
 
+// SetCheckpointed sets the checkpointed property value. A ready checkpoint exists under the profile's current checkpoint name.
+func (m *ProfileView) SetCheckpointed(value *bool) {
+	m.checkpointed = value
+}
+
 // SetReadyReplicas sets the ready_replicas property value. The ready_replicas property
 func (m *ProfileView) SetReadyReplicas(value *int64) {
 	m.ready_replicas = value
@@ -132,9 +161,11 @@ func (m *ProfileView) SetState(value *string) {
 type ProfileViewable interface {
 	DeploymentProfileable
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetCheckpointed() *bool
 	GetReadyReplicas() *int64
 	GetStartKind() *string
 	GetState() *string
+	SetCheckpointed(value *bool)
 	SetReadyReplicas(value *int64)
 	SetStartKind(value *string)
 	SetState(value *string)
