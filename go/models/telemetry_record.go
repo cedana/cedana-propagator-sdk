@@ -24,6 +24,8 @@ type TelemetryRecord struct {
 	end_to_end_latency_ms *int64
 	// The fallback_used property
 	fallback_used *bool
+	// The API key the request was authorized with, from the authorize response.
+	key_id *string
 	// The logical_model property
 	logical_model *string
 	// The mean_inter_token_ms property
@@ -185,6 +187,16 @@ func (m *TelemetryRecord) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		return nil
 	}
+	res["key_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetKeyId(val)
+		}
+		return nil
+	}
 	res["logical_model"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -308,6 +320,12 @@ func (m *TelemetryRecord) GetFieldDeserializers() map[string]func(i878a80d2330e8
 	return res
 }
 
+// GetKeyId gets the key_id property value. The API key the request was authorized with, from the authorize response.
+// returns a *string when successful
+func (m *TelemetryRecord) GetKeyId() *string {
+	return m.key_id
+}
+
 // GetLogicalModel gets the logical_model property value. The logical_model property
 // returns a *string when successful
 func (m *TelemetryRecord) GetLogicalModel() *string {
@@ -420,6 +438,12 @@ func (m *TelemetryRecord) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 	}
 	{
 		err := writer.WriteBoolValue("fallback_used", m.GetFallbackUsed())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("key_id", m.GetKeyId())
 		if err != nil {
 			return err
 		}
@@ -545,6 +569,11 @@ func (m *TelemetryRecord) SetFallbackUsed(value *bool) {
 	m.fallback_used = value
 }
 
+// SetKeyId sets the key_id property value. The API key the request was authorized with, from the authorize response.
+func (m *TelemetryRecord) SetKeyId(value *string) {
+	m.key_id = value
+}
+
 // SetLogicalModel sets the logical_model property value. The logical_model property
 func (m *TelemetryRecord) SetLogicalModel(value *string) {
 	m.logical_model = value
@@ -615,6 +644,7 @@ type TelemetryRecordable interface {
 	GetDecisionSource() *string
 	GetEndToEndLatencyMs() *int64
 	GetFallbackUsed() *bool
+	GetKeyId() *string
 	GetLogicalModel() *string
 	GetMeanInterTokenMs() *float64
 	GetP95InterTokenMs() *float64
@@ -634,6 +664,7 @@ type TelemetryRecordable interface {
 	SetDecisionSource(value *string)
 	SetEndToEndLatencyMs(value *int64)
 	SetFallbackUsed(value *bool)
+	SetKeyId(value *string)
 	SetLogicalModel(value *string)
 	SetMeanInterTokenMs(value *float64)
 	SetP95InterTokenMs(value *float64)

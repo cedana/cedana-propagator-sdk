@@ -35,6 +35,13 @@
           "checkpoint_status": {
             "type": "string"
           },
+          "checksum": {
+            "description": "GPU state checksum recorded with the checkpoint (\"sha256:<hex>\"); null when not computed",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "delta": {
             "description": "Whether the checkpoint is a (GPU delta) increment. Authoritative even\nwhen parent_checkpoint_id is null (malformed id at ingest, parent deleted)",
             "type": [
@@ -396,9 +403,20 @@
             "format": "uuid",
             "type": "string"
           },
+          "cacheable": {
+            "description": "The gateway may reuse this decision briefly: true only for keys with no rate limit or\nbudget, which are charged on every authorize.",
+            "type": "boolean"
+          },
           "expires_at": {
             "format": "date-time",
             "type": "string"
+          },
+          "key_id": {
+            "description": "The key the caller presented; the gateway echoes it in telemetry so usage keeps it\nfor requests served from its authorization cache.",
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "route_generation": {
             "format": "int64",
@@ -408,7 +426,8 @@
         "required": [
           "authorization_id",
           "route_generation",
-          "expires_at"
+          "expires_at",
+          "cacheable"
         ],
         "type": "object"
       },
@@ -7850,6 +7869,13 @@
               "null"
             ]
           },
+          "key_id": {
+            "description": "The API key the request was authorized with, from the authorize response.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "logical_model": {
             "type": "string"
           },
@@ -9131,6 +9157,84 @@
         "summary": "Create or update a job",
         "tags": [
           "Jobs"
+        ]
+      }
+    },
+    "/v1/checkpoint/checksum": {
+      "get": {
+        "description": "Returns the GPU state checksum recorded at dump for the checkpoint at a restore path",
+        "operationId": "get_checkpoint_checksum",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "example": "sha256:<hex>",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Returns the checksum"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "No checksum recorded for the path"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Failed to fetch from database"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Get checksum of a checkpoint",
+        "tags": [
+          "Actions"
         ]
       }
     },

@@ -6,6 +6,7 @@ from kiota_abstractions.request_adapter import RequestAdapter
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
+    from .checksum.checksum_request_builder import ChecksumRequestBuilder
     from .path.path_request_builder import PathRequestBuilder
     from .pod.pod_request_builder import PodRequestBuilder
     from .status.status_request_builder import StatusRequestBuilder
@@ -22,6 +23,15 @@ class CheckpointRequestBuilder(BaseRequestBuilder):
         Returns: None
         """
         super().__init__(request_adapter, "{+baseurl}/v1/checkpoint", path_parameters)
+    
+    @property
+    def checksum(self) -> ChecksumRequestBuilder:
+        """
+        The checksum property
+        """
+        from .checksum.checksum_request_builder import ChecksumRequestBuilder
+
+        return ChecksumRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def path(self) -> PathRequestBuilder:
