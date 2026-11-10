@@ -28,7 +28,7 @@ class ProfileStartupComparison(AdditionalDataHolder, Parsable):
     saved_ms: Optional[int] = None
     # Cold median divided by restore median. Above 1 means restoring is faster.
     speedup: Optional[float] = None
-    # Every start behind the summaries, newest first, so the numbers can bechecked rather than taken on faith.
+    # Every start behind the summaries, newest first.
     starts: Optional[list[WorkerStart]] = None
     
     @staticmethod

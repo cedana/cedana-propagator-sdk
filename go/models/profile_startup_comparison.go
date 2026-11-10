@@ -23,7 +23,7 @@ type ProfileStartupComparison struct {
 	saved_ms *int64
 	// Cold median divided by restore median. Above 1 means restoring is faster.
 	speedup *float64
-	// Every start behind the summaries, newest first, so the numbers can bechecked rather than taken on faith.
+	// Every start behind the summaries, newest first.
 	starts []WorkerStartable
 }
 
@@ -165,7 +165,7 @@ func (m *ProfileStartupComparison) GetSpeedup() *float64 {
 	return m.speedup
 }
 
-// GetStarts gets the starts property value. Every start behind the summaries, newest first, so the numbers can bechecked rather than taken on faith.
+// GetStarts gets the starts property value. Every start behind the summaries, newest first.
 // returns a []WorkerStartable when successful
 func (m *ProfileStartupComparison) GetStarts() []WorkerStartable {
 	return m.starts
@@ -265,7 +265,7 @@ func (m *ProfileStartupComparison) SetSpeedup(value *float64) {
 	m.speedup = value
 }
 
-// SetStarts sets the starts property value. Every start behind the summaries, newest first, so the numbers can bechecked rather than taken on faith.
+// SetStarts sets the starts property value. Every start behind the summaries, newest first.
 func (m *ProfileStartupComparison) SetStarts(value []WorkerStartable) {
 	m.starts = value
 }

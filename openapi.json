@@ -6084,7 +6084,7 @@
             ]
           },
           "starts": {
-            "description": "Every start behind the summaries, newest first, so the numbers can be\nchecked rather than taken on faith.",
+            "description": "Every start behind the summaries, newest first.",
             "items": {
               "$ref": "#/components/schemas/WorkerStart"
             },
