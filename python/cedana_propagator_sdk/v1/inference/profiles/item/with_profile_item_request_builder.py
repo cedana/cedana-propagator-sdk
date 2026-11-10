@@ -17,7 +17,9 @@ if TYPE_CHECKING:
     from .....models.http_error import HttpError
     from .checkpoint.checkpoint_request_builder import CheckpointRequestBuilder
     from .manifest.manifest_request_builder import ManifestRequestBuilder
+    from .policy.policy_request_builder import PolicyRequestBuilder
     from .scale.scale_request_builder import ScaleRequestBuilder
+    from .team.team_request_builder import TeamRequestBuilder
 
 class WithProfile_ItemRequestBuilder(BaseRequestBuilder):
     """
@@ -91,6 +93,15 @@ class WithProfile_ItemRequestBuilder(BaseRequestBuilder):
         return ManifestRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
+    def policy(self) -> PolicyRequestBuilder:
+        """
+        The policy property
+        """
+        from .policy.policy_request_builder import PolicyRequestBuilder
+
+        return PolicyRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
     def scale(self) -> ScaleRequestBuilder:
         """
         The scale property
@@ -98,6 +109,15 @@ class WithProfile_ItemRequestBuilder(BaseRequestBuilder):
         from .scale.scale_request_builder import ScaleRequestBuilder
 
         return ScaleRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def team(self) -> TeamRequestBuilder:
+        """
+        The team property
+        """
+        from .team.team_request_builder import TeamRequestBuilder
+
+        return TeamRequestBuilder(self.request_adapter, self.path_parameters)
     
     @dataclass
     class WithProfile_ItemRequestBuilderDeleteRequestConfiguration(RequestConfiguration[QueryParameters]):

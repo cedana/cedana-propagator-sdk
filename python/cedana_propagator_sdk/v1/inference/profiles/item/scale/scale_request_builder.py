@@ -48,6 +48,7 @@ class ScaleRequestBuilder(BaseRequestBuilder):
         error_mapping: dict[str, type[ParsableFactory]] = {
             "400": HttpError,
             "404": HttpError,
+            "409": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:

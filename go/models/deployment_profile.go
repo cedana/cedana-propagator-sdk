@@ -43,6 +43,8 @@ type DeploymentProfile struct {
 	spec ModelSpecable
 	// The target_concurrency property
 	target_concurrency *int32
+	// The team whose policy and caps apply; null for none.
+	team *string
 }
 
 // NewDeploymentProfile instantiates a new DeploymentProfile and sets the default values.
@@ -264,6 +266,16 @@ func (m *DeploymentProfile) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		return nil
 	}
+	res["team"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetTeam(val)
+		}
+		return nil
+	}
 	return res
 }
 
@@ -325,6 +337,12 @@ func (m *DeploymentProfile) GetSpec() ModelSpecable {
 // returns a *int32 when successful
 func (m *DeploymentProfile) GetTargetConcurrency() *int32 {
 	return m.target_concurrency
+}
+
+// GetTeam gets the team property value. The team whose policy and caps apply; null for none.
+// returns a *string when successful
+func (m *DeploymentProfile) GetTeam() *string {
+	return m.team
 }
 
 // Serialize serializes information the current object
@@ -426,6 +444,12 @@ func (m *DeploymentProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 		}
 	}
 	{
+		err := writer.WriteStringValue("team", m.GetTeam())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteAdditionalData(m.GetAdditionalData())
 		if err != nil {
 			return err
@@ -519,6 +543,11 @@ func (m *DeploymentProfile) SetTargetConcurrency(value *int32) {
 	m.target_concurrency = value
 }
 
+// SetTeam sets the team property value. The team whose policy and caps apply; null for none.
+func (m *DeploymentProfile) SetTeam(value *string) {
+	m.team = value
+}
+
 type DeploymentProfileable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
@@ -538,6 +567,7 @@ type DeploymentProfileable interface {
 	GetScaleDownIdleSeconds() *int64
 	GetSpec() ModelSpecable
 	GetTargetConcurrency() *int32
+	GetTeam() *string
 	SetBackendUrl(value *string)
 	SetCheckpointName(value *string)
 	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
@@ -554,4 +584,5 @@ type DeploymentProfileable interface {
 	SetScaleDownIdleSeconds(value *int64)
 	SetSpec(value ModelSpecable)
 	SetTargetConcurrency(value *int32)
+	SetTeam(value *string)
 }

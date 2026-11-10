@@ -75,6 +75,12 @@ func (m *InferenceRequestBuilder) Models() *InferenceModelsRequestsModelsRequest
 	return NewInferenceModelsRequestsModelsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Policies the policies property
+// returns a *InferencePoliciesRequestBuilder when successful
+func (m *InferenceRequestBuilder) Policies() *InferencePoliciesRequestBuilder {
+	return NewInferencePoliciesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Profiles the profiles property
 // returns a *InferenceProfilesRequestBuilder when successful
 func (m *InferenceRequestBuilder) Profiles() *InferenceProfilesRequestBuilder {

@@ -1585,6 +1585,13 @@
           "target_concurrency": {
             "format": "int32",
             "type": "integer"
+          },
+          "team": {
+            "description": "Kept as is when omitted on an update.",
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
@@ -1889,6 +1896,13 @@
           "target_concurrency": {
             "format": "int32",
             "type": "integer"
+          },
+          "team": {
+            "description": "The team whose policy and caps apply; null for none.",
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
@@ -1982,6 +1996,87 @@
           "entry"
         ],
         "type": "object"
+      },
+      "EffectivePolicy": {
+        "properties": {
+          "idle_seconds": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "max_replicas": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "min_replicas": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "never_park": {
+            "type": "boolean"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority"
+          },
+          "schedules": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleWindow"
+            },
+            "type": "array"
+          },
+          "sources": {
+            "$ref": "#/components/schemas/Sources"
+          },
+          "team": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "min_replicas",
+          "max_replicas",
+          "idle_seconds",
+          "priority",
+          "never_park",
+          "schedules",
+          "sources"
+        ],
+        "type": "object"
+      },
+      "EffectivePolicyView": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EffectivePolicy"
+          },
+          {
+            "properties": {
+              "max_gpus": {
+                "format": "int32",
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "max_resident_models": {
+                "format": "int32",
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "schedule_floor": {
+                "description": "What the active schedule windows keep warm now.",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "schedule_floor"
+            ],
+            "type": "object"
+          }
+        ]
       },
       "Engine": {
         "enum": [
@@ -3557,6 +3652,31 @@
             ]
           },
           "ttft_p95_ms": {
+            "description": "Over every request, wakes included.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "wake_requests": {
+            "description": "Requests that waited for the model to wake.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "wake_ttft_p95_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "warm_requests": {
+            "description": "Requests routed within WAKE_QUEUE_MS; the TTFT breach is judged on these.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "warm_ttft_p95_ms": {
             "format": "double",
             "type": [
               "number",
@@ -3569,6 +3689,8 @@
           "requests",
           "errors",
           "error_rate",
+          "warm_requests",
+          "wake_requests",
           "thresholds",
           "breaches"
         ],
@@ -5853,6 +5975,76 @@
         ],
         "type": "object"
       },
+      "Policy": {
+        "description": "A policy at one scope; an absent field inherits from the next scope.",
+        "properties": {
+          "idle_seconds": {
+            "description": "Seconds without a request before the model parks to its floor.",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "max_gpus": {
+            "description": "Team policies only: GPUs the team's models may hold.",
+            "format": "int32",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "max_replicas": {
+            "format": "int32",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "max_resident_models": {
+            "description": "Team policies only: models of the team with replicas at once.",
+            "format": "int32",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "min_replicas": {
+            "format": "int32",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "never_park": {
+            "description": "Keeps at least one replica warm.",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "priority": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Priority"
+              }
+            ]
+          },
+          "schedules": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleWindow"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
       "PolicyActivityResponse": {
         "properties": {
           "failed_checkpoints": {
@@ -6009,6 +6201,39 @@
         ],
         "type": "object"
       },
+      "PolicyList": {
+        "properties": {
+          "org": {
+            "$ref": "#/components/schemas/Policy"
+          },
+          "profiles": {
+            "items": {
+              "$ref": "#/components/schemas/ScopedPolicy"
+            },
+            "type": "array"
+          },
+          "team_names": {
+            "description": "Every team named on a profile or a policy.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "teams": {
+            "items": {
+              "$ref": "#/components/schemas/ScopedPolicy"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "org",
+          "teams",
+          "profiles",
+          "team_names"
+        ],
+        "type": "object"
+      },
       "PolicyPipeline": {
         "description": "Complete policy pipeline definition",
         "properties": {
@@ -6157,6 +6382,14 @@
           "container_port"
         ],
         "type": "object"
+      },
+      "Priority": {
+        "enum": [
+          "batch",
+          "standard",
+          "interactive"
+        ],
+        "type": "string"
       },
       "ProcessState": {
         "properties": {
@@ -6323,6 +6556,10 @@
                 "description": "A ready checkpoint exists under the profile's current checkpoint name.",
                 "type": "boolean"
               },
+              "policy": {
+                "$ref": "#/components/schemas/EffectivePolicy",
+                "description": "The resolved scaling policy; its bounds are the ones the router enforces."
+              },
               "ready_replicas": {
                 "format": "int64",
                 "type": "integer"
@@ -6342,7 +6579,8 @@
             "required": [
               "ready_replicas",
               "checkpointed",
-              "state"
+              "state",
+              "policy"
             ],
             "type": "object"
           }
@@ -6903,6 +7141,62 @@
         ],
         "type": "object"
       },
+      "ScheduleWindow": {
+        "description": "Keeps at least `min_replicas` warm inside the window.",
+        "properties": {
+          "days": {
+            "description": "ISO weekdays, 1 = Monday.",
+            "items": {
+              "format": "int32",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "end": {
+            "type": "string"
+          },
+          "min_replicas": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "start": {
+            "description": "\"HH:MM\" local time; an end at or before the start runs past midnight.",
+            "type": "string"
+          },
+          "timezone": {
+            "description": "IANA name, e.g. \"America/New_York\".",
+            "type": "string"
+          }
+        },
+        "required": [
+          "days",
+          "start",
+          "end",
+          "timezone",
+          "min_replicas"
+        ],
+        "type": "object"
+      },
+      "ScopedPolicy": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Policy"
+          },
+          {
+            "properties": {
+              "name": {
+                "description": "The team name or profile id.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          }
+        ]
+      },
       "ScriptConfiguration": {
         "properties": {
           "base64_script": {
@@ -6918,6 +7212,18 @@
         "properties": {
           "gateway_url": {
             "description": "http(s) origin; null or empty clears it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "SetTeam": {
+        "properties": {
+          "team": {
+            "description": "Null removes the profile from its team.",
             "type": [
               "string",
               "null"
@@ -7891,6 +8197,46 @@
           "timestamp",
           "cpus_by_state",
           "nodes_by_state"
+        ],
+        "type": "object"
+      },
+      "Source": {
+        "enum": [
+          "profile",
+          "team",
+          "org",
+          "default"
+        ],
+        "type": "string"
+      },
+      "Sources": {
+        "properties": {
+          "idle_seconds": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "max_replicas": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "min_replicas": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "never_park": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "schedules": {
+            "$ref": "#/components/schemas/Source"
+          }
+        },
+        "required": [
+          "min_replicas",
+          "max_replicas",
+          "idle_seconds",
+          "priority",
+          "never_park",
+          "schedules"
         ],
         "type": "object"
       },
@@ -13078,6 +13424,278 @@
         ]
       }
     },
+    "/v1/inference/policies": {
+      "get": {
+        "operationId": "list_policies",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyList"
+                }
+              }
+            },
+            "description": "Stored policies by scope"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Every policy: org default, teams and profiles",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/policies/org": {
+      "delete": {
+        "operationId": "delete_org_policy",
+        "responses": {
+          "204": {
+            "description": "Cleared"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Clear the org default policy",
+        "tags": [
+          "inference"
+        ]
+      },
+      "put": {
+        "operationId": "put_org_policy",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Policy"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Policy"
+                }
+              }
+            },
+            "description": "Saved"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Set the org default policy",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/policies/teams/{team}": {
+      "delete": {
+        "operationId": "delete_team_policy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "team",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cleared"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Clear a team's policy and caps",
+        "tags": [
+          "inference"
+        ]
+      },
+      "put": {
+        "operationId": "put_team_policy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "team",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Policy"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Policy"
+                }
+              }
+            },
+            "description": "Saved"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Set a team's policy and caps",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
     "/v1/inference/profiles": {
       "get": {
         "operationId": "list_profiles",
@@ -13405,6 +14023,269 @@
         ]
       }
     },
+    "/v1/inference/profiles/{profile_id}/policy": {
+      "delete": {
+        "operationId": "delete_profile_policy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cleared"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Clear a profile's policy so it inherits its team's and the org's",
+        "tags": [
+          "inference"
+        ]
+      },
+      "get": {
+        "operationId": "get_profile_policy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Policy"
+                }
+              }
+            },
+            "description": "The profile's policy"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Profile not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "A profile's own policy; empty when it inherits everything",
+        "tags": [
+          "inference"
+        ]
+      },
+      "put": {
+        "operationId": "put_profile_policy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Policy"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Policy"
+                }
+              }
+            },
+            "description": "Saved"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Profile not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Set a profile's policy",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/profiles/{profile_id}/policy/effective": {
+      "get": {
+        "operationId": "get_effective_policy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EffectivePolicyView"
+                }
+              }
+            },
+            "description": "Resolved policy"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Profile not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "A profile's effective policy, with where each field came from",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
     "/v1/inference/profiles/{profile_id}/scale": {
       "post": {
         "operationId": "scale_profile",
@@ -13459,6 +14340,16 @@
             },
             "description": "Profile not found"
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "A team cap blocks the scale-up"
+          },
           "4XX": {
             "content": {
               "application/json": {
@@ -13486,6 +14377,85 @@
           }
         ],
         "summary": "Scale a profile; 0 scales it to zero",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/profiles/{profile_id}/team": {
+      "put": {
+        "operationId": "set_profile_team",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTeam"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Saved"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Profile not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Put a profile in a team, or take it out with null",
         "tags": [
           "inference"
         ]
@@ -13757,7 +14727,7 @@
                 }
               }
             },
-            "description": "Queue full or activation deadline exceeded"
+            "description": "Queue full, activation deadline exceeded or a team cap reached"
           },
           "5XX": {
             "content": {

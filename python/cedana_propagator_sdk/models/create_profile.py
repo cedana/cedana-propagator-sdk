@@ -35,6 +35,8 @@ class CreateProfile(AdditionalDataHolder, Parsable):
     scale_down_idle_seconds: Optional[int] = None
     # The target_concurrency property
     target_concurrency: Optional[int] = None
+    # Kept as is when omitted on an update.
+    team: Optional[str] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> CreateProfile:
@@ -68,6 +70,7 @@ class CreateProfile(AdditionalDataHolder, Parsable):
             "profile_id": lambda n : setattr(self, 'profile_id', n.get_str_value()),
             "scale_down_idle_seconds": lambda n : setattr(self, 'scale_down_idle_seconds', n.get_int_value()),
             "target_concurrency": lambda n : setattr(self, 'target_concurrency', n.get_int_value()),
+            "team": lambda n : setattr(self, 'team', n.get_str_value()),
         }
         return fields
     
@@ -90,6 +93,7 @@ class CreateProfile(AdditionalDataHolder, Parsable):
         writer.write_str_value("profile_id", self.profile_id)
         writer.write_int_value("scale_down_idle_seconds", self.scale_down_idle_seconds)
         writer.write_int_value("target_concurrency", self.target_concurrency)
+        writer.write_str_value("team", self.team)
         writer.write_additional_data_value(self.additional_data)
     
 

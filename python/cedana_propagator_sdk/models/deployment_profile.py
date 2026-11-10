@@ -45,6 +45,8 @@ class DeploymentProfile(AdditionalDataHolder, Parsable):
     spec: Optional[ModelSpec] = None
     # The target_concurrency property
     target_concurrency: Optional[int] = None
+    # The team whose policy and caps apply; null for none.
+    team: Optional[str] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> DeploymentProfile:
@@ -83,6 +85,7 @@ class DeploymentProfile(AdditionalDataHolder, Parsable):
             "scale_down_idle_seconds": lambda n : setattr(self, 'scale_down_idle_seconds', n.get_int_value()),
             "spec": lambda n : setattr(self, 'spec', n.get_object_value(ModelSpec)),
             "target_concurrency": lambda n : setattr(self, 'target_concurrency', n.get_int_value()),
+            "team": lambda n : setattr(self, 'team', n.get_str_value()),
         }
         return fields
     
@@ -110,6 +113,7 @@ class DeploymentProfile(AdditionalDataHolder, Parsable):
         writer.write_int_value("scale_down_idle_seconds", self.scale_down_idle_seconds)
         writer.write_object_value("spec", self.spec)
         writer.write_int_value("target_concurrency", self.target_concurrency)
+        writer.write_str_value("team", self.team)
         writer.write_additional_data_value(self.additional_data)
     
 

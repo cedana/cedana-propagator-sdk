@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from .lifecycle_events.lifecycle_events_request_builder import LifecycleEventsRequestBuilder
     from .metrics.metrics_request_builder import MetricsRequestBuilder
     from .models_requests.models_request_builder import ModelsRequestBuilder
+    from .policies.policies_request_builder import PoliciesRequestBuilder
     from .profiles.profiles_request_builder import ProfilesRequestBuilder
     from .router.router_request_builder import RouterRequestBuilder
     from .slo.slo_request_builder import SloRequestBuilder
@@ -104,6 +105,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .models_requests.models_request_builder import ModelsRequestBuilder
 
         return ModelsRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def policies(self) -> PoliciesRequestBuilder:
+        """
+        The policies property
+        """
+        from .policies.policies_request_builder import PoliciesRequestBuilder
+
+        return PoliciesRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def profiles(self) -> ProfilesRequestBuilder:

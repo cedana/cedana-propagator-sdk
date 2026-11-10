@@ -12,6 +12,8 @@ type ProfileView struct {
 	DeploymentProfile
 	// A ready checkpoint exists under the profile's current checkpoint name.
 	checkpointed *bool
+	// The resolved scaling policy; its bounds are the ones the router enforces.
+	policy EffectivePolicyable
 	// The ready_replicas property
 	ready_replicas *int64
 	// How the newest worker started: "restore" or "cold"; null with no worker.
@@ -54,6 +56,16 @@ func (m *ProfileView) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 		}
 		return nil
 	}
+	res["policy"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetObjectValue(CreateEffectivePolicyFromDiscriminatorValue)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPolicy(val.(EffectivePolicyable))
+		}
+		return nil
+	}
 	res["ready_replicas"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetInt64Value()
 		if err != nil {
@@ -87,6 +99,12 @@ func (m *ProfileView) GetFieldDeserializers() map[string]func(i878a80d2330e89d26
 	return res
 }
 
+// GetPolicy gets the policy property value. The resolved scaling policy; its bounds are the ones the router enforces.
+// returns a EffectivePolicyable when successful
+func (m *ProfileView) GetPolicy() EffectivePolicyable {
+	return m.policy
+}
+
 // GetReadyReplicas gets the ready_replicas property value. The ready_replicas property
 // returns a *int64 when successful
 func (m *ProfileView) GetReadyReplicas() *int64 {
@@ -118,6 +136,12 @@ func (m *ProfileView) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6
 		}
 	}
 	{
+		err = writer.WriteObjectValue("policy", m.GetPolicy())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err = writer.WriteInt64Value("ready_replicas", m.GetReadyReplicas())
 		if err != nil {
 			return err
@@ -143,6 +167,11 @@ func (m *ProfileView) SetCheckpointed(value *bool) {
 	m.checkpointed = value
 }
 
+// SetPolicy sets the policy property value. The resolved scaling policy; its bounds are the ones the router enforces.
+func (m *ProfileView) SetPolicy(value EffectivePolicyable) {
+	m.policy = value
+}
+
 // SetReadyReplicas sets the ready_replicas property value. The ready_replicas property
 func (m *ProfileView) SetReadyReplicas(value *int64) {
 	m.ready_replicas = value
@@ -162,10 +191,12 @@ type ProfileViewable interface {
 	DeploymentProfileable
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetCheckpointed() *bool
+	GetPolicy() EffectivePolicyable
 	GetReadyReplicas() *int64
 	GetStartKind() *string
 	GetState() *string
 	SetCheckpointed(value *bool)
+	SetPolicy(value EffectivePolicyable)
 	SetReadyReplicas(value *int64)
 	SetStartKind(value *string)
 	SetState(value *string)

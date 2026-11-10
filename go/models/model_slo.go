@@ -33,8 +33,16 @@ type ModelSlo struct {
 	thresholds SloThresholdsable
 	// The ttft_p50_ms property
 	ttft_p50_ms *float64
-	// The ttft_p95_ms property
+	// Over every request, wakes included.
 	ttft_p95_ms *float64
+	// Requests that waited for the model to wake.
+	wake_requests *int64
+	// The wake_ttft_p95_ms property
+	wake_ttft_p95_ms *float64
+	// Requests routed within WAKE_QUEUE_MS; the TTFT breach is judged on these.
+	warm_requests *int64
+	// The warm_ttft_p95_ms property
+	warm_ttft_p95_ms *float64
 }
 
 // NewModelSlo instantiates a new ModelSlo and sets the default values.
@@ -210,6 +218,46 @@ func (m *ModelSlo) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896
 		}
 		return nil
 	}
+	res["wake_requests"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWakeRequests(val)
+		}
+		return nil
+	}
+	res["wake_ttft_p95_ms"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetFloat64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWakeTtftP95Ms(val)
+		}
+		return nil
+	}
+	res["warm_requests"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWarmRequests(val)
+		}
+		return nil
+	}
+	res["warm_ttft_p95_ms"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetFloat64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetWarmTtftP95Ms(val)
+		}
+		return nil
+	}
 	return res
 }
 
@@ -255,10 +303,34 @@ func (m *ModelSlo) GetTtftP50Ms() *float64 {
 	return m.ttft_p50_ms
 }
 
-// GetTtftP95Ms gets the ttft_p95_ms property value. The ttft_p95_ms property
+// GetTtftP95Ms gets the ttft_p95_ms property value. Over every request, wakes included.
 // returns a *float64 when successful
 func (m *ModelSlo) GetTtftP95Ms() *float64 {
 	return m.ttft_p95_ms
+}
+
+// GetWakeRequests gets the wake_requests property value. Requests that waited for the model to wake.
+// returns a *int64 when successful
+func (m *ModelSlo) GetWakeRequests() *int64 {
+	return m.wake_requests
+}
+
+// GetWakeTtftP95Ms gets the wake_ttft_p95_ms property value. The wake_ttft_p95_ms property
+// returns a *float64 when successful
+func (m *ModelSlo) GetWakeTtftP95Ms() *float64 {
+	return m.wake_ttft_p95_ms
+}
+
+// GetWarmRequests gets the warm_requests property value. Requests routed within WAKE_QUEUE_MS; the TTFT breach is judged on these.
+// returns a *int64 when successful
+func (m *ModelSlo) GetWarmRequests() *int64 {
+	return m.warm_requests
+}
+
+// GetWarmTtftP95Ms gets the warm_ttft_p95_ms property value. The warm_ttft_p95_ms property
+// returns a *float64 when successful
+func (m *ModelSlo) GetWarmTtftP95Ms() *float64 {
+	return m.warm_ttft_p95_ms
 }
 
 // Serialize serializes information the current object
@@ -336,6 +408,30 @@ func (m *ModelSlo) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c01
 		}
 	}
 	{
+		err := writer.WriteInt64Value("wake_requests", m.GetWakeRequests())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteFloat64Value("wake_ttft_p95_ms", m.GetWakeTtftP95Ms())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteInt64Value("warm_requests", m.GetWarmRequests())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteFloat64Value("warm_ttft_p95_ms", m.GetWarmTtftP95Ms())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteAdditionalData(m.GetAdditionalData())
 		if err != nil {
 			return err
@@ -404,9 +500,29 @@ func (m *ModelSlo) SetTtftP50Ms(value *float64) {
 	m.ttft_p50_ms = value
 }
 
-// SetTtftP95Ms sets the ttft_p95_ms property value. The ttft_p95_ms property
+// SetTtftP95Ms sets the ttft_p95_ms property value. Over every request, wakes included.
 func (m *ModelSlo) SetTtftP95Ms(value *float64) {
 	m.ttft_p95_ms = value
+}
+
+// SetWakeRequests sets the wake_requests property value. Requests that waited for the model to wake.
+func (m *ModelSlo) SetWakeRequests(value *int64) {
+	m.wake_requests = value
+}
+
+// SetWakeTtftP95Ms sets the wake_ttft_p95_ms property value. The wake_ttft_p95_ms property
+func (m *ModelSlo) SetWakeTtftP95Ms(value *float64) {
+	m.wake_ttft_p95_ms = value
+}
+
+// SetWarmRequests sets the warm_requests property value. Requests routed within WAKE_QUEUE_MS; the TTFT breach is judged on these.
+func (m *ModelSlo) SetWarmRequests(value *int64) {
+	m.warm_requests = value
+}
+
+// SetWarmTtftP95Ms sets the warm_ttft_p95_ms property value. The warm_ttft_p95_ms property
+func (m *ModelSlo) SetWarmTtftP95Ms(value *float64) {
+	m.warm_ttft_p95_ms = value
 }
 
 type ModelSloable interface {
@@ -424,6 +540,10 @@ type ModelSloable interface {
 	GetThresholds() SloThresholdsable
 	GetTtftP50Ms() *float64
 	GetTtftP95Ms() *float64
+	GetWakeRequests() *int64
+	GetWakeTtftP95Ms() *float64
+	GetWarmRequests() *int64
+	GetWarmTtftP95Ms() *float64
 	SetBreaches(value []string)
 	SetE2eP95Ms(value *float64)
 	SetErrorRate(value *float64)
@@ -436,4 +556,8 @@ type ModelSloable interface {
 	SetThresholds(value SloThresholdsable)
 	SetTtftP50Ms(value *float64)
 	SetTtftP95Ms(value *float64)
+	SetWakeRequests(value *int64)
+	SetWakeTtftP95Ms(value *float64)
+	SetWarmRequests(value *int64)
+	SetWarmTtftP95Ms(value *float64)
 }

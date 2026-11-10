@@ -37,8 +37,16 @@ class ModelSlo(AdditionalDataHolder, Parsable):
     thresholds: Optional[SloThresholds] = None
     # The ttft_p50_ms property
     ttft_p50_ms: Optional[float] = None
-    # The ttft_p95_ms property
+    # Over every request, wakes included.
     ttft_p95_ms: Optional[float] = None
+    # Requests that waited for the model to wake.
+    wake_requests: Optional[int] = None
+    # The wake_ttft_p95_ms property
+    wake_ttft_p95_ms: Optional[float] = None
+    # Requests routed within WAKE_QUEUE_MS; the TTFT breach is judged on these.
+    warm_requests: Optional[int] = None
+    # The warm_ttft_p95_ms property
+    warm_ttft_p95_ms: Optional[float] = None
     
     @staticmethod
     def create_from_discriminator_value(parse_node: ParseNode) -> ModelSlo:
@@ -73,6 +81,10 @@ class ModelSlo(AdditionalDataHolder, Parsable):
             "thresholds": lambda n : setattr(self, 'thresholds', n.get_object_value(SloThresholds)),
             "ttft_p50_ms": lambda n : setattr(self, 'ttft_p50_ms', n.get_float_value()),
             "ttft_p95_ms": lambda n : setattr(self, 'ttft_p95_ms', n.get_float_value()),
+            "wake_requests": lambda n : setattr(self, 'wake_requests', n.get_int_value()),
+            "wake_ttft_p95_ms": lambda n : setattr(self, 'wake_ttft_p95_ms', n.get_float_value()),
+            "warm_requests": lambda n : setattr(self, 'warm_requests', n.get_int_value()),
+            "warm_ttft_p95_ms": lambda n : setattr(self, 'warm_ttft_p95_ms', n.get_float_value()),
         }
         return fields
     
@@ -96,6 +108,10 @@ class ModelSlo(AdditionalDataHolder, Parsable):
         writer.write_object_value("thresholds", self.thresholds)
         writer.write_float_value("ttft_p50_ms", self.ttft_p50_ms)
         writer.write_float_value("ttft_p95_ms", self.ttft_p95_ms)
+        writer.write_int_value("wake_requests", self.wake_requests)
+        writer.write_float_value("wake_ttft_p95_ms", self.wake_ttft_p95_ms)
+        writer.write_int_value("warm_requests", self.warm_requests)
+        writer.write_float_value("warm_ttft_p95_ms", self.warm_ttft_p95_ms)
         writer.write_additional_data_value(self.additional_data)
     
 

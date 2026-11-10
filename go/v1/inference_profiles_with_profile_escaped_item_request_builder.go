@@ -68,10 +68,22 @@ func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Manifest() *InferenceP
 	return NewInferenceProfilesItemManifestRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Policy the policy property
+// returns a *InferenceProfilesItemPolicyRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Policy() *InferenceProfilesItemPolicyRequestBuilder {
+	return NewInferenceProfilesItemPolicyRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Scale the scale property
 // returns a *InferenceProfilesItemScaleRequestBuilder when successful
 func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Scale() *InferenceProfilesItemScaleRequestBuilder {
 	return NewInferenceProfilesItemScaleRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// Team the team property
+// returns a *InferenceProfilesItemTeamRequestBuilder when successful
+func (m *InferenceProfilesWithProfile_ItemRequestBuilder) Team() *InferenceProfilesItemTeamRequestBuilder {
+	return NewInferenceProfilesItemTeamRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // ToDeleteRequestInformation removes the model's objects from its cluster, weights volume included, then the profile.
