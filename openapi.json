@@ -378,6 +378,32 @@
         },
         "type": "object"
       },
+      "AlertWebhook": {
+        "description": "A webhook as listed; the URL is masked since Slack webhook URLs are credentials.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "enabled",
+          "created_at"
+        ],
+        "type": "object"
+      },
       "AuthorizeRequest": {
         "properties": {
           "estimated_prompt_tokens": {
@@ -1567,6 +1593,20 @@
         ],
         "type": "object"
       },
+      "CreateWebhook": {
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      },
       "CreatedInferenceKey": {
         "allOf": [
           {
@@ -2465,6 +2505,64 @@
         },
         "required": [
           "message"
+        ],
+        "type": "object"
+      },
+      "InferenceEvent": {
+        "description": "One entry of a model's timeline, merged from the tables that record it.",
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "duration_ms": {
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "kind": {
+            "description": "worker.restored, worker.cold_start, worker.terminated, restore.failed, restore.fallback,\ncheckpoint.first_ready, checkpoint.failed, model.parked, model.woken, model.scaled, or a\nlifecycle kind.",
+            "type": "string"
+          },
+          "logical_model": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pod_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "profile_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "severity": {
+            "type": "string"
+          },
+          "source": {
+            "description": "The table the event came from.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "at",
+          "kind",
+          "source",
+          "severity"
         ],
         "type": "object"
       },
@@ -3389,6 +3487,90 @@
         "required": [
           "profile_id",
           "points"
+        ],
+        "type": "object"
+      },
+      "ModelSlo": {
+        "description": "One model's service levels over the window, per serving profile.",
+        "properties": {
+          "breaches": {
+            "description": "Breached metrics: ttft_p95, error_rate, inter_token_p95. Empty below the minimum requests.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "e2e_p95_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "error_rate": {
+            "format": "double",
+            "type": "number"
+          },
+          "errors": {
+            "description": "5xx and 429 responses; other 4xx are caller errors.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "inter_token_p95_ms": {
+            "description": "p95 over requests of each request's p95 inter-token gap.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "logical_model": {
+            "type": "string"
+          },
+          "profile_id": {
+            "description": "The profile that served; null for requests refused before one was chosen.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "queue_p95_ms": {
+            "description": "Time the gateway held the request before routing it.",
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "requests": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "thresholds": {
+            "$ref": "#/components/schemas/SloThresholds"
+          },
+          "ttft_p50_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "ttft_p95_ms": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "logical_model",
+          "requests",
+          "errors",
+          "error_rate",
+          "thresholds",
+          "breaches"
         ],
         "type": "object"
       },
@@ -6744,6 +6926,85 @@
         },
         "type": "object"
       },
+      "SloConfig": {
+        "properties": {
+          "default": {
+            "$ref": "#/components/schemas/SloThresholds",
+            "description": "The org default; code defaults until one is saved."
+          },
+          "overrides": {
+            "items": {
+              "$ref": "#/components/schemas/SloOverride"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "default",
+          "overrides"
+        ],
+        "type": "object"
+      },
+      "SloConfigUpsert": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SloThresholds"
+          },
+          {
+            "properties": {
+              "profile_id": {
+                "description": "A profile id, or \"*\" for the org default.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "profile_id"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "SloOverride": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SloThresholds"
+          },
+          {
+            "properties": {
+              "profile_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "profile_id"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "SloThresholds": {
+        "properties": {
+          "error_rate": {
+            "description": "Fraction of requests, 0 to 1.",
+            "format": "double",
+            "type": "number"
+          },
+          "inter_token_p95_ms": {
+            "format": "double",
+            "type": "number"
+          },
+          "ttft_p95_ms": {
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "ttft_p95_ms",
+          "error_rate",
+          "inter_token_p95_ms"
+        ],
+        "type": "object"
+      },
       "SlurmAvailableFilters": {
         "description": "Distinct filter values across all jobs (not just the current page)",
         "properties": {
@@ -8188,6 +8449,17 @@
             ]
           }
         },
+        "type": "object"
+      },
+      "UpdateWebhook": {
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
         "type": "object"
       },
       "UploadUrlsResponse": {
@@ -11743,6 +12015,254 @@
         ]
       }
     },
+    "/v1/inference/alerts/webhooks": {
+      "get": {
+        "operationId": "list_webhooks",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AlertWebhook"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Alert webhooks"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "List alert webhooks",
+        "tags": [
+          "inference"
+        ]
+      },
+      "post": {
+        "operationId": "create_webhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhook"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertWebhook"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Add an alert webhook; SLO breaches POST `{\"text\": ...}` to it",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/alerts/webhooks/{id}": {
+      "delete": {
+        "operationId": "delete_webhook",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Remove an alert webhook",
+        "tags": [
+          "inference"
+        ]
+      },
+      "put": {
+        "operationId": "update_webhook",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWebhook"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertWebhook"
+                }
+              }
+            },
+            "description": "Updated"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Enable or disable an alert webhook",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
     "/v1/inference/costs/config": {
       "get": {
         "operationId": "list_cost_config",
@@ -11861,6 +12381,96 @@
           }
         ],
         "summary": "Set cost rates for a profile",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/events": {
+      "get": {
+        "operationId": "events",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "hours",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "profile_id",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InferenceEvent"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Worker starts, restores, checkpoints, terminations, scaling and lifecycle events, newest first"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Model events timeline",
         "tags": [
           "inference"
         ]
@@ -13217,6 +13827,235 @@
         "summary": "Accept one completed-request record from Switchyard, service-token-only.\nIdempotent by request_id: replays of the same completed record are no-ops.",
         "tags": [
           "Router"
+        ]
+      }
+    },
+    "/v1/inference/slo": {
+      "get": {
+        "operationId": "slo",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "hours",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ModelSlo"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Service levels and breaches per model and profile"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Per-model SLOs",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/slo/config": {
+      "get": {
+        "operationId": "get_slo_config",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SloConfig"
+                }
+              }
+            },
+            "description": "Org default and per-profile thresholds"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "SLO thresholds",
+        "tags": [
+          "inference"
+        ]
+      },
+      "put": {
+        "operationId": "put_slo_config",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SloConfigUpsert"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SloOverride"
+                }
+              }
+            },
+            "description": "Thresholds saved"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Profile not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Set SLO thresholds for a profile, or the org default with profile_id \"*\"",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/slo/config/{profile_id}": {
+      "delete": {
+        "operationId": "delete_slo_config",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Reset"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Reset a profile's thresholds to the org default (\"*\" resets the default to code defaults)",
+        "tags": [
+          "inference"
         ]
       }
     },

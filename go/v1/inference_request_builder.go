@@ -12,6 +12,12 @@ type InferenceRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
+// Alerts the alerts property
+// returns a *InferenceAlertsRequestBuilder when successful
+func (m *InferenceRequestBuilder) Alerts() *InferenceAlertsRequestBuilder {
+	return NewInferenceAlertsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // NewInferenceRequestBuilderInternal instantiates a new InferenceRequestBuilder and sets the default values.
 func NewInferenceRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *InferenceRequestBuilder {
 	m := &InferenceRequestBuilder{
@@ -31,6 +37,12 @@ func NewInferenceRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee2633
 // returns a *InferenceCostsRequestBuilder when successful
 func (m *InferenceRequestBuilder) Costs() *InferenceCostsRequestBuilder {
 	return NewInferenceCostsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// Events the events property
+// returns a *InferenceEventsRequestBuilder when successful
+func (m *InferenceRequestBuilder) Events() *InferenceEventsRequestBuilder {
+	return NewInferenceEventsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // Gateways the gateways property
@@ -73,6 +85,12 @@ func (m *InferenceRequestBuilder) Profiles() *InferenceProfilesRequestBuilder {
 // returns a *InferenceRouterRequestBuilder when successful
 func (m *InferenceRequestBuilder) Router() *InferenceRouterRequestBuilder {
 	return NewInferenceRouterRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// Slo the slo property
+// returns a *InferenceSloRequestBuilder when successful
+func (m *InferenceRequestBuilder) Slo() *InferenceSloRequestBuilder {
+	return NewInferenceSloRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // StartupComparison the startupComparison property
