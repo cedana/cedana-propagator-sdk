@@ -3398,6 +3398,10 @@
             },
             "type": "object"
           },
+          "pd": {
+            "description": "Serve disaggregated: a prefill and a decode worker per replica, KV moved over NIXL.\nNot checkpointed or parked: freezing one side of a pair breaks it.",
+            "type": "boolean"
+          },
           "repo": {
             "description": "Hugging Face repo, e.g. `Qwen/Qwen3-8B`.",
             "type": "string"

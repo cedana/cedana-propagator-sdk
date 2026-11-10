@@ -25,6 +25,8 @@ type ModelSpec struct {
 	image *string
 	// The node_selector property
 	node_selector ModelSpec_node_selectorable
+	// Serve disaggregated: a prefill and a decode worker per replica, KV moved over NIXL.Not checkpointed or parked: freezing one side of a pair breaks it.
+	pd *bool
 	// Hugging Face repo, e.g. `Qwen/Qwen3-8B`.
 	repo *string
 	// Worker container resources other than GPUs; no CPU or memory limits unless set here.
@@ -152,6 +154,16 @@ func (m *ModelSpec) GetFieldDeserializers() map[string]func(i878a80d2330e89d2689
 		}
 		return nil
 	}
+	res["pd"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetBoolValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetPd(val)
+		}
+		return nil
+	}
 	res["repo"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -225,6 +237,12 @@ func (m *ModelSpec) GetNodeSelector() ModelSpec_node_selectorable {
 	return m.node_selector
 }
 
+// GetPd gets the pd property value. Serve disaggregated: a prefill and a decode worker per replica, KV moved over NIXL.Not checkpointed or parked: freezing one side of a pair breaks it.
+// returns a *bool when successful
+func (m *ModelSpec) GetPd() *bool {
+	return m.pd
+}
+
 // GetRepo gets the repo property value. Hugging Face repo, e.g. `Qwen/Qwen3-8B`.
 // returns a *string when successful
 func (m *ModelSpec) GetRepo() *string {
@@ -290,6 +308,12 @@ func (m *ModelSpec) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c0
 	}
 	{
 		err := writer.WriteObjectValue("node_selector", m.GetNodeSelector())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteBoolValue("pd", m.GetPd())
 		if err != nil {
 			return err
 		}
@@ -373,6 +397,11 @@ func (m *ModelSpec) SetNodeSelector(value ModelSpec_node_selectorable) {
 	m.node_selector = value
 }
 
+// SetPd sets the pd property value. Serve disaggregated: a prefill and a decode worker per replica, KV moved over NIXL.Not checkpointed or parked: freezing one side of a pair breaks it.
+func (m *ModelSpec) SetPd(value *bool) {
+	m.pd = value
+}
+
 // SetRepo sets the repo property value. Hugging Face repo, e.g. `Qwen/Qwen3-8B`.
 func (m *ModelSpec) SetRepo(value *string) {
 	m.repo = value
@@ -403,6 +432,7 @@ type ModelSpecable interface {
 	GetHfTokenSecret() *string
 	GetImage() *string
 	GetNodeSelector() ModelSpec_node_selectorable
+	GetPd() *bool
 	GetRepo() *string
 	GetResources() ModelSpec_resourcesable
 	GetRevision() *string
@@ -414,6 +444,7 @@ type ModelSpecable interface {
 	SetHfTokenSecret(value *string)
 	SetImage(value *string)
 	SetNodeSelector(value ModelSpec_node_selectorable)
+	SetPd(value *bool)
 	SetRepo(value *string)
 	SetResources(value ModelSpec_resourcesable)
 	SetRevision(value *string)

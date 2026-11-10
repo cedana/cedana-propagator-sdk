@@ -33,6 +33,8 @@ class ModelSpec(AdditionalDataHolder, Parsable):
     image: Optional[str] = None
     # The node_selector property
     node_selector: Optional[ModelSpec_node_selector] = None
+    # Serve disaggregated: a prefill and a decode worker per replica, KV moved over NIXL.Not checkpointed or parked: freezing one side of a pair breaks it.
+    pd: Optional[bool] = None
     # Hugging Face repo, e.g. `Qwen/Qwen3-8B`.
     repo: Optional[str] = None
     # Worker container resources other than GPUs; no CPU or memory limits unless set here.
@@ -78,6 +80,7 @@ class ModelSpec(AdditionalDataHolder, Parsable):
             "hf_token_secret": lambda n : setattr(self, 'hf_token_secret', n.get_str_value()),
             "image": lambda n : setattr(self, 'image', n.get_str_value()),
             "node_selector": lambda n : setattr(self, 'node_selector', n.get_object_value(ModelSpec_node_selector)),
+            "pd": lambda n : setattr(self, 'pd', n.get_bool_value()),
             "repo": lambda n : setattr(self, 'repo', n.get_str_value()),
             "resources": lambda n : setattr(self, 'resources', n.get_object_value(ModelSpec_resources)),
             "revision": lambda n : setattr(self, 'revision', n.get_str_value()),
@@ -100,6 +103,7 @@ class ModelSpec(AdditionalDataHolder, Parsable):
         writer.write_str_value("hf_token_secret", self.hf_token_secret)
         writer.write_str_value("image", self.image)
         writer.write_object_value("node_selector", self.node_selector)
+        writer.write_bool_value("pd", self.pd)
         writer.write_str_value("repo", self.repo)
         writer.write_object_value("resources", self.resources)
         writer.write_str_value("revision", self.revision)
