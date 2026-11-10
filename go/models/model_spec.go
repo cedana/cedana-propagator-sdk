@@ -11,8 +11,6 @@ import (
 type ModelSpec struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
-	// Size of the weights volume, e.g. `60Gi`.
-	cache_size *string
 	// The engine property
 	engine *Engine
 	// Extra engine flags, appended after the generated ones.
@@ -33,8 +31,6 @@ type ModelSpec struct {
 	resources ModelSpec_resourcesable
 	// A 40-character commit: `main` moves, and a checkpoint of other weights must not restore.
 	revision *string
-	// The storage_class property
-	storage_class *string
 	// The tolerations property
 	tolerations []ModelSpec_tolerationsable
 }
@@ -56,12 +52,6 @@ func CreateModelSpecFromDiscriminatorValue(parseNode i878a80d2330e89d26896388a3f
 // returns a map[string]any when successful
 func (m *ModelSpec) GetAdditionalData() map[string]any {
 	return m.additionalData
-}
-
-// GetCacheSize gets the cache_size property value. Size of the weights volume, e.g. `60Gi`.
-// returns a *string when successful
-func (m *ModelSpec) GetCacheSize() *string {
-	return m.cache_size
 }
 
 // GetEngine gets the engine property value. The engine property
@@ -86,16 +76,6 @@ func (m *ModelSpec) GetEnv() ModelSpec_envable {
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *ModelSpec) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
-	res["cache_size"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetStringValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetCacheSize(val)
-		}
-		return nil
-	}
 	res["engine"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetEnumValue(ParseEngine)
 		if err != nil {
@@ -202,16 +182,6 @@ func (m *ModelSpec) GetFieldDeserializers() map[string]func(i878a80d2330e89d2689
 		}
 		return nil
 	}
-	res["storage_class"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetStringValue()
-		if err != nil {
-			return err
-		}
-		if val != nil {
-			m.SetStorageClass(val)
-		}
-		return nil
-	}
 	res["tolerations"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetCollectionOfObjectValues(CreateModelSpec_tolerationsFromDiscriminatorValue)
 		if err != nil {
@@ -273,12 +243,6 @@ func (m *ModelSpec) GetRevision() *string {
 	return m.revision
 }
 
-// GetStorageClass gets the storage_class property value. The storage_class property
-// returns a *string when successful
-func (m *ModelSpec) GetStorageClass() *string {
-	return m.storage_class
-}
-
 // GetTolerations gets the tolerations property value. The tolerations property
 // returns a []ModelSpec_tolerationsable when successful
 func (m *ModelSpec) GetTolerations() []ModelSpec_tolerationsable {
@@ -287,12 +251,6 @@ func (m *ModelSpec) GetTolerations() []ModelSpec_tolerationsable {
 
 // Serialize serializes information the current object
 func (m *ModelSpec) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
-	{
-		err := writer.WriteStringValue("cache_size", m.GetCacheSize())
-		if err != nil {
-			return err
-		}
-	}
 	if m.GetEngine() != nil {
 		cast := (*m.GetEngine()).String()
 		err := writer.WriteStringValue("engine", &cast)
@@ -354,12 +312,6 @@ func (m *ModelSpec) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c0
 			return err
 		}
 	}
-	{
-		err := writer.WriteStringValue("storage_class", m.GetStorageClass())
-		if err != nil {
-			return err
-		}
-	}
 	if m.GetTolerations() != nil {
 		cast := make([]i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable, len(m.GetTolerations()))
 		for i, v := range m.GetTolerations() {
@@ -384,11 +336,6 @@ func (m *ModelSpec) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c0
 // SetAdditionalData sets the AdditionalData property value. Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 func (m *ModelSpec) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
-}
-
-// SetCacheSize sets the cache_size property value. Size of the weights volume, e.g. `60Gi`.
-func (m *ModelSpec) SetCacheSize(value *string) {
-	m.cache_size = value
 }
 
 // SetEngine sets the engine property value. The engine property
@@ -441,11 +388,6 @@ func (m *ModelSpec) SetRevision(value *string) {
 	m.revision = value
 }
 
-// SetStorageClass sets the storage_class property value. The storage_class property
-func (m *ModelSpec) SetStorageClass(value *string) {
-	m.storage_class = value
-}
-
 // SetTolerations sets the tolerations property value. The tolerations property
 func (m *ModelSpec) SetTolerations(value []ModelSpec_tolerationsable) {
 	m.tolerations = value
@@ -454,7 +396,6 @@ func (m *ModelSpec) SetTolerations(value []ModelSpec_tolerationsable) {
 type ModelSpecable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
-	GetCacheSize() *string
 	GetEngine() *Engine
 	GetEngineArgs() []string
 	GetEnv() ModelSpec_envable
@@ -465,9 +406,7 @@ type ModelSpecable interface {
 	GetRepo() *string
 	GetResources() ModelSpec_resourcesable
 	GetRevision() *string
-	GetStorageClass() *string
 	GetTolerations() []ModelSpec_tolerationsable
-	SetCacheSize(value *string)
 	SetEngine(value *Engine)
 	SetEngineArgs(value []string)
 	SetEnv(value ModelSpec_envable)
@@ -478,6 +417,5 @@ type ModelSpecable interface {
 	SetRepo(value *string)
 	SetResources(value ModelSpec_resourcesable)
 	SetRevision(value *string)
-	SetStorageClass(value *string)
 	SetTolerations(value []ModelSpec_tolerationsable)
 }

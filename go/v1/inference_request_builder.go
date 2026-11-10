@@ -45,6 +45,12 @@ func (m *InferenceRequestBuilder) LifecycleEvents() *InferenceLifecycleEventsReq
 	return NewInferenceLifecycleEventsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Metrics the metrics property
+// returns a *InferenceMetricsRequestBuilder when successful
+func (m *InferenceRequestBuilder) Metrics() *InferenceMetricsRequestBuilder {
+	return NewInferenceMetricsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Models the models property
 // returns a *InferenceModelsRequestsModelsRequestBuilder when successful
 func (m *InferenceRequestBuilder) Models() *InferenceModelsRequestsModelsRequestBuilder {

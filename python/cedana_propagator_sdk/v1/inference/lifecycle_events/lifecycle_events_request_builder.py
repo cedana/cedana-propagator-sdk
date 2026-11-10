@@ -30,7 +30,7 @@ class LifecycleEventsRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/inference/lifecycle-events{?limit*,since*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/inference/lifecycle-events{?limit*,profile_id*,since*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[LifecycleEventsRequestBuilderGetQueryParameters]] = None) -> Optional[list[LifecycleEventView]]:
         """
@@ -119,6 +119,9 @@ class LifecycleEventsRequestBuilder(BaseRequestBuilder):
         The cluster's recent lifecycle events across all profiles, time-ascending, so aUI can replay how the routing topology changed over time.
         """
         limit: Optional[int] = None
+
+        # Only this profile's events.
+        profile_id: Optional[str] = None
 
         # Only events at or after this instant, so a poller can page forward.
         since: Optional[datetime.datetime] = None

@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .checkpoint_savings.checkpoint_savings_request_builder import CheckpointSavingsRequestBuilder
     from .export.export_request_builder import ExportRequestBuilder
     from .gpu.gpu_request_builder import GpuRequestBuilder
+    from .ingest.ingest_request_builder import IngestRequestBuilder
     from .k8.k8_request_builder import K8RequestBuilder
     from .operations.operations_request_builder import OperationsRequestBuilder
     from .pods.pods_request_builder import PodsRequestBuilder
@@ -63,6 +64,15 @@ class MetricsRequestBuilder(BaseRequestBuilder):
         from .gpu.gpu_request_builder import GpuRequestBuilder
 
         return GpuRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def ingest(self) -> IngestRequestBuilder:
+        """
+        The ingest property
+        """
+        from .ingest.ingest_request_builder import IngestRequestBuilder
+
+        return IngestRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def k8(self) -> K8RequestBuilder:

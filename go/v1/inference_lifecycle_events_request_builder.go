@@ -18,6 +18,8 @@ type InferenceLifecycleEventsRequestBuilder struct {
 // InferenceLifecycleEventsRequestBuilderGetQueryParameters the cluster's recent lifecycle events across all profiles, time-ascending, so aUI can replay how the routing topology changed over time.
 type InferenceLifecycleEventsRequestBuilderGetQueryParameters struct {
 	Limit *int64 "uriparametername:\"limit\""
+	// Only this profile's events.
+	Profile_id *string "uriparametername:\"profile_id\""
 	// Only events at or after this instant, so a poller can page forward.
 	Since *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time "uriparametername:\"since\""
 }
@@ -43,7 +45,7 @@ type InferenceLifecycleEventsRequestBuilderPostRequestConfiguration struct {
 // NewInferenceLifecycleEventsRequestBuilderInternal instantiates a new InferenceLifecycleEventsRequestBuilder and sets the default values.
 func NewInferenceLifecycleEventsRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *InferenceLifecycleEventsRequestBuilder {
 	m := &InferenceLifecycleEventsRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/inference/lifecycle-events{?limit*,since*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/inference/lifecycle-events{?limit*,profile_id*,since*}", pathParameters),
 	}
 	return m
 }

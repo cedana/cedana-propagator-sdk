@@ -1996,6 +1996,40 @@
         ],
         "type": "object"
       },
+      "FleetPoint": {
+        "properties": {
+          "gpus_in_use": {
+            "format": "double",
+            "type": "number"
+          },
+          "gpus_total": {
+            "format": "double",
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "ready_replicas": {
+            "format": "double",
+            "type": "number"
+          },
+          "serving_models": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "ts": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ts",
+          "serving_models",
+          "ready_replicas",
+          "gpus_in_use"
+        ],
+        "type": "object"
+      },
       "GpuInfo": {
         "description": "GPU inventory of one node.",
         "properties": {
@@ -3270,13 +3304,54 @@
         ],
         "type": "object"
       },
+      "MetricsSeries": {
+        "properties": {
+          "bucket_minutes": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "fleet": {
+            "items": {
+              "$ref": "#/components/schemas/FleetPoint"
+            },
+            "type": "array"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/ModelMetricsSeries"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "bucket_minutes",
+          "series",
+          "fleet"
+        ],
+        "type": "object"
+      },
+      "ModelMetricsSeries": {
+        "description": "A model's engine and GPU metrics in one bucket: `ts` plus one field per recorded series\n(generation_tokens_per_second, kv_usage, gpu_utilization, ...); a series with no samples is absent.",
+        "properties": {
+          "points": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "profile_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile_id",
+          "points"
+        ],
+        "type": "object"
+      },
       "ModelSpec": {
         "description": "What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.",
         "properties": {
-          "cache_size": {
-            "description": "Size of the weights volume, e.g. `60Gi`.",
-            "type": "string"
-          },
           "engine": {
             "$ref": "#/components/schemas/Engine"
           },
@@ -3338,12 +3413,6 @@
             "description": "A 40-character commit: `main` moves, and a checkpoint of other weights must not restore.",
             "type": "string"
           },
-          "storage_class": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "tolerations": {
             "items": {
               "type": "object"
@@ -3353,8 +3422,7 @@
         },
         "required": [
           "repo",
-          "revision",
-          "cache_size"
+          "revision"
         ],
         "type": "object"
       },
@@ -11838,6 +11906,18 @@
                 "null"
               ]
             }
+          },
+          {
+            "description": "Only this profile's events.",
+            "in": "query",
+            "name": "profile_id",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         ],
         "responses": {
@@ -11969,6 +12049,73 @@
           }
         ],
         "summary": "Ingest one trusted lifecycle envelope over HTTP. Same event_id dedupe and\ntransactional ingestion as the RabbitMQ path.",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/metrics/series": {
+      "get": {
+        "description": "From the cluster's Prometheus recording rules (`cedana:inference_*`), shipped by the\nmonitoring stack. Empty when monitoring is off.",
+        "operationId": "metrics_series",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "hours",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "bucket_minutes",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetricsSeries"
+                }
+              }
+            },
+            "description": "Per-model and fleet series, oldest first"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Engine and GPU metrics per model over time",
         "tags": [
           "inference"
         ]
@@ -14762,6 +14909,66 @@
           }
         ],
         "summary": "Get GPU time-series data for a specific GPU",
+        "tags": [
+          "Metrics"
+        ]
+      }
+    },
+    "/v1/metrics/ingest": {
+      "post": {
+        "description": "Newline-delimited JSON from the cluster's Vector agent, stored unchanged where ClickHouse's\nS3Queue reads it, so clusters ship metrics with their org token instead of S3 credentials.",
+        "operationId": "ingest",
+        "requestBody": {
+          "content": {
+            "application/x-ndjson": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Stored"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "No ingestion bucket configured"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Ingest a batch of cluster metrics",
         "tags": [
           "Metrics"
         ]

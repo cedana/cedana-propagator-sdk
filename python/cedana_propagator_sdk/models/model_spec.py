@@ -19,8 +19,6 @@ class ModelSpec(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # Size of the weights volume, e.g. `60Gi`.
-    cache_size: Optional[str] = None
     # The engine property
     engine: Optional[Engine] = None
     # Extra engine flags, appended after the generated ones.
@@ -41,8 +39,6 @@ class ModelSpec(AdditionalDataHolder, Parsable):
     resources: Optional[ModelSpec_resources] = None
     # A 40-character commit: `main` moves, and a checkpoint of other weights must not restore.
     revision: Optional[str] = None
-    # The storage_class property
-    storage_class: Optional[str] = None
     # The tolerations property
     tolerations: Optional[list[ModelSpec_tolerations]] = None
     
@@ -75,7 +71,6 @@ class ModelSpec(AdditionalDataHolder, Parsable):
         from .model_spec_tolerations import ModelSpec_tolerations
 
         fields: dict[str, Callable[[Any], None]] = {
-            "cache_size": lambda n : setattr(self, 'cache_size', n.get_str_value()),
             "engine": lambda n : setattr(self, 'engine', n.get_enum_value(Engine)),
             "engine_args": lambda n : setattr(self, 'engine_args', n.get_collection_of_primitive_values(str)),
             "env": lambda n : setattr(self, 'env', n.get_object_value(ModelSpec_env)),
@@ -86,7 +81,6 @@ class ModelSpec(AdditionalDataHolder, Parsable):
             "repo": lambda n : setattr(self, 'repo', n.get_str_value()),
             "resources": lambda n : setattr(self, 'resources', n.get_object_value(ModelSpec_resources)),
             "revision": lambda n : setattr(self, 'revision', n.get_str_value()),
-            "storage_class": lambda n : setattr(self, 'storage_class', n.get_str_value()),
             "tolerations": lambda n : setattr(self, 'tolerations', n.get_collection_of_object_values(ModelSpec_tolerations)),
         }
         return fields
@@ -99,7 +93,6 @@ class ModelSpec(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
-        writer.write_str_value("cache_size", self.cache_size)
         writer.write_enum_value("engine", self.engine)
         writer.write_collection_of_primitive_values("engine_args", self.engine_args)
         writer.write_object_value("env", self.env)
@@ -110,7 +103,6 @@ class ModelSpec(AdditionalDataHolder, Parsable):
         writer.write_str_value("repo", self.repo)
         writer.write_object_value("resources", self.resources)
         writer.write_str_value("revision", self.revision)
-        writer.write_str_value("storage_class", self.storage_class)
         writer.write_collection_of_object_values("tolerations", self.tolerations)
         writer.write_additional_data_value(self.additional_data)
     

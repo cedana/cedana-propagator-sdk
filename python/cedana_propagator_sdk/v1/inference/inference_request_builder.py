@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from .costs.costs_request_builder import CostsRequestBuilder
     from .keys.keys_request_builder import KeysRequestBuilder
     from .lifecycle_events.lifecycle_events_request_builder import LifecycleEventsRequestBuilder
+    from .metrics.metrics_request_builder import MetricsRequestBuilder
     from .models_requests.models_request_builder import ModelsRequestBuilder
     from .profiles.profiles_request_builder import ProfilesRequestBuilder
     from .router.router_request_builder import RouterRequestBuilder
@@ -54,6 +55,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .lifecycle_events.lifecycle_events_request_builder import LifecycleEventsRequestBuilder
 
         return LifecycleEventsRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def metrics(self) -> MetricsRequestBuilder:
+        """
+        The metrics property
+        """
+        from .metrics.metrics_request_builder import MetricsRequestBuilder
+
+        return MetricsRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def models(self) -> ModelsRequestBuilder:
