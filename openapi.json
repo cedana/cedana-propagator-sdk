@@ -969,6 +969,30 @@
         ],
         "type": "object"
       },
+      "ClusterGateway": {
+        "description": "A cluster's inference gateway as callers outside the cluster reach it.",
+        "properties": {
+          "cluster_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "cluster_name": {
+            "type": "string"
+          },
+          "gateway_url": {
+            "description": "Public OpenAI base origin (Ingress/LoadBalancer); None means in-cluster only.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "cluster_id",
+          "cluster_name"
+        ],
+        "type": "object"
+      },
       "ClusterResidency": {
         "properties": {
           "checkpoints": {
@@ -3743,6 +3767,13 @@
               }
             ]
           },
+          "pressure": {
+            "description": "Pressure conditions currently True, e.g. [\"DiskPressure\"]",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
           "region": {
             "type": "string"
           },
@@ -3781,7 +3812,8 @@
           "instance_type",
           "region",
           "capacity_type",
-          "labels"
+          "labels",
+          "pressure"
         ],
         "type": "object"
       },
@@ -6698,6 +6730,18 @@
         "required": [
           "base64_script"
         ],
+        "type": "object"
+      },
+      "SetClusterGateway": {
+        "properties": {
+          "gateway_url": {
+            "description": "http(s) origin; null or empty clears it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
         "type": "object"
       },
       "SlurmAvailableFilters": {
@@ -11817,6 +11861,142 @@
           }
         ],
         "summary": "Set cost rates for a profile",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/gateways": {
+      "get": {
+        "operationId": "list_gateways",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ClusterGateway"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Gateway per Kubernetes cluster"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "List cluster gateways",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/inference/gateways/{cluster_id}": {
+      "put": {
+        "operationId": "set_gateway",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cluster_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetClusterGateway"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClusterGateway"
+                }
+              }
+            },
+            "description": "Gateway saved"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Not an http(s) URL"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Cluster not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "summary": "Set a cluster's public gateway URL",
         "tags": [
           "inference"
         ]

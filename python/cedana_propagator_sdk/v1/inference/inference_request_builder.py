@@ -7,6 +7,7 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from .costs.costs_request_builder import CostsRequestBuilder
+    from .gateways.gateways_request_builder import GatewaysRequestBuilder
     from .keys.keys_request_builder import KeysRequestBuilder
     from .lifecycle_events.lifecycle_events_request_builder import LifecycleEventsRequestBuilder
     from .metrics.metrics_request_builder import MetricsRequestBuilder
@@ -37,6 +38,15 @@ class InferenceRequestBuilder(BaseRequestBuilder):
         from .costs.costs_request_builder import CostsRequestBuilder
 
         return CostsRequestBuilder(self.request_adapter, self.path_parameters)
+    
+    @property
+    def gateways(self) -> GatewaysRequestBuilder:
+        """
+        The gateways property
+        """
+        from .gateways.gateways_request_builder import GatewaysRequestBuilder
+
+        return GatewaysRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def keys(self) -> KeysRequestBuilder:

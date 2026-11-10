@@ -33,6 +33,12 @@ func (m *InferenceRequestBuilder) Costs() *InferenceCostsRequestBuilder {
 	return NewInferenceCostsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Gateways the gateways property
+// returns a *InferenceGatewaysRequestBuilder when successful
+func (m *InferenceRequestBuilder) Gateways() *InferenceGatewaysRequestBuilder {
+	return NewInferenceGatewaysRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Keys the keys property
 // returns a *InferenceKeysRequestBuilder when successful
 func (m *InferenceRequestBuilder) Keys() *InferenceKeysRequestBuilder {
