@@ -29,7 +29,7 @@ class GpuRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/metrics/gpu{?hours*,node_name*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/metrics/gpu{?node_name*}", path_parameters)
     
     async def get(self,request_configuration: Optional[RequestConfiguration[GpuRequestBuilderGetQueryParameters]] = None) -> Optional[list[NodeGpuMetrics]]:
         """
@@ -87,9 +87,6 @@ class GpuRequestBuilder(BaseRequestBuilder):
         """
         Get GPU metrics grouped by node
         """
-        # Time window in hours (default: 1, max: 24)
-        hours: Optional[int] = None
-
         # Filter by node name
         node_name: Optional[str] = None
 

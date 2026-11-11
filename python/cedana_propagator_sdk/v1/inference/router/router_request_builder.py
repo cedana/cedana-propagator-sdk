@@ -8,7 +8,6 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from .authorize.authorize_request_builder import AuthorizeRequestBuilder
     from .config.config_request_builder import ConfigRequestBuilder
-    from .metrics.metrics_request_builder import MetricsRequestBuilder
     from .resolve.resolve_request_builder import ResolveRequestBuilder
     from .telemetry.telemetry_request_builder import TelemetryRequestBuilder
 
@@ -42,15 +41,6 @@ class RouterRequestBuilder(BaseRequestBuilder):
         from .config.config_request_builder import ConfigRequestBuilder
 
         return ConfigRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
-    def metrics(self) -> MetricsRequestBuilder:
-        """
-        The metrics property
-        """
-        from .metrics.metrics_request_builder import MetricsRequestBuilder
-
-        return MetricsRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def resolve(self) -> ResolveRequestBuilder:

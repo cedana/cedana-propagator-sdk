@@ -3497,49 +3497,6 @@
         ],
         "type": "object"
       },
-      "MetricSample": {
-        "properties": {
-          "metric_name": {
-            "type": "string"
-          },
-          "profile_id": {
-            "type": "string"
-          },
-          "route": {
-            "type": "string"
-          },
-          "timestamp": {
-            "format": "int64",
-            "type": "integer"
-          },
-          "value": {
-            "format": "double",
-            "type": "number"
-          }
-        },
-        "required": [
-          "route",
-          "profile_id",
-          "metric_name",
-          "value",
-          "timestamp"
-        ],
-        "type": "object"
-      },
-      "MetricsBatch": {
-        "properties": {
-          "samples": {
-            "items": {
-              "$ref": "#/components/schemas/MetricSample"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "samples"
-        ],
-        "type": "object"
-      },
       "MetricsSeries": {
         "properties": {
           "bucket_minutes": {
@@ -8472,6 +8429,20 @@
           }
         },
         "type": "object"
+      },
+      "TelemetryBody": {
+        "description": "One record or a batch; Switchyard batches, older gateways send one per request.",
+        "oneOf": [
+          {
+            "items": {
+              "$ref": "#/components/schemas/TelemetryRecord"
+            },
+            "type": "array"
+          },
+          {
+            "$ref": "#/components/schemas/TelemetryRecord"
+          }
+        ]
       },
       "TelemetryRecord": {
         "properties": {
@@ -14606,55 +14577,6 @@
         ]
       }
     },
-    "/v1/inference/router/metrics": {
-      "post": {
-        "operationId": "router_metrics",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MetricsBatch"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Samples ingested"
-          },
-          "4XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Client error"
-          },
-          "5XX": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpError"
-                }
-              }
-            },
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "ServiceToken": []
-          }
-        ],
-        "summary": "Accept batched metric samples from Switchyard into ClickHouse,\nservice-token-only.",
-        "tags": [
-          "Router"
-        ]
-      }
-    },
     "/v1/inference/router/resolve": {
       "post": {
         "operationId": "resolve",
@@ -14758,7 +14680,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TelemetryRecord"
+                "$ref": "#/components/schemas/TelemetryBody"
               }
             }
           },
@@ -14766,7 +14688,7 @@
         },
         "responses": {
           "200": {
-            "description": "Record ingested"
+            "description": "Records ingested"
           },
           "4XX": {
             "content": {
@@ -14794,7 +14716,7 @@
             "ServiceToken": []
           }
         ],
-        "summary": "Accept one completed-request record from Switchyard, service-token-only.\nIdempotent by request_id: replays of the same completed record are no-ops.",
+        "summary": "Accept completed-request records from Switchyard, service-token-only, in one\ntransaction. Idempotent by request_id: replays of a completed record are no-ops.",
         "tags": [
           "Router"
         ]
@@ -16862,19 +16784,6 @@
             "schema": {
               "type": [
                 "string",
-                "null"
-              ]
-            }
-          },
-          {
-            "description": "Time window in hours (default: 1, max: 24)",
-            "in": "query",
-            "name": "hours",
-            "required": false,
-            "schema": {
-              "format": "int64",
-              "type": [
-                "integer",
                 "null"
               ]
             }

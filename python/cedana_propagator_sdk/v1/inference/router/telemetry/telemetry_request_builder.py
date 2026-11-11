@@ -15,7 +15,7 @@ from warnings import warn
 
 if TYPE_CHECKING:
     from .....models.http_error import HttpError
-    from .....models.telemetry_record import TelemetryRecord
+    from .telemetry_body import TelemetryBody
 
 class TelemetryRequestBuilder(BaseRequestBuilder):
     """
@@ -30,10 +30,10 @@ class TelemetryRequestBuilder(BaseRequestBuilder):
         """
         super().__init__(request_adapter, "{+baseurl}/v1/inference/router/telemetry", path_parameters)
     
-    async def post(self,body: TelemetryRecord, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[bytes]:
+    async def post(self,body: TelemetryBody, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> Optional[bytes]:
         """
-        Accept one completed-request record from Switchyard, service-token-only.Idempotent by request_id: replays of the same completed record are no-ops.
-        param body: The request body
+        Accept completed-request records from Switchyard, service-token-only, in onetransaction. Idempotent by request_id: replays of a completed record are no-ops.
+        param body: One record or a batch; Switchyard batches, older gateways send one per request.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: bytes
         """
@@ -51,10 +51,10 @@ class TelemetryRequestBuilder(BaseRequestBuilder):
             raise Exception("Http core is null") 
         return await self.request_adapter.send_primitive_async(request_info, "bytes", error_mapping)
     
-    def to_post_request_information(self,body: TelemetryRecord, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
+    def to_post_request_information(self,body: TelemetryBody, request_configuration: Optional[RequestConfiguration[QueryParameters]] = None) -> RequestInformation:
         """
-        Accept one completed-request record from Switchyard, service-token-only.Idempotent by request_id: replays of the same completed record are no-ops.
-        param body: The request body
+        Accept completed-request records from Switchyard, service-token-only, in onetransaction. Idempotent by request_id: replays of a completed record are no-ops.
+        param body: One record or a batch; Switchyard batches, older gateways send one per request.
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
