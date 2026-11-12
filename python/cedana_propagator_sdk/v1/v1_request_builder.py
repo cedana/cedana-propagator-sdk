@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from .csx.csx_request_builder import CsxRequestBuilder
     from .discover.discover_request_builder import DiscoverRequestBuilder
     from .download.download_request_builder import DownloadRequestBuilder
-    from .dynamo.dynamo_request_builder import DynamoRequestBuilder
     from .events.events_request_builder import EventsRequestBuilder
     from .files.files_request_builder import FilesRequestBuilder
     from .health.health_request_builder import HealthRequestBuilder
@@ -120,15 +119,6 @@ class V1RequestBuilder(BaseRequestBuilder):
         from .download.download_request_builder import DownloadRequestBuilder
 
         return DownloadRequestBuilder(self.request_adapter, self.path_parameters)
-    
-    @property
-    def dynamo(self) -> DynamoRequestBuilder:
-        """
-        The dynamo property
-        """
-        from .dynamo.dynamo_request_builder import DynamoRequestBuilder
-
-        return DynamoRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def events(self) -> EventsRequestBuilder:

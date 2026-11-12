@@ -39,12 +39,6 @@ func NewInferenceRouterRequestBuilder(rawUrl string, requestAdapter i2ae4187f7da
 	return NewInferenceRouterRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Metrics the metrics property
-// returns a *InferenceRouterMetricsRequestBuilder when successful
-func (m *InferenceRouterRequestBuilder) Metrics() *InferenceRouterMetricsRequestBuilder {
-	return NewInferenceRouterMetricsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // Resolve the resolve property
 // returns a *InferenceRouterResolveRequestBuilder when successful
 func (m *InferenceRouterRequestBuilder) Resolve() *InferenceRouterResolveRequestBuilder {

@@ -11,12 +11,11 @@ from kiota_abstractions.request_information import RequestInformation
 from kiota_abstractions.request_option import RequestOption
 from kiota_abstractions.serialization import Parsable, ParsableFactory
 from typing import Any, Optional, TYPE_CHECKING, Union
-from uuid import UUID
 from warnings import warn
 
 if TYPE_CHECKING:
     from .....models.http_error import HttpError
-    from .....models.usage_bucket import UsageBucket
+    from .....models.usage_point import UsagePoint
 
 class SeriesRequestBuilder(BaseRequestBuilder):
     """
@@ -29,13 +28,13 @@ class SeriesRequestBuilder(BaseRequestBuilder):
         param request_adapter: The request adapter to use to execute the requests.
         Returns: None
         """
-        super().__init__(request_adapter, "{+baseurl}/v1/inference/usage/series{?bucket*,experiment_id*,hours*,profile_id*}", path_parameters)
+        super().__init__(request_adapter, "{+baseurl}/v1/inference/usage/series{?bucket_minutes*,hours*}", path_parameters)
     
-    async def get(self,request_configuration: Optional[RequestConfiguration[SeriesRequestBuilderGetQueryParameters]] = None) -> Optional[list[UsageBucket]]:
+    async def get(self,request_configuration: Optional[RequestConfiguration[SeriesRequestBuilderGetQueryParameters]] = None) -> Optional[list[UsagePoint]]:
         """
-        Bucketed usage time series
+        Traffic per model over time
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
-        Returns: Optional[list[UsageBucket]]
+        Returns: Optional[list[UsagePoint]]
         """
         request_info = self.to_get_request_information(
             request_configuration
@@ -43,18 +42,17 @@ class SeriesRequestBuilder(BaseRequestBuilder):
         from .....models.http_error import HttpError
 
         error_mapping: dict[str, type[ParsableFactory]] = {
-            "400": HttpError,
             "XXX": HttpError,
         }
         if not self.request_adapter:
             raise Exception("Http core is null") 
-        from .....models.usage_bucket import UsageBucket
+        from .....models.usage_point import UsagePoint
 
-        return await self.request_adapter.send_collection_async(request_info, UsageBucket, error_mapping)
+        return await self.request_adapter.send_collection_async(request_info, UsagePoint, error_mapping)
     
     def to_get_request_information(self,request_configuration: Optional[RequestConfiguration[SeriesRequestBuilderGetQueryParameters]] = None) -> RequestInformation:
         """
-        Bucketed usage time series
+        Traffic per model over time
         param request_configuration: Configuration for the request such as headers, query parameters, and middleware options.
         Returns: RequestInformation
         """
@@ -76,15 +74,11 @@ class SeriesRequestBuilder(BaseRequestBuilder):
     @dataclass
     class SeriesRequestBuilderGetQueryParameters():
         """
-        Bucketed usage time series
+        Traffic per model over time
         """
-        bucket: Optional[str] = None
-
-        experiment_id: Optional[UUID] = None
+        bucket_minutes: Optional[int] = None
 
         hours: Optional[int] = None
-
-        profile_id: Optional[str] = None
 
     
     @dataclass

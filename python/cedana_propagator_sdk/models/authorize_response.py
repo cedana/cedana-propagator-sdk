@@ -13,8 +13,12 @@ class AuthorizeResponse(AdditionalDataHolder, Parsable):
 
     # The authorization_id property
     authorization_id: Optional[UUID] = None
+    # The gateway may reuse this decision briefly: true only for keys with no rate limit orbudget, which are charged on every authorize.
+    cacheable: Optional[bool] = None
     # The expires_at property
     expires_at: Optional[datetime.datetime] = None
+    # The key the caller presented; the gateway echoes it in telemetry so usage keeps itfor requests served from its authorization cache.
+    key_id: Optional[str] = None
     # The route_generation property
     route_generation: Optional[int] = None
     
@@ -36,7 +40,9 @@ class AuthorizeResponse(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
             "authorization_id": lambda n : setattr(self, 'authorization_id', n.get_uuid_value()),
+            "cacheable": lambda n : setattr(self, 'cacheable', n.get_bool_value()),
             "expires_at": lambda n : setattr(self, 'expires_at', n.get_datetime_value()),
+            "key_id": lambda n : setattr(self, 'key_id', n.get_str_value()),
             "route_generation": lambda n : setattr(self, 'route_generation', n.get_int_value()),
         }
         return fields
@@ -50,7 +56,9 @@ class AuthorizeResponse(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_uuid_value("authorization_id", self.authorization_id)
+        writer.write_bool_value("cacheable", self.cacheable)
         writer.write_datetime_value("expires_at", self.expires_at)
+        writer.write_str_value("key_id", self.key_id)
         writer.write_int_value("route_generation", self.route_generation)
         writer.write_additional_data_value(self.additional_data)
     

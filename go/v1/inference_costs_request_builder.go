@@ -12,12 +12,6 @@ type InferenceCostsRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// Breakdown the breakdown property
-// returns a *InferenceCostsBreakdownRequestBuilder when successful
-func (m *InferenceCostsRequestBuilder) Breakdown() *InferenceCostsBreakdownRequestBuilder {
-	return NewInferenceCostsBreakdownRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // Config the config property
 // returns a *InferenceCostsConfigRequestBuilder when successful
 func (m *InferenceCostsRequestBuilder) Config() *InferenceCostsConfigRequestBuilder {
@@ -37,10 +31,4 @@ func NewInferenceCostsRequestBuilder(rawUrl string, requestAdapter i2ae4187f7dae
 	urlParams := make(map[string]string)
 	urlParams["request-raw-url"] = rawUrl
 	return NewInferenceCostsRequestBuilderInternal(urlParams, requestAdapter)
-}
-
-// Report the report property
-// returns a *InferenceCostsReportRequestBuilder when successful
-func (m *InferenceCostsRequestBuilder) Report() *InferenceCostsReportRequestBuilder {
-	return NewInferenceCostsReportRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }

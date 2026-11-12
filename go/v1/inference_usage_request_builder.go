@@ -4,6 +4,8 @@
 package v1
 
 import (
+	"context"
+	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
@@ -12,10 +14,27 @@ type InferenceUsageRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
+// InferenceUsageRequestBuilderGetQueryParameters tokens and latency served per model
+type InferenceUsageRequestBuilderGetQueryParameters struct {
+	// "key" splits each model's row by the API key (customer) that sent it.
+	By    *string "uriparametername:\"by\""
+	Hours *int32  "uriparametername:\"hours\""
+}
+
+// InferenceUsageRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
+type InferenceUsageRequestBuilderGetRequestConfiguration struct {
+	// Request headers
+	Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
+	// Request options
+	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
+	// Request query parameters
+	QueryParameters *InferenceUsageRequestBuilderGetQueryParameters
+}
+
 // NewInferenceUsageRequestBuilderInternal instantiates a new InferenceUsageRequestBuilder and sets the default values.
 func NewInferenceUsageRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *InferenceUsageRequestBuilder {
 	m := &InferenceUsageRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/inference/usage", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/inference/usage{?by*,hours*}", pathParameters),
 	}
 	return m
 }
@@ -27,8 +46,53 @@ func NewInferenceUsageRequestBuilder(rawUrl string, requestAdapter i2ae4187f7dae
 	return NewInferenceUsageRequestBuilderInternal(urlParams, requestAdapter)
 }
 
+// Get tokens and latency served per model
+// returns a []ModelUsageable when successful
+// returns a HttpError error when the service returns a 4XX or 5XX status code
+func (m *InferenceUsageRequestBuilder) Get(ctx context.Context, requestConfiguration *InferenceUsageRequestBuilderGetRequestConfiguration) ([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.ModelUsageable, error) {
+	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
+	if err != nil {
+		return nil, err
+	}
+	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
+		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
+	}
+	res, err := m.BaseRequestBuilder.RequestAdapter.SendCollection(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateModelUsageFromDiscriminatorValue, errorMapping)
+	if err != nil {
+		return nil, err
+	}
+	val := make([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.ModelUsageable, len(res))
+	for i, v := range res {
+		if v != nil {
+			val[i] = v.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.ModelUsageable)
+		}
+	}
+	return val, nil
+}
+
 // Series the series property
 // returns a *InferenceUsageSeriesRequestBuilder when successful
 func (m *InferenceUsageRequestBuilder) Series() *InferenceUsageSeriesRequestBuilder {
 	return NewInferenceUsageSeriesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
+// ToGetRequestInformation tokens and latency served per model
+// returns a *RequestInformation when successful
+func (m *InferenceUsageRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *InferenceUsageRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
+	if requestConfiguration != nil {
+		if requestConfiguration.QueryParameters != nil {
+			requestInfo.AddQueryParameters(*(requestConfiguration.QueryParameters))
+		}
+		requestInfo.Headers.AddAll(requestConfiguration.Headers)
+		requestInfo.AddRequestOptions(requestConfiguration.Options)
+	}
+	requestInfo.Headers.TryAdd("Accept", "application/json")
+	return requestInfo, nil
+}
+
+// WithUrl returns a request builder with the provided arbitrary URL. Using this method means any other path or query parameters are ignored.
+// returns a *InferenceUsageRequestBuilder when successful
+func (m *InferenceUsageRequestBuilder) WithUrl(rawUrl string) *InferenceUsageRequestBuilder {
+	return NewInferenceUsageRequestBuilder(rawUrl, m.BaseRequestBuilder.RequestAdapter)
 }

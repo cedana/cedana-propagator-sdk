@@ -12,34 +12,10 @@ type InferenceRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
 }
 
-// Activations the activations property
-// returns a *InferenceActivationsRequestBuilder when successful
-func (m *InferenceRequestBuilder) Activations() *InferenceActivationsRequestBuilder {
-	return NewInferenceActivationsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// Analytics the analytics property
-// returns a *InferenceAnalyticsRequestBuilder when successful
-func (m *InferenceRequestBuilder) Analytics() *InferenceAnalyticsRequestBuilder {
-	return NewInferenceAnalyticsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// Artifacts the artifacts property
-// returns a *InferenceArtifactsRequestBuilder when successful
-func (m *InferenceRequestBuilder) Artifacts() *InferenceArtifactsRequestBuilder {
-	return NewInferenceArtifactsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// CapacityIntents the capacityIntents property
-// returns a *InferenceCapacityIntentsRequestBuilder when successful
-func (m *InferenceRequestBuilder) CapacityIntents() *InferenceCapacityIntentsRequestBuilder {
-	return NewInferenceCapacityIntentsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// Chat the chat property
-// returns a *InferenceChatRequestBuilder when successful
-func (m *InferenceRequestBuilder) Chat() *InferenceChatRequestBuilder {
-	return NewInferenceChatRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// Alerts the alerts property
+// returns a *InferenceAlertsRequestBuilder when successful
+func (m *InferenceRequestBuilder) Alerts() *InferenceAlertsRequestBuilder {
+	return NewInferenceAlertsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // NewInferenceRequestBuilderInternal instantiates a new InferenceRequestBuilder and sets the default values.
@@ -57,28 +33,22 @@ func NewInferenceRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee2633
 	return NewInferenceRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Correlation the correlation property
-// returns a *InferenceCorrelationRequestBuilder when successful
-func (m *InferenceRequestBuilder) Correlation() *InferenceCorrelationRequestBuilder {
-	return NewInferenceCorrelationRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // Costs the costs property
 // returns a *InferenceCostsRequestBuilder when successful
 func (m *InferenceRequestBuilder) Costs() *InferenceCostsRequestBuilder {
 	return NewInferenceCostsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Experiments the experiments property
-// returns a *InferenceExperimentsRequestBuilder when successful
-func (m *InferenceRequestBuilder) Experiments() *InferenceExperimentsRequestBuilder {
-	return NewInferenceExperimentsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// Events the events property
+// returns a *InferenceEventsRequestBuilder when successful
+func (m *InferenceRequestBuilder) Events() *InferenceEventsRequestBuilder {
+	return NewInferenceEventsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Fleets the fleets property
-// returns a *InferenceFleetsRequestBuilder when successful
-func (m *InferenceRequestBuilder) Fleets() *InferenceFleetsRequestBuilder {
-	return NewInferenceFleetsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// Gateways the gateways property
+// returns a *InferenceGatewaysRequestBuilder when successful
+func (m *InferenceRequestBuilder) Gateways() *InferenceGatewaysRequestBuilder {
+	return NewInferenceGatewaysRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // Keys the keys property
@@ -105,16 +75,10 @@ func (m *InferenceRequestBuilder) Models() *InferenceModelsRequestsModelsRequest
 	return NewInferenceModelsRequestsModelsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Observations the observations property
-// returns a *InferenceObservationsRequestBuilder when successful
-func (m *InferenceRequestBuilder) Observations() *InferenceObservationsRequestBuilder {
-	return NewInferenceObservationsRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// Outbox the outbox property
-// returns a *InferenceOutboxRequestBuilder when successful
-func (m *InferenceRequestBuilder) Outbox() *InferenceOutboxRequestBuilder {
-	return NewInferenceOutboxRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// Policies the policies property
+// returns a *InferencePoliciesRequestBuilder when successful
+func (m *InferenceRequestBuilder) Policies() *InferencePoliciesRequestBuilder {
+	return NewInferencePoliciesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // Profiles the profiles property
@@ -123,34 +87,22 @@ func (m *InferenceRequestBuilder) Profiles() *InferenceProfilesRequestBuilder {
 	return NewInferenceProfilesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// RetentionPolicies the retentionPolicies property
-// returns a *InferenceRetentionPoliciesRequestBuilder when successful
-func (m *InferenceRequestBuilder) RetentionPolicies() *InferenceRetentionPoliciesRequestBuilder {
-	return NewInferenceRetentionPoliciesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
 // Router the router property
 // returns a *InferenceRouterRequestBuilder when successful
 func (m *InferenceRequestBuilder) Router() *InferenceRouterRequestBuilder {
 	return NewInferenceRouterRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
-// Routes the routes property
-// returns a *InferenceRoutesRequestBuilder when successful
-func (m *InferenceRequestBuilder) Routes() *InferenceRoutesRequestBuilder {
-	return NewInferenceRoutesRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+// Slo the slo property
+// returns a *InferenceSloRequestBuilder when successful
+func (m *InferenceRequestBuilder) Slo() *InferenceSloRequestBuilder {
+	return NewInferenceSloRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // StartupComparison the startupComparison property
 // returns a *InferenceStartupComparisonRequestBuilder when successful
 func (m *InferenceRequestBuilder) StartupComparison() *InferenceStartupComparisonRequestBuilder {
 	return NewInferenceStartupComparisonRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
-}
-
-// Storage the storage property
-// returns a *InferenceStorageRequestBuilder when successful
-func (m *InferenceRequestBuilder) Storage() *InferenceStorageRequestBuilder {
-	return NewInferenceStorageRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
 // Usage the usage property

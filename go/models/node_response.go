@@ -31,6 +31,8 @@ type NodeResponse struct {
 	name *string
 	// The network property
 	network NetworkInfoable
+	// Pressure conditions currently True, e.g. ["DiskPressure"]
+	pressure []string
 	// The region property
 	region *string
 	// The status property
@@ -188,6 +190,22 @@ func (m *NodeResponse) GetFieldDeserializers() map[string]func(i878a80d2330e89d2
 		}
 		return nil
 	}
+	res["pressure"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetCollectionOfPrimitiveValues("string")
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			res := make([]string, len(val))
+			for i, v := range val {
+				if v != nil {
+					res[i] = *(v.(*string))
+				}
+			}
+			m.SetPressure(res)
+		}
+		return nil
+	}
 	res["region"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -265,6 +283,12 @@ func (m *NodeResponse) GetName() *string {
 // returns a NetworkInfoable when successful
 func (m *NodeResponse) GetNetwork() NetworkInfoable {
 	return m.network
+}
+
+// GetPressure gets the pressure property value. Pressure conditions currently True, e.g. ["DiskPressure"]
+// returns a []string when successful
+func (m *NodeResponse) GetPressure() []string {
+	return m.pressure
 }
 
 // GetRegion gets the region property value. The region property
@@ -349,6 +373,12 @@ func (m *NodeResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e
 	}
 	{
 		err := writer.WriteObjectValue("network", m.GetNetwork())
+		if err != nil {
+			return err
+		}
+	}
+	if m.GetPressure() != nil {
+		err := writer.WriteCollectionOfStringValues("pressure", m.GetPressure())
 		if err != nil {
 			return err
 		}
@@ -441,6 +471,11 @@ func (m *NodeResponse) SetNetwork(value NetworkInfoable) {
 	m.network = value
 }
 
+// SetPressure sets the pressure property value. Pressure conditions currently True, e.g. ["DiskPressure"]
+func (m *NodeResponse) SetPressure(value []string) {
+	m.pressure = value
+}
+
 // SetRegion sets the region property value. The region property
 func (m *NodeResponse) SetRegion(value *string) {
 	m.region = value
@@ -474,6 +509,7 @@ type NodeResponseable interface {
 	GetLabels() NodeResponse_labelsable
 	GetName() *string
 	GetNetwork() NetworkInfoable
+	GetPressure() []string
 	GetRegion() *string
 	GetStatus() *string
 	GetStorage() StorageInfoable
@@ -488,6 +524,7 @@ type NodeResponseable interface {
 	SetLabels(value NodeResponse_labelsable)
 	SetName(value *string)
 	SetNetwork(value NetworkInfoable)
+	SetPressure(value []string)
 	SetRegion(value *string)
 	SetStatus(value *string)
 	SetStorage(value StorageInfoable)

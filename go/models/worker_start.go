@@ -8,7 +8,6 @@ import (
 	i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e "time"
 )
 
-// WorkerStart one worker start, and whether it restored.
 type WorkerStart struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
@@ -18,7 +17,7 @@ type WorkerStart struct {
 	pod_name *string
 	// The ready_at property
 	ready_at *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
-	// True when this worker was given a checkpoint to restore from.
+	// True when a restore is bound to this worker pod.
 	restored *bool
 	// PodScheduled to Ready, in milliseconds.
 	start_time_ms *int64
@@ -118,7 +117,7 @@ func (m *WorkerStart) GetReadyAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a163
 	return m.ready_at
 }
 
-// GetRestored gets the restored property value. True when this worker was given a checkpoint to restore from.
+// GetRestored gets the restored property value. True when a restore is bound to this worker pod.
 // returns a *bool when successful
 func (m *WorkerStart) GetRestored() *bool {
 	return m.restored
@@ -191,7 +190,7 @@ func (m *WorkerStart) SetReadyAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077
 	m.ready_at = value
 }
 
-// SetRestored sets the restored property value. True when this worker was given a checkpoint to restore from.
+// SetRestored sets the restored property value. True when a restore is bound to this worker pod.
 func (m *WorkerStart) SetRestored(value *bool) {
 	m.restored = value
 }

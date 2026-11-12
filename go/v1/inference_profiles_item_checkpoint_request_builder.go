@@ -6,28 +6,13 @@ package v1
 import (
 	"context"
 	i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89 "github.com/cedana/cedana-propagator-sdk/go/models"
+	i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22 "github.com/google/uuid"
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f "github.com/microsoft/kiota-abstractions-go"
 )
 
 // InferenceProfilesItemCheckpointRequestBuilder builds and executes requests for operations under \v1\inference\profiles\{profile_id}\checkpoint
 type InferenceProfilesItemCheckpointRequestBuilder struct {
 	i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.BaseRequestBuilder
-}
-
-// InferenceProfilesItemCheckpointRequestBuilderGetRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type InferenceProfilesItemCheckpointRequestBuilderGetRequestConfiguration struct {
-	// Request headers
-	Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-	// Request options
-	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
-}
-
-// InferenceProfilesItemCheckpointRequestBuilderPatchRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
-type InferenceProfilesItemCheckpointRequestBuilderPatchRequestConfiguration struct {
-	// Request headers
-	Headers *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestHeaders
-	// Request options
-	Options []i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestOption
 }
 
 // InferenceProfilesItemCheckpointRequestBuilderPostRequestConfiguration configuration for the request such as headers, query parameters, and middleware options.
@@ -53,61 +38,13 @@ func NewInferenceProfilesItemCheckpointRequestBuilder(rawUrl string, requestAdap
 	return NewInferenceProfilesItemCheckpointRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Get the latest checkpoint request for a profile, outstanding or finished
-// returns a CheckpointRequestViewable when successful
-// returns a HttpError error when the service returns a 404 status code
-// returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *InferenceProfilesItemCheckpointRequestBuilder) Get(ctx context.Context, requestConfiguration *InferenceProfilesItemCheckpointRequestBuilderGetRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CheckpointRequestViewable, error) {
-	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
-	if err != nil {
-		return nil, err
-	}
-	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
-		"404": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateCheckpointRequestViewFromDiscriminatorValue, errorMapping)
-	if err != nil {
-		return nil, err
-	}
-	if res == nil {
-		return nil, nil
-	}
-	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CheckpointRequestViewable), nil
-}
-
-// Patch report progress on a checkpoint request (controller only)
-// returns a CheckpointRequestViewable when successful
-// returns a HttpError error when the service returns a 400 status code
-// returns a HttpError error when the service returns a 404 status code
-// returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *InferenceProfilesItemCheckpointRequestBuilder) Patch(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.UpdateCheckpointRequestable, requestConfiguration *InferenceProfilesItemCheckpointRequestBuilderPatchRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CheckpointRequestViewable, error) {
-	requestInfo, err := m.ToPatchRequestInformation(ctx, body, requestConfiguration)
-	if err != nil {
-		return nil, err
-	}
-	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
-		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-		"404": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateCheckpointRequestViewFromDiscriminatorValue, errorMapping)
-	if err != nil {
-		return nil, err
-	}
-	if res == nil {
-		return nil, nil
-	}
-	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CheckpointRequestViewable), nil
-}
-
-// Post ask for a checkpoint of this profile's worker now. Covers the two cases theautomatic path refuses: a restored worker, and replacing an existing checkpoint.
-// returns a CheckpointRequestViewable when successful
+// Post an ordinary `checkpoint_pod` action on the newest ready worker; the checkpoint carriesthe profile's `CEDANA_CHECKPOINT` name, so the next worker to start restores from it.
+// returns a *UUID when successful
 // returns a HttpError error when the service returns a 404 status code
 // returns a HttpError error when the service returns a 409 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *InferenceProfilesItemCheckpointRequestBuilder) Post(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.RequestCheckpointable, requestConfiguration *InferenceProfilesItemCheckpointRequestBuilderPostRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CheckpointRequestViewable, error) {
-	requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration)
+func (m *InferenceProfilesItemCheckpointRequestBuilder) Post(ctx context.Context, requestConfiguration *InferenceProfilesItemCheckpointRequestBuilderPostRequestConfiguration) (*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID, error) {
+	requestInfo, err := m.ToPostRequestInformation(ctx, requestConfiguration)
 	if err != nil {
 		return nil, err
 	}
@@ -116,57 +53,25 @@ func (m *InferenceProfilesItemCheckpointRequestBuilder) Post(ctx context.Context
 		"409": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateCheckpointRequestViewFromDiscriminatorValue, errorMapping)
+	res, err := m.BaseRequestBuilder.RequestAdapter.SendPrimitive(ctx, requestInfo, "uuid", errorMapping)
 	if err != nil {
 		return nil, err
 	}
 	if res == nil {
 		return nil, nil
 	}
-	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CheckpointRequestViewable), nil
+	return res.(*i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID), nil
 }
 
-// ToGetRequestInformation the latest checkpoint request for a profile, outstanding or finished
+// ToPostRequestInformation an ordinary `checkpoint_pod` action on the newest ready worker; the checkpoint carriesthe profile's `CEDANA_CHECKPOINT` name, so the next worker to start restores from it.
 // returns a *RequestInformation when successful
-func (m *InferenceProfilesItemCheckpointRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *InferenceProfilesItemCheckpointRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
-	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-	if requestConfiguration != nil {
-		requestInfo.Headers.AddAll(requestConfiguration.Headers)
-		requestInfo.AddRequestOptions(requestConfiguration.Options)
-	}
-	requestInfo.Headers.TryAdd("Accept", "application/json")
-	return requestInfo, nil
-}
-
-// ToPatchRequestInformation report progress on a checkpoint request (controller only)
-// returns a *RequestInformation when successful
-func (m *InferenceProfilesItemCheckpointRequestBuilder) ToPatchRequestInformation(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.UpdateCheckpointRequestable, requestConfiguration *InferenceProfilesItemCheckpointRequestBuilderPatchRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
-	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.PATCH, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
-	if requestConfiguration != nil {
-		requestInfo.Headers.AddAll(requestConfiguration.Headers)
-		requestInfo.AddRequestOptions(requestConfiguration.Options)
-	}
-	requestInfo.Headers.TryAdd("Accept", "application/json")
-	err := requestInfo.SetContentFromParsable(ctx, m.BaseRequestBuilder.RequestAdapter, "application/json", body)
-	if err != nil {
-		return nil, err
-	}
-	return requestInfo, nil
-}
-
-// ToPostRequestInformation ask for a checkpoint of this profile's worker now. Covers the two cases theautomatic path refuses: a restored worker, and replacing an existing checkpoint.
-// returns a *RequestInformation when successful
-func (m *InferenceProfilesItemCheckpointRequestBuilder) ToPostRequestInformation(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.RequestCheckpointable, requestConfiguration *InferenceProfilesItemCheckpointRequestBuilderPostRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *InferenceProfilesItemCheckpointRequestBuilder) ToPostRequestInformation(ctx context.Context, requestConfiguration *InferenceProfilesItemCheckpointRequestBuilderPostRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
 	if requestConfiguration != nil {
 		requestInfo.Headers.AddAll(requestConfiguration.Headers)
 		requestInfo.AddRequestOptions(requestConfiguration.Options)
 	}
-	requestInfo.Headers.TryAdd("Accept", "application/json")
-	err := requestInfo.SetContentFromParsable(ctx, m.BaseRequestBuilder.RequestAdapter, "application/json", body)
-	if err != nil {
-		return nil, err
-	}
+	requestInfo.Headers.TryAdd("Accept", "text/plain;q=0.9")
 	return requestInfo, nil
 }
 

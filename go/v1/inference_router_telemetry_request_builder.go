@@ -37,10 +37,10 @@ func NewInferenceRouterTelemetryRequestBuilder(rawUrl string, requestAdapter i2a
 	return NewInferenceRouterTelemetryRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Post accept one completed-request record from Switchyard, service-token-only.Idempotent by request_id: replays of the same completed record are no-ops.
+// Post accept completed-request records from Switchyard, service-token-only, in onetransaction. Idempotent by request_id: replays of a completed record are no-ops.
 // returns a []byte when successful
 // returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *InferenceRouterTelemetryRequestBuilder) Post(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.TelemetryRecordable, requestConfiguration *InferenceRouterTelemetryRequestBuilderPostRequestConfiguration) ([]byte, error) {
+func (m *InferenceRouterTelemetryRequestBuilder) Post(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.TelemetryBodyable, requestConfiguration *InferenceRouterTelemetryRequestBuilderPostRequestConfiguration) ([]byte, error) {
 	requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration)
 	if err != nil {
 		return nil, err
@@ -58,9 +58,9 @@ func (m *InferenceRouterTelemetryRequestBuilder) Post(ctx context.Context, body 
 	return res.([]byte), nil
 }
 
-// ToPostRequestInformation accept one completed-request record from Switchyard, service-token-only.Idempotent by request_id: replays of the same completed record are no-ops.
+// ToPostRequestInformation accept completed-request records from Switchyard, service-token-only, in onetransaction. Idempotent by request_id: replays of a completed record are no-ops.
 // returns a *RequestInformation when successful
-func (m *InferenceRouterTelemetryRequestBuilder) ToPostRequestInformation(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.TelemetryRecordable, requestConfiguration *InferenceRouterTelemetryRequestBuilderPostRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
+func (m *InferenceRouterTelemetryRequestBuilder) ToPostRequestInformation(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.TelemetryBodyable, requestConfiguration *InferenceRouterTelemetryRequestBuilderPostRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
 	if requestConfiguration != nil {
 		requestInfo.Headers.AddAll(requestConfiguration.Headers)

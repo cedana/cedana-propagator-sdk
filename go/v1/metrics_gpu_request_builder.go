@@ -16,8 +16,6 @@ type MetricsGpuRequestBuilder struct {
 
 // MetricsGpuRequestBuilderGetQueryParameters get GPU metrics grouped by node
 type MetricsGpuRequestBuilderGetQueryParameters struct {
-	// Time window in hours (default: 1, max: 24)
-	Hours *int64 "uriparametername:\"hours\""
 	// Filter by node name
 	Node_name *string "uriparametername:\"node_name\""
 }
@@ -35,7 +33,7 @@ type MetricsGpuRequestBuilderGetRequestConfiguration struct {
 // NewMetricsGpuRequestBuilderInternal instantiates a new MetricsGpuRequestBuilder and sets the default values.
 func NewMetricsGpuRequestBuilderInternal(pathParameters map[string]string, requestAdapter i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestAdapter) *MetricsGpuRequestBuilder {
 	m := &MetricsGpuRequestBuilder{
-		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/metrics/gpu{?hours*,node_name*}", pathParameters),
+		BaseRequestBuilder: *i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewBaseRequestBuilder(requestAdapter, "{+baseurl}/v1/metrics/gpu{?node_name*}", pathParameters),
 	}
 	return m
 }

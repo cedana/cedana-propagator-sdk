@@ -58,10 +58,10 @@ func NewInferenceProfilesRequestBuilder(rawUrl string, requestAdapter i2ae4187f7
 	return NewInferenceProfilesRequestBuilderInternal(urlParams, requestAdapter)
 }
 
-// Get list deployment profiles
-// returns a []DeploymentProfileable when successful
+// Get list deployment profiles with their state
+// returns a []ProfileViewable when successful
 // returns a HttpError error when the service returns a 4XX or 5XX status code
-func (m *InferenceProfilesRequestBuilder) Get(ctx context.Context, requestConfiguration *InferenceProfilesRequestBuilderGetRequestConfiguration) ([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.DeploymentProfileable, error) {
+func (m *InferenceProfilesRequestBuilder) Get(ctx context.Context, requestConfiguration *InferenceProfilesRequestBuilderGetRequestConfiguration) ([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.ProfileViewable, error) {
 	requestInfo, err := m.ToGetRequestInformation(ctx, requestConfiguration)
 	if err != nil {
 		return nil, err
@@ -69,23 +69,22 @@ func (m *InferenceProfilesRequestBuilder) Get(ctx context.Context, requestConfig
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
-	res, err := m.BaseRequestBuilder.RequestAdapter.SendCollection(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateDeploymentProfileFromDiscriminatorValue, errorMapping)
+	res, err := m.BaseRequestBuilder.RequestAdapter.SendCollection(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateProfileViewFromDiscriminatorValue, errorMapping)
 	if err != nil {
 		return nil, err
 	}
-	val := make([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.DeploymentProfileable, len(res))
+	val := make([]i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.ProfileViewable, len(res))
 	for i, v := range res {
 		if v != nil {
-			val[i] = v.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.DeploymentProfileable)
+			val[i] = v.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.ProfileViewable)
 		}
 	}
 	return val, nil
 }
 
-// Post create an immutable deployment profile
+// Post create or update a deployment profile
 // returns a DeploymentProfileable when successful
 // returns a HttpError error when the service returns a 400 status code
-// returns a HttpError error when the service returns a 409 status code
 // returns a HttpError error when the service returns a 4XX or 5XX status code
 func (m *InferenceProfilesRequestBuilder) Post(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateProfileable, requestConfiguration *InferenceProfilesRequestBuilderPostRequestConfiguration) (i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.DeploymentProfileable, error) {
 	requestInfo, err := m.ToPostRequestInformation(ctx, body, requestConfiguration)
@@ -94,7 +93,6 @@ func (m *InferenceProfilesRequestBuilder) Post(ctx context.Context, body i89856f
 	}
 	errorMapping := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.ErrorMappings{
 		"400": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
-		"409": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 		"XXX": i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateHttpErrorFromDiscriminatorValue,
 	}
 	res, err := m.BaseRequestBuilder.RequestAdapter.Send(ctx, requestInfo, i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateDeploymentProfileFromDiscriminatorValue, errorMapping)
@@ -107,7 +105,7 @@ func (m *InferenceProfilesRequestBuilder) Post(ctx context.Context, body i89856f
 	return res.(i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.DeploymentProfileable), nil
 }
 
-// ToGetRequestInformation list deployment profiles
+// ToGetRequestInformation list deployment profiles with their state
 // returns a *RequestInformation when successful
 func (m *InferenceProfilesRequestBuilder) ToGetRequestInformation(ctx context.Context, requestConfiguration *InferenceProfilesRequestBuilderGetRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.GET, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)
@@ -119,7 +117,7 @@ func (m *InferenceProfilesRequestBuilder) ToGetRequestInformation(ctx context.Co
 	return requestInfo, nil
 }
 
-// ToPostRequestInformation create an immutable deployment profile
+// ToPostRequestInformation create or update a deployment profile
 // returns a *RequestInformation when successful
 func (m *InferenceProfilesRequestBuilder) ToPostRequestInformation(ctx context.Context, body i89856fb30cc728ac649e5f2184f35b3dbca9c394c0e717f9e3ad3070b5506e89.CreateProfileable, requestConfiguration *InferenceProfilesRequestBuilderPostRequestConfiguration) (*i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.RequestInformation, error) {
 	requestInfo := i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.NewRequestInformationWithMethodAndUrlTemplateAndPathParameters(i2ae4187f7daee263371cb1c977df639813ab50ffa529013b7437480d1ec0158f.POST, m.BaseRequestBuilder.UrlTemplate, m.BaseRequestBuilder.PathParameters)

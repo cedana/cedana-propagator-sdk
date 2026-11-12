@@ -23,6 +23,8 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
     end_to_end_latency_ms: Optional[int] = None
     # The fallback_used property
     fallback_used: Optional[bool] = None
+    # The API key the request was authorized with, from the authorize response.
+    key_id: Optional[str] = None
     # The logical_model property
     logical_model: Optional[str] = None
     # The mean_inter_token_ms property
@@ -72,6 +74,7 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
             "decision_source": lambda n : setattr(self, 'decision_source', n.get_str_value()),
             "end_to_end_latency_ms": lambda n : setattr(self, 'end_to_end_latency_ms', n.get_int_value()),
             "fallback_used": lambda n : setattr(self, 'fallback_used', n.get_bool_value()),
+            "key_id": lambda n : setattr(self, 'key_id', n.get_str_value()),
             "logical_model": lambda n : setattr(self, 'logical_model', n.get_str_value()),
             "mean_inter_token_ms": lambda n : setattr(self, 'mean_inter_token_ms', n.get_float_value()),
             "p95_inter_token_ms": lambda n : setattr(self, 'p95_inter_token_ms', n.get_float_value()),
@@ -102,6 +105,7 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
         writer.write_str_value("decision_source", self.decision_source)
         writer.write_int_value("end_to_end_latency_ms", self.end_to_end_latency_ms)
         writer.write_bool_value("fallback_used", self.fallback_used)
+        writer.write_str_value("key_id", self.key_id)
         writer.write_str_value("logical_model", self.logical_model)
         writer.write_float_value("mean_inter_token_ms", self.mean_inter_token_ms)
         writer.write_float_value("p95_inter_token_ms", self.p95_inter_token_ms)

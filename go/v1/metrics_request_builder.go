@@ -51,6 +51,12 @@ func (m *MetricsRequestBuilder) Gpu() *MetricsGpuRequestBuilder {
 	return NewMetricsGpuRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
 }
 
+// Ingest the ingest property
+// returns a *MetricsIngestRequestBuilder when successful
+func (m *MetricsRequestBuilder) Ingest() *MetricsIngestRequestBuilder {
+	return NewMetricsIngestRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // K8 the k8 property
 // returns a *MetricsK8RequestBuilder when successful
 func (m *MetricsRequestBuilder) K8() *MetricsK8RequestBuilder {

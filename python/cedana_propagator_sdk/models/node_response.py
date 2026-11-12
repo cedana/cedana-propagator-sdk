@@ -38,6 +38,8 @@ class NodeResponse(AdditionalDataHolder, Parsable):
     name: Optional[str] = None
     # The network property
     network: Optional[NetworkInfo] = None
+    # Pressure conditions currently True, e.g. ["DiskPressure"]
+    pressure: Optional[list[str]] = None
     # The region property
     region: Optional[str] = None
     # The status property
@@ -88,6 +90,7 @@ class NodeResponse(AdditionalDataHolder, Parsable):
             "labels": lambda n : setattr(self, 'labels', n.get_object_value(NodeResponse_labels)),
             "name": lambda n : setattr(self, 'name', n.get_str_value()),
             "network": lambda n : setattr(self, 'network', n.get_object_value(NetworkInfo)),
+            "pressure": lambda n : setattr(self, 'pressure', n.get_collection_of_primitive_values(str)),
             "region": lambda n : setattr(self, 'region', n.get_str_value()),
             "status": lambda n : setattr(self, 'status', n.get_str_value()),
             "storage": lambda n : setattr(self, 'storage', n.get_object_value(StorageInfo)),
@@ -113,6 +116,7 @@ class NodeResponse(AdditionalDataHolder, Parsable):
         writer.write_object_value("labels", self.labels)
         writer.write_str_value("name", self.name)
         writer.write_object_value("network", self.network)
+        writer.write_collection_of_primitive_values("pressure", self.pressure)
         writer.write_str_value("region", self.region)
         writer.write_str_value("status", self.status)
         writer.write_object_value("storage", self.storage)

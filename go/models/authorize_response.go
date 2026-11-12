@@ -14,8 +14,12 @@ type AuthorizeResponse struct {
 	additionalData map[string]any
 	// The authorization_id property
 	authorization_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	// The gateway may reuse this decision briefly: true only for keys with no rate limit orbudget, which are charged on every authorize.
+	cacheable *bool
 	// The expires_at property
 	expires_at *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
+	// The key the caller presented; the gateway echoes it in telemetry so usage keeps itfor requests served from its authorization cache.
+	key_id *string
 	// The route_generation property
 	route_generation *int64
 }
@@ -45,6 +49,12 @@ func (m *AuthorizeResponse) GetAuthorizationId() *i561e97a8befe7661a44c8f5460099
 	return m.authorization_id
 }
 
+// GetCacheable gets the cacheable property value. The gateway may reuse this decision briefly: true only for keys with no rate limit orbudget, which are charged on every authorize.
+// returns a *bool when successful
+func (m *AuthorizeResponse) GetCacheable() *bool {
+	return m.cacheable
+}
+
 // GetExpiresAt gets the expires_at property value. The expires_at property
 // returns a *Time when successful
 func (m *AuthorizeResponse) GetExpiresAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time {
@@ -65,6 +75,16 @@ func (m *AuthorizeResponse) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		return nil
 	}
+	res["cacheable"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetBoolValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCacheable(val)
+		}
+		return nil
+	}
 	res["expires_at"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetTimeValue()
 		if err != nil {
@@ -72,6 +92,16 @@ func (m *AuthorizeResponse) GetFieldDeserializers() map[string]func(i878a80d2330
 		}
 		if val != nil {
 			m.SetExpiresAt(val)
+		}
+		return nil
+	}
+	res["key_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetKeyId(val)
 		}
 		return nil
 	}
@@ -86,6 +116,12 @@ func (m *AuthorizeResponse) GetFieldDeserializers() map[string]func(i878a80d2330
 		return nil
 	}
 	return res
+}
+
+// GetKeyId gets the key_id property value. The key the caller presented; the gateway echoes it in telemetry so usage keeps itfor requests served from its authorization cache.
+// returns a *string when successful
+func (m *AuthorizeResponse) GetKeyId() *string {
+	return m.key_id
 }
 
 // GetRouteGeneration gets the route_generation property value. The route_generation property
@@ -103,7 +139,19 @@ func (m *AuthorizeResponse) Serialize(writer i878a80d2330e89d26896388a3f487eef27
 		}
 	}
 	{
+		err := writer.WriteBoolValue("cacheable", m.GetCacheable())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteTimeValue("expires_at", m.GetExpiresAt())
+		if err != nil {
+			return err
+		}
+	}
+	{
+		err := writer.WriteStringValue("key_id", m.GetKeyId())
 		if err != nil {
 			return err
 		}
@@ -133,9 +181,19 @@ func (m *AuthorizeResponse) SetAuthorizationId(value *i561e97a8befe7661a44c8f546
 	m.authorization_id = value
 }
 
+// SetCacheable sets the cacheable property value. The gateway may reuse this decision briefly: true only for keys with no rate limit orbudget, which are charged on every authorize.
+func (m *AuthorizeResponse) SetCacheable(value *bool) {
+	m.cacheable = value
+}
+
 // SetExpiresAt sets the expires_at property value. The expires_at property
 func (m *AuthorizeResponse) SetExpiresAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time) {
 	m.expires_at = value
+}
+
+// SetKeyId sets the key_id property value. The key the caller presented; the gateway echoes it in telemetry so usage keeps itfor requests served from its authorization cache.
+func (m *AuthorizeResponse) SetKeyId(value *string) {
+	m.key_id = value
 }
 
 // SetRouteGeneration sets the route_generation property value. The route_generation property
@@ -147,9 +205,13 @@ type AuthorizeResponseable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetAuthorizationId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
+	GetCacheable() *bool
 	GetExpiresAt() *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time
+	GetKeyId() *string
 	GetRouteGeneration() *int64
 	SetAuthorizationId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
+	SetCacheable(value *bool)
 	SetExpiresAt(value *i336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e.Time)
+	SetKeyId(value *string)
 	SetRouteGeneration(value *int64)
 }
