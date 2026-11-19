@@ -51,6 +51,12 @@ func NewInstallRequestBuilder(rawUrl string, requestAdapter i2ae4187f7daee263371
 	return NewInstallRequestBuilderInternal(urlParams, requestAdapter)
 }
 
+// Csx the csx property
+// returns a *InstallCsxRequestBuilder when successful
+func (m *InstallRequestBuilder) Csx() *InstallCsxRequestBuilder {
+	return NewInstallCsxRequestBuilderInternal(m.BaseRequestBuilder.PathParameters, m.BaseRequestBuilder.RequestAdapter)
+}
+
 // Get download install-release.sh from cedana.
 // returns a HttpError error when the service returns a 400 status code
 // returns a HttpError error when the service returns a 404 status code

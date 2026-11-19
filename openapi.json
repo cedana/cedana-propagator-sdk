@@ -15243,6 +15243,108 @@
         ]
       }
     },
+    "/v1/install/csx": {
+      "get": {
+        "operationId": "download_csx_install_script",
+        "parameters": [
+          {
+            "description": "Exact version match, e.g. 0.9.2",
+            "in": "query",
+            "name": "version",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Architecture, e.g. amd64",
+            "in": "query",
+            "name": "arch",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Build type: alpha|release",
+            "in": "query",
+            "name": "build",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "set to true to fetch with exact repository name and build name",
+            "in": "query",
+            "name": "exact",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirects to a presigned S3 URL for csx install-slurm.sh"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Invalid key format"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "csx install-slurm.sh not found"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Client error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Failed to fetch install-slurm.sh from csx repository"
+          },
+          "5XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            },
+            "description": "Server error"
+          }
+        },
+        "summary": "Download install-slurm.sh from csx, which installs CSX on a SLURM node.",
+        "tags": [
+          "Plugins"
+        ]
+      }
+    },
     "/v1/install/slurm": {
       "get": {
         "operationId": "download_slurm_install_script",

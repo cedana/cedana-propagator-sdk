@@ -15,6 +15,7 @@ from warnings import warn
 
 if TYPE_CHECKING:
     from ...models.http_error import HttpError
+    from .csx.csx_request_builder import CsxRequestBuilder
     from .slurm.slurm_request_builder import SlurmRequestBuilder
 
 class InstallRequestBuilder(BaseRequestBuilder):
@@ -71,6 +72,15 @@ class InstallRequestBuilder(BaseRequestBuilder):
         if raw_url is None:
             raise TypeError("raw_url cannot be null.")
         return InstallRequestBuilder(self.request_adapter, raw_url)
+    
+    @property
+    def csx(self) -> CsxRequestBuilder:
+        """
+        The csx property
+        """
+        from .csx.csx_request_builder import CsxRequestBuilder
+
+        return CsxRequestBuilder(self.request_adapter, self.path_parameters)
     
     @property
     def slurm(self) -> SlurmRequestBuilder:
