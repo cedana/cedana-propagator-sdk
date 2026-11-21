@@ -11,6 +11,8 @@ import (
 type CreateProfile struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// The api_kind property
+	api_kind *ApiKind
 	// The cluster_id property
 	cluster_id *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	// The estimated_cold_start_ms property
@@ -23,8 +25,8 @@ type CreateProfile struct {
 	max_replicas *int32
 	// The min_replicas property
 	min_replicas *int32
-	// What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
-	model ModelSpecable
+	// A Dynamo model, or with `"kind": "container"` any HTTP server image.
+	model ProfileSpecable
 	// The namespace property
 	namespace *string
 	// The profile_id property
@@ -56,6 +58,12 @@ func (m *CreateProfile) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetApiKind gets the api_kind property value. The api_kind property
+// returns a *ApiKind when successful
+func (m *CreateProfile) GetApiKind() *ApiKind {
+	return m.api_kind
+}
+
 // GetClusterId gets the cluster_id property value. The cluster_id property
 // returns a *UUID when successful
 func (m *CreateProfile) GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID {
@@ -72,6 +80,16 @@ func (m *CreateProfile) GetEstimatedColdStartMs() *int64 {
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *CreateProfile) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["api_kind"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetEnumValue(ParseApiKind)
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetApiKind(val.(*ApiKind))
+		}
+		return nil
+	}
 	res["cluster_id"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetUUIDValue()
 		if err != nil {
@@ -133,12 +151,12 @@ func (m *CreateProfile) GetFieldDeserializers() map[string]func(i878a80d2330e89d
 		return nil
 	}
 	res["model"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(CreateModelSpecFromDiscriminatorValue)
+		val, err := n.GetObjectValue(CreateProfileSpecFromDiscriminatorValue)
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetModel(val.(ModelSpecable))
+			m.SetModel(val.(ProfileSpecable))
 		}
 		return nil
 	}
@@ -219,9 +237,9 @@ func (m *CreateProfile) GetMinReplicas() *int32 {
 	return m.min_replicas
 }
 
-// GetModel gets the model property value. What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
-// returns a ModelSpecable when successful
-func (m *CreateProfile) GetModel() ModelSpecable {
+// GetModel gets the model property value. A Dynamo model, or with `"kind": "container"` any HTTP server image.
+// returns a ProfileSpecable when successful
+func (m *CreateProfile) GetModel() ProfileSpecable {
 	return m.model
 }
 
@@ -257,6 +275,13 @@ func (m *CreateProfile) GetTeam() *string {
 
 // Serialize serializes information the current object
 func (m *CreateProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
+	if m.GetApiKind() != nil {
+		cast := (*m.GetApiKind()).String()
+		err := writer.WriteStringValue("api_kind", &cast)
+		if err != nil {
+			return err
+		}
+	}
 	{
 		err := writer.WriteUUIDValue("cluster_id", m.GetClusterId())
 		if err != nil {
@@ -343,6 +368,11 @@ func (m *CreateProfile) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetApiKind sets the api_kind property value. The api_kind property
+func (m *CreateProfile) SetApiKind(value *ApiKind) {
+	m.api_kind = value
+}
+
 // SetClusterId sets the cluster_id property value. The cluster_id property
 func (m *CreateProfile) SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID) {
 	m.cluster_id = value
@@ -373,8 +403,8 @@ func (m *CreateProfile) SetMinReplicas(value *int32) {
 	m.min_replicas = value
 }
 
-// SetModel sets the model property value. What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
-func (m *CreateProfile) SetModel(value ModelSpecable) {
+// SetModel sets the model property value. A Dynamo model, or with `"kind": "container"` any HTTP server image.
+func (m *CreateProfile) SetModel(value ProfileSpecable) {
 	m.model = value
 }
 
@@ -406,25 +436,27 @@ func (m *CreateProfile) SetTeam(value *string) {
 type CreateProfileable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetApiKind() *ApiKind
 	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
 	GetEstimatedColdStartMs() *int64
 	GetLogicalModel() *string
 	GetMaxQueueDepth() *int32
 	GetMaxReplicas() *int32
 	GetMinReplicas() *int32
-	GetModel() ModelSpecable
+	GetModel() ProfileSpecable
 	GetNamespace() *string
 	GetProfileId() *string
 	GetScaleDownIdleSeconds() *int64
 	GetTargetConcurrency() *int32
 	GetTeam() *string
+	SetApiKind(value *ApiKind)
 	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
 	SetEstimatedColdStartMs(value *int64)
 	SetLogicalModel(value *string)
 	SetMaxQueueDepth(value *int32)
 	SetMaxReplicas(value *int32)
 	SetMinReplicas(value *int32)
-	SetModel(value ModelSpecable)
+	SetModel(value ProfileSpecable)
 	SetNamespace(value *string)
 	SetProfileId(value *string)
 	SetScaleDownIdleSeconds(value *int64)

@@ -6,13 +6,15 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from .model_spec import ModelSpec
+    from .profile_spec import ProfileSpec
 
 @dataclass
 class DeploymentProfile(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
+    # How the router calls it: "openai_chat" or "http".
+    api_kind: Optional[str] = None
     # The backend_url property
     backend_url: Optional[str] = None
     # The `CEDANA_CHECKPOINT` name its workers restore from.
@@ -41,8 +43,8 @@ class DeploymentProfile(AdditionalDataHolder, Parsable):
     profile_revision: Optional[str] = None
     # The scale_down_idle_seconds property
     scale_down_idle_seconds: Optional[int] = None
-    # What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
-    spec: Optional[ModelSpec] = None
+    # A ModelSpec, or with "kind": "container" a ContainerSpec
+    spec: Optional[ProfileSpec] = None
     # The target_concurrency property
     target_concurrency: Optional[int] = None
     # The team whose policy and caps apply; null for none.
@@ -64,11 +66,12 @@ class DeploymentProfile(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
-        from .model_spec import ModelSpec
+        from .profile_spec import ProfileSpec
 
-        from .model_spec import ModelSpec
+        from .profile_spec import ProfileSpec
 
         fields: dict[str, Callable[[Any], None]] = {
+            "api_kind": lambda n : setattr(self, 'api_kind', n.get_str_value()),
             "backend_url": lambda n : setattr(self, 'backend_url', n.get_str_value()),
             "checkpoint_name": lambda n : setattr(self, 'checkpoint_name', n.get_str_value()),
             "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
@@ -83,7 +86,7 @@ class DeploymentProfile(AdditionalDataHolder, Parsable):
             "profile_id": lambda n : setattr(self, 'profile_id', n.get_str_value()),
             "profile_revision": lambda n : setattr(self, 'profile_revision', n.get_str_value()),
             "scale_down_idle_seconds": lambda n : setattr(self, 'scale_down_idle_seconds', n.get_int_value()),
-            "spec": lambda n : setattr(self, 'spec', n.get_object_value(ModelSpec)),
+            "spec": lambda n : setattr(self, 'spec', n.get_object_value(ProfileSpec)),
             "target_concurrency": lambda n : setattr(self, 'target_concurrency', n.get_int_value()),
             "team": lambda n : setattr(self, 'team', n.get_str_value()),
         }
@@ -97,6 +100,7 @@ class DeploymentProfile(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
+        writer.write_str_value("api_kind", self.api_kind)
         writer.write_str_value("backend_url", self.backend_url)
         writer.write_str_value("checkpoint_name", self.checkpoint_name)
         writer.write_uuid_value("cluster_id", self.cluster_id)

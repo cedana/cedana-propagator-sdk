@@ -404,6 +404,14 @@
         ],
         "type": "object"
       },
+      "ApiKind": {
+        "description": "How the router calls a profile's server.",
+        "enum": [
+          "openai_chat",
+          "http"
+        ],
+        "type": "string"
+      },
       "AuthorizeRequest": {
         "properties": {
           "estimated_prompt_tokens": {
@@ -1128,6 +1136,102 @@
         },
         "type": "object"
       },
+      "ContainerSpec": {
+        "description": "Any HTTP server image as one GPU worker: no Dynamo frontend, no weights download.",
+        "properties": {
+          "args": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "command": {
+            "description": "The image entrypoint when empty.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "env": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "gpus": {
+            "format": "int32",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "image": {
+            "description": "Image reference with a digest (`name@sha256:...`): a tag can move under a checkpoint.",
+            "type": "string"
+          },
+          "image_pull_secrets": {
+            "description": "Registry Secrets in the profile's namespace, for an image in a private registry.\nNot in the checkpoint name: pull credentials do not change the process.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "live_path": {
+            "type": "string"
+          },
+          "model_id": {
+            "description": "The id the server lists in `GET /v1/models`; the router sends it upstream.",
+            "type": "string"
+          },
+          "node_selector": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "port": {
+            "description": "The port the server listens on.",
+            "format": "int32",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "ready_path": {
+            "description": "Readiness path: the pod is ready once the model is loaded.",
+            "type": "string"
+          },
+          "resources": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "secret_files": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Mount directory to Secret name. Each key of the Secret is a file in the directory,\nread-only. A rotated Secret keeps the checkpoint: only the path and name are hashed.",
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "tolerations": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "image",
+          "model_id"
+        ],
+        "type": "object"
+      },
       "CostConfig": {
         "properties": {
           "node_hourly_usd": {
@@ -1539,6 +1643,17 @@
       },
       "CreateProfile": {
         "properties": {
+          "api_kind": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ApiKind",
+                "description": "Defaults to \"http\" for a container spec and \"openai_chat\" for a Dynamo one."
+              }
+            ]
+          },
           "cluster_id": {
             "format": "uuid",
             "type": [
@@ -1570,7 +1685,8 @@
             "type": "integer"
           },
           "model": {
-            "$ref": "#/components/schemas/ModelSpec"
+            "$ref": "#/components/schemas/ProfileSpec",
+            "description": "A Dynamo model, or with `\"kind\": \"container\"` any HTTP server image."
           },
           "namespace": {
             "type": "string"
@@ -1837,6 +1953,10 @@
       },
       "DeploymentProfile": {
         "properties": {
+          "api_kind": {
+            "description": "How the router calls it: \"openai_chat\" or \"http\".",
+            "type": "string"
+          },
           "backend_url": {
             "type": "string"
           },
@@ -1891,7 +2011,7 @@
             "type": "integer"
           },
           "spec": {
-            "$ref": "#/components/schemas/ModelSpec"
+            "$ref": "#/components/schemas/ProfileSpec"
           },
           "target_concurrency": {
             "format": "int32",
@@ -1920,7 +2040,8 @@
           "target_concurrency",
           "max_queue_depth",
           "scale_down_idle_seconds",
-          "desired_replicas"
+          "desired_replicas",
+          "api_kind"
         ],
         "type": "object"
       },
@@ -2077,13 +2198,6 @@
             "type": "object"
           }
         ]
-      },
-      "Engine": {
-        "enum": [
-          "sglang",
-          "vllm"
-        ],
-        "type": "string"
       },
       "EnvironmentVariable": {
         "properties": {
@@ -6442,6 +6556,17 @@
         ],
         "type": "object"
       },
+      "ProfileSpec": {
+        "description": "A ModelSpec, or with \"kind\": \"container\" a ContainerSpec",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ModelSpec"
+          },
+          {
+            "$ref": "#/components/schemas/ContainerSpec"
+          }
+        ]
+      },
       "ProfileStartupComparison": {
         "description": "Cold starts against restores, for one profile.",
         "properties": {
@@ -6978,6 +7103,10 @@
       },
       "RouterTargetConfig": {
         "properties": {
+          "api_kind": {
+            "description": "\"openai_chat\" or \"http\": how Switchyard calls the target.",
+            "type": "string"
+          },
           "current_replicas": {
             "format": "int32",
             "type": "integer"
@@ -7032,6 +7161,7 @@
           "priority",
           "service_url",
           "upstream_model",
+          "api_kind",
           "ready",
           "draining",
           "min_replicas",
@@ -8449,6 +8579,14 @@
           "activation_path": {
             "type": [
               "string",
+              "null"
+            ]
+          },
+          "cells": {
+            "description": "Cells a pass-through request carried, from the server's `x-singlomers-cells` header.",
+            "format": "int64",
+            "type": [
+              "integer",
               "null"
             ]
           },

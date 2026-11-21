@@ -12,7 +12,7 @@ type ModelSpec struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
 	// The engine property
-	engine *Engine
+	engine i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	// Extra engine flags, appended after the generated ones.
 	engine_args []string
 	// The env property
@@ -57,8 +57,8 @@ func (m *ModelSpec) GetAdditionalData() map[string]any {
 }
 
 // GetEngine gets the engine property value. The engine property
-// returns a *Engine when successful
-func (m *ModelSpec) GetEngine() *Engine {
+// returns a UntypedNodeable when successful
+func (m *ModelSpec) GetEngine() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable {
 	return m.engine
 }
 
@@ -79,12 +79,12 @@ func (m *ModelSpec) GetEnv() ModelSpec_envable {
 func (m *ModelSpec) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
 	res["engine"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetEnumValue(ParseEngine)
+		val, err := n.GetObjectValue(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.CreateUntypedNodeFromDiscriminatorValue)
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetEngine(val.(*Engine))
+			m.SetEngine(val.(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable))
 		}
 		return nil
 	}
@@ -269,9 +269,8 @@ func (m *ModelSpec) GetTolerations() []ModelSpec_tolerationsable {
 
 // Serialize serializes information the current object
 func (m *ModelSpec) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
-	if m.GetEngine() != nil {
-		cast := (*m.GetEngine()).String()
-		err := writer.WriteStringValue("engine", &cast)
+	{
+		err := writer.WriteObjectValue("engine", m.GetEngine())
 		if err != nil {
 			return err
 		}
@@ -363,7 +362,7 @@ func (m *ModelSpec) SetAdditionalData(value map[string]any) {
 }
 
 // SetEngine sets the engine property value. The engine property
-func (m *ModelSpec) SetEngine(value *Engine) {
+func (m *ModelSpec) SetEngine(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable) {
 	m.engine = value
 }
 
@@ -425,7 +424,7 @@ func (m *ModelSpec) SetTolerations(value []ModelSpec_tolerationsable) {
 type ModelSpecable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
-	GetEngine() *Engine
+	GetEngine() i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable
 	GetEngineArgs() []string
 	GetEnv() ModelSpec_envable
 	GetGpus() *int32
@@ -437,7 +436,7 @@ type ModelSpecable interface {
 	GetResources() ModelSpec_resourcesable
 	GetRevision() *string
 	GetTolerations() []ModelSpec_tolerationsable
-	SetEngine(value *Engine)
+	SetEngine(value i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.UntypedNodeable)
 	SetEngineArgs(value []string)
 	SetEnv(value ModelSpec_envable)
 	SetGpus(value *int32)

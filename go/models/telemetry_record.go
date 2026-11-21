@@ -12,6 +12,8 @@ type TelemetryRecord struct {
 	activation_path *string
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// Cells a pass-through request carried, from the server's `x-singlomers-cells` header.
+	cells *int64
 	// The classifier_latency_ms property
 	classifier_latency_ms *int64
 	// The classifier_profile_id property
@@ -77,6 +79,12 @@ func (m *TelemetryRecord) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetCells gets the cells property value. Cells a pass-through request carried, from the server's `x-singlomers-cells` header.
+// returns a *int64 when successful
+func (m *TelemetryRecord) GetCells() *int64 {
+	return m.cells
+}
+
 // GetClassifierLatencyMs gets the classifier_latency_ms property value. The classifier_latency_ms property
 // returns a *int64 when successful
 func (m *TelemetryRecord) GetClassifierLatencyMs() *int64 {
@@ -124,6 +132,16 @@ func (m *TelemetryRecord) GetFieldDeserializers() map[string]func(i878a80d2330e8
 		}
 		if val != nil {
 			m.SetActivationPath(val)
+		}
+		return nil
+	}
+	res["cells"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetInt64Value()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetCells(val)
 		}
 		return nil
 	}
@@ -407,6 +425,12 @@ func (m *TelemetryRecord) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0
 		}
 	}
 	{
+		err := writer.WriteInt64Value("cells", m.GetCells())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteInt64Value("classifier_latency_ms", m.GetClassifierLatencyMs())
 		if err != nil {
 			return err
@@ -539,6 +563,11 @@ func (m *TelemetryRecord) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetCells sets the cells property value. Cells a pass-through request carried, from the server's `x-singlomers-cells` header.
+func (m *TelemetryRecord) SetCells(value *int64) {
+	m.cells = value
+}
+
 // SetClassifierLatencyMs sets the classifier_latency_ms property value. The classifier_latency_ms property
 func (m *TelemetryRecord) SetClassifierLatencyMs(value *int64) {
 	m.classifier_latency_ms = value
@@ -638,6 +667,7 @@ type TelemetryRecordable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
 	GetActivationPath() *string
+	GetCells() *int64
 	GetClassifierLatencyMs() *int64
 	GetClassifierProfileId() *string
 	GetCompletionTokens() *int64
@@ -658,6 +688,7 @@ type TelemetryRecordable interface {
 	GetTtftMs() *int64
 	GetUpstreamAttempts() *int32
 	SetActivationPath(value *string)
+	SetCells(value *int64)
 	SetClassifierLatencyMs(value *int64)
 	SetClassifierProfileId(value *string)
 	SetCompletionTokens(value *int64)

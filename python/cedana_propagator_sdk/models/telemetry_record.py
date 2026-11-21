@@ -11,6 +11,8 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
 
     # The activation_path property
     activation_path: Optional[str] = None
+    # Cells a pass-through request carried, from the server's `x-singlomers-cells` header.
+    cells: Optional[int] = None
     # The classifier_latency_ms property
     classifier_latency_ms: Optional[int] = None
     # The classifier_profile_id property
@@ -68,6 +70,7 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
         """
         fields: dict[str, Callable[[Any], None]] = {
             "activation_path": lambda n : setattr(self, 'activation_path', n.get_str_value()),
+            "cells": lambda n : setattr(self, 'cells', n.get_int_value()),
             "classifier_latency_ms": lambda n : setattr(self, 'classifier_latency_ms', n.get_int_value()),
             "classifier_profile_id": lambda n : setattr(self, 'classifier_profile_id', n.get_str_value()),
             "completion_tokens": lambda n : setattr(self, 'completion_tokens', n.get_int_value()),
@@ -99,6 +102,7 @@ class TelemetryRecord(AdditionalDataHolder, Parsable):
         if writer is None:
             raise TypeError("writer cannot be null.")
         writer.write_str_value("activation_path", self.activation_path)
+        writer.write_int_value("cells", self.cells)
         writer.write_int_value("classifier_latency_ms", self.classifier_latency_ms)
         writer.write_str_value("classifier_profile_id", self.classifier_profile_id)
         writer.write_int_value("completion_tokens", self.completion_tokens)

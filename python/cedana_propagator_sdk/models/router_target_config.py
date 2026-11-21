@@ -9,6 +9,8 @@ class RouterTargetConfig(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
+    # "openai_chat" or "http": how Switchyard calls the target.
+    api_kind: Optional[str] = None
     # The current_replicas property
     current_replicas: Optional[int] = None
     # The draining property
@@ -53,6 +55,7 @@ class RouterTargetConfig(AdditionalDataHolder, Parsable):
         Returns: dict[str, Callable[[ParseNode], None]]
         """
         fields: dict[str, Callable[[Any], None]] = {
+            "api_kind": lambda n : setattr(self, 'api_kind', n.get_str_value()),
             "current_replicas": lambda n : setattr(self, 'current_replicas', n.get_int_value()),
             "draining": lambda n : setattr(self, 'draining', n.get_bool_value()),
             "max_queue_depth": lambda n : setattr(self, 'max_queue_depth', n.get_int_value()),
@@ -77,6 +80,7 @@ class RouterTargetConfig(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
+        writer.write_str_value("api_kind", self.api_kind)
         writer.write_int_value("current_replicas", self.current_replicas)
         writer.write_bool_value("draining", self.draining)
         writer.write_int_value("max_queue_depth", self.max_queue_depth)

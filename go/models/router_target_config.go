@@ -10,6 +10,8 @@ import (
 type RouterTargetConfig struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// "openai_chat" or "http": how Switchyard calls the target.
+	api_kind *string
 	// The current_replicas property
 	current_replicas *int32
 	// The draining property
@@ -57,6 +59,12 @@ func (m *RouterTargetConfig) GetAdditionalData() map[string]any {
 	return m.additionalData
 }
 
+// GetApiKind gets the api_kind property value. "openai_chat" or "http": how Switchyard calls the target.
+// returns a *string when successful
+func (m *RouterTargetConfig) GetApiKind() *string {
+	return m.api_kind
+}
+
 // GetCurrentReplicas gets the current_replicas property value. The current_replicas property
 // returns a *int32 when successful
 func (m *RouterTargetConfig) GetCurrentReplicas() *int32 {
@@ -73,6 +81,16 @@ func (m *RouterTargetConfig) GetDraining() *bool {
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *RouterTargetConfig) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["api_kind"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetApiKind(val)
+		}
+		return nil
+	}
 	res["current_replicas"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetInt32Value()
 		if err != nil {
@@ -275,6 +293,12 @@ func (m *RouterTargetConfig) GetUpstreamModel() *string {
 // Serialize serializes information the current object
 func (m *RouterTargetConfig) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
 	{
+		err := writer.WriteStringValue("api_kind", m.GetApiKind())
+		if err != nil {
+			return err
+		}
+	}
+	{
 		err := writer.WriteInt32Value("current_replicas", m.GetCurrentReplicas())
 		if err != nil {
 			return err
@@ -366,6 +390,11 @@ func (m *RouterTargetConfig) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetApiKind sets the api_kind property value. "openai_chat" or "http": how Switchyard calls the target.
+func (m *RouterTargetConfig) SetApiKind(value *string) {
+	m.api_kind = value
+}
+
 // SetCurrentReplicas sets the current_replicas property value. The current_replicas property
 func (m *RouterTargetConfig) SetCurrentReplicas(value *int32) {
 	m.current_replicas = value
@@ -434,6 +463,7 @@ func (m *RouterTargetConfig) SetUpstreamModel(value *string) {
 type RouterTargetConfigable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetApiKind() *string
 	GetCurrentReplicas() *int32
 	GetDraining() *bool
 	GetMaxQueueDepth() *int32
@@ -447,6 +477,7 @@ type RouterTargetConfigable interface {
 	GetTargetConcurrency() *int32
 	GetTier() *string
 	GetUpstreamModel() *string
+	SetApiKind(value *string)
 	SetCurrentReplicas(value *int32)
 	SetDraining(value *bool)
 	SetMaxQueueDepth(value *int32)

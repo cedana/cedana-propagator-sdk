@@ -11,6 +11,8 @@ import (
 type DeploymentProfile struct {
 	// Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
 	additionalData map[string]any
+	// How the router calls it: "openai_chat" or "http".
+	api_kind *string
 	// The backend_url property
 	backend_url *string
 	// The `CEDANA_CHECKPOINT` name its workers restore from.
@@ -39,8 +41,8 @@ type DeploymentProfile struct {
 	profile_revision *string
 	// The scale_down_idle_seconds property
 	scale_down_idle_seconds *int64
-	// What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
-	spec ModelSpecable
+	// A ModelSpec, or with "kind": "container" a ContainerSpec
+	spec ProfileSpecable
 	// The target_concurrency property
 	target_concurrency *int32
 	// The team whose policy and caps apply; null for none.
@@ -64,6 +66,12 @@ func CreateDeploymentProfileFromDiscriminatorValue(parseNode i878a80d2330e89d268
 // returns a map[string]any when successful
 func (m *DeploymentProfile) GetAdditionalData() map[string]any {
 	return m.additionalData
+}
+
+// GetApiKind gets the api_kind property value. How the router calls it: "openai_chat" or "http".
+// returns a *string when successful
+func (m *DeploymentProfile) GetApiKind() *string {
+	return m.api_kind
 }
 
 // GetBackendUrl gets the backend_url property value. The backend_url property
@@ -106,6 +114,16 @@ func (m *DeploymentProfile) GetExactModel() *string {
 // returns a map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error when successful
 func (m *DeploymentProfile) GetFieldDeserializers() map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 	res := make(map[string]func(i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error)
+	res["api_kind"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
+		val, err := n.GetStringValue()
+		if err != nil {
+			return err
+		}
+		if val != nil {
+			m.SetApiKind(val)
+		}
+		return nil
+	}
 	res["backend_url"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
 		val, err := n.GetStringValue()
 		if err != nil {
@@ -247,12 +265,12 @@ func (m *DeploymentProfile) GetFieldDeserializers() map[string]func(i878a80d2330
 		return nil
 	}
 	res["spec"] = func(n i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.ParseNode) error {
-		val, err := n.GetObjectValue(CreateModelSpecFromDiscriminatorValue)
+		val, err := n.GetObjectValue(CreateProfileSpecFromDiscriminatorValue)
 		if err != nil {
 			return err
 		}
 		if val != nil {
-			m.SetSpec(val.(ModelSpecable))
+			m.SetSpec(val.(ProfileSpecable))
 		}
 		return nil
 	}
@@ -327,9 +345,9 @@ func (m *DeploymentProfile) GetScaleDownIdleSeconds() *int64 {
 	return m.scale_down_idle_seconds
 }
 
-// GetSpec gets the spec property value. What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
-// returns a ModelSpecable when successful
-func (m *DeploymentProfile) GetSpec() ModelSpecable {
+// GetSpec gets the spec property value. A ModelSpec, or with "kind": "container" a ContainerSpec
+// returns a ProfileSpecable when successful
+func (m *DeploymentProfile) GetSpec() ProfileSpecable {
 	return m.spec
 }
 
@@ -347,6 +365,12 @@ func (m *DeploymentProfile) GetTeam() *string {
 
 // Serialize serializes information the current object
 func (m *DeploymentProfile) Serialize(writer i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.SerializationWriter) error {
+	{
+		err := writer.WriteStringValue("api_kind", m.GetApiKind())
+		if err != nil {
+			return err
+		}
+	}
 	{
 		err := writer.WriteStringValue("backend_url", m.GetBackendUrl())
 		if err != nil {
@@ -463,6 +487,11 @@ func (m *DeploymentProfile) SetAdditionalData(value map[string]any) {
 	m.additionalData = value
 }
 
+// SetApiKind sets the api_kind property value. How the router calls it: "openai_chat" or "http".
+func (m *DeploymentProfile) SetApiKind(value *string) {
+	m.api_kind = value
+}
+
 // SetBackendUrl sets the backend_url property value. The backend_url property
 func (m *DeploymentProfile) SetBackendUrl(value *string) {
 	m.backend_url = value
@@ -533,8 +562,8 @@ func (m *DeploymentProfile) SetScaleDownIdleSeconds(value *int64) {
 	m.scale_down_idle_seconds = value
 }
 
-// SetSpec sets the spec property value. What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
-func (m *DeploymentProfile) SetSpec(value ModelSpecable) {
+// SetSpec sets the spec property value. A ModelSpec, or with "kind": "container" a ContainerSpec
+func (m *DeploymentProfile) SetSpec(value ProfileSpecable) {
 	m.spec = value
 }
 
@@ -551,6 +580,7 @@ func (m *DeploymentProfile) SetTeam(value *string) {
 type DeploymentProfileable interface {
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.AdditionalDataHolder
 	i878a80d2330e89d26896388a3f487eef27b0a0e6c010c493bf80be1452208f91.Parsable
+	GetApiKind() *string
 	GetBackendUrl() *string
 	GetCheckpointName() *string
 	GetClusterId() *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID
@@ -565,9 +595,10 @@ type DeploymentProfileable interface {
 	GetProfileId() *string
 	GetProfileRevision() *string
 	GetScaleDownIdleSeconds() *int64
-	GetSpec() ModelSpecable
+	GetSpec() ProfileSpecable
 	GetTargetConcurrency() *int32
 	GetTeam() *string
+	SetApiKind(value *string)
 	SetBackendUrl(value *string)
 	SetCheckpointName(value *string)
 	SetClusterId(value *i561e97a8befe7661a44c8f54600992b4207a3a0cf6770e5559949bc276de2e22.UUID)
@@ -582,7 +613,7 @@ type DeploymentProfileable interface {
 	SetProfileId(value *string)
 	SetProfileRevision(value *string)
 	SetScaleDownIdleSeconds(value *int64)
-	SetSpec(value ModelSpecable)
+	SetSpec(value ProfileSpecable)
 	SetTargetConcurrency(value *int32)
 	SetTeam(value *string)
 }

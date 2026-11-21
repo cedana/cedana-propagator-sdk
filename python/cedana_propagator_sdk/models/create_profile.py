@@ -6,13 +6,16 @@ from typing import Any, Optional, TYPE_CHECKING, Union
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from .model_spec import ModelSpec
+    from .api_kind import ApiKind
+    from .profile_spec import ProfileSpec
 
 @dataclass
 class CreateProfile(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
+    # The api_kind property
+    api_kind: Optional[ApiKind] = None
     # The cluster_id property
     cluster_id: Optional[UUID] = None
     # The estimated_cold_start_ms property
@@ -25,8 +28,8 @@ class CreateProfile(AdditionalDataHolder, Parsable):
     max_replicas: Optional[int] = None
     # The min_replicas property
     min_replicas: Optional[int] = None
-    # What a user asks for: a model on some GPUs. Everything Dynamo-shaped is derived.
-    model: Optional[ModelSpec] = None
+    # A Dynamo model, or with `"kind": "container"` any HTTP server image.
+    model: Optional[ProfileSpec] = None
     # The namespace property
     namespace: Optional[str] = None
     # The profile_id property
@@ -54,18 +57,21 @@ class CreateProfile(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
-        from .model_spec import ModelSpec
+        from .api_kind import ApiKind
+        from .profile_spec import ProfileSpec
 
-        from .model_spec import ModelSpec
+        from .api_kind import ApiKind
+        from .profile_spec import ProfileSpec
 
         fields: dict[str, Callable[[Any], None]] = {
+            "api_kind": lambda n : setattr(self, 'api_kind', n.get_enum_value(ApiKind)),
             "cluster_id": lambda n : setattr(self, 'cluster_id', n.get_uuid_value()),
             "estimated_cold_start_ms": lambda n : setattr(self, 'estimated_cold_start_ms', n.get_int_value()),
             "logical_model": lambda n : setattr(self, 'logical_model', n.get_str_value()),
             "max_queue_depth": lambda n : setattr(self, 'max_queue_depth', n.get_int_value()),
             "max_replicas": lambda n : setattr(self, 'max_replicas', n.get_int_value()),
             "min_replicas": lambda n : setattr(self, 'min_replicas', n.get_int_value()),
-            "model": lambda n : setattr(self, 'model', n.get_object_value(ModelSpec)),
+            "model": lambda n : setattr(self, 'model', n.get_object_value(ProfileSpec)),
             "namespace": lambda n : setattr(self, 'namespace', n.get_str_value()),
             "profile_id": lambda n : setattr(self, 'profile_id', n.get_str_value()),
             "scale_down_idle_seconds": lambda n : setattr(self, 'scale_down_idle_seconds', n.get_int_value()),
@@ -82,6 +88,7 @@ class CreateProfile(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
+        writer.write_enum_value("api_kind", self.api_kind)
         writer.write_uuid_value("cluster_id", self.cluster_id)
         writer.write_int_value("estimated_cold_start_ms", self.estimated_cold_start_ms)
         writer.write_str_value("logical_model", self.logical_model)

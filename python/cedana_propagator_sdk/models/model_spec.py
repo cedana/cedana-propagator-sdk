@@ -5,7 +5,6 @@ from kiota_abstractions.serialization import AdditionalDataHolder, Parsable, Par
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from .engine import Engine
     from .model_spec_env import ModelSpec_env
     from .model_spec_node_selector import ModelSpec_node_selector
     from .model_spec_resources import ModelSpec_resources
@@ -19,8 +18,6 @@ class ModelSpec(AdditionalDataHolder, Parsable):
     # Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.
     additional_data: dict[str, Any] = field(default_factory=dict)
 
-    # The engine property
-    engine: Optional[Engine] = None
     # Extra engine flags, appended after the generated ones.
     engine_args: Optional[list[str]] = None
     # The env property
@@ -60,20 +57,17 @@ class ModelSpec(AdditionalDataHolder, Parsable):
         The deserialization information for the current model
         Returns: dict[str, Callable[[ParseNode], None]]
         """
-        from .engine import Engine
         from .model_spec_env import ModelSpec_env
         from .model_spec_node_selector import ModelSpec_node_selector
         from .model_spec_resources import ModelSpec_resources
         from .model_spec_tolerations import ModelSpec_tolerations
 
-        from .engine import Engine
         from .model_spec_env import ModelSpec_env
         from .model_spec_node_selector import ModelSpec_node_selector
         from .model_spec_resources import ModelSpec_resources
         from .model_spec_tolerations import ModelSpec_tolerations
 
         fields: dict[str, Callable[[Any], None]] = {
-            "engine": lambda n : setattr(self, 'engine', n.get_enum_value(Engine)),
             "engine_args": lambda n : setattr(self, 'engine_args', n.get_collection_of_primitive_values(str)),
             "env": lambda n : setattr(self, 'env', n.get_object_value(ModelSpec_env)),
             "gpus": lambda n : setattr(self, 'gpus', n.get_int_value()),
@@ -96,7 +90,6 @@ class ModelSpec(AdditionalDataHolder, Parsable):
         """
         if writer is None:
             raise TypeError("writer cannot be null.")
-        writer.write_enum_value("engine", self.engine)
         writer.write_collection_of_primitive_values("engine_args", self.engine_args)
         writer.write_object_value("env", self.env)
         writer.write_int_value("gpus", self.gpus)
